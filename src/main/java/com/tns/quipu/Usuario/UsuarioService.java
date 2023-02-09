@@ -1,0 +1,62 @@
+package com.tns.quipu.Usuario;
+
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+public class UsuarioService implements UserDetailsService {
+
+    private UsuarioRepository ur;
+
+    @Autowired
+    public UsuarioService(UsuarioRepository ur) {
+        this.ur = ur;
+    }
+
+    @Transactional(readOnly = true)
+    public List<Usuario> findAllUsers() {
+        return ur.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public Usuario findUserByEmail(String email) {
+        return ur.findByEmail(email).orElse(null);
+    }
+
+    @Transactional()
+    public void saveUsuario(Usuario usuario) {
+        usuario.setPassword(new BCryptPasswordEncoder().encode(usuario.getPassword()));
+        ur.save(usuario);
+    }
+
+
+    @Override
+    public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
+        System.out.println("usernameService: "  + userName);
+        Usuario user = ur.findByUsernameOrEmail(userName,userName).orElse(null);
+        System.out.println("usuario_debug:" + user);
+
+        Set<UsuarioRol> authorities = user
+                .getAuthorities()
+                .stream()
+                .map((role) -> new UsuarioRol(role.getAuthority())).collect(Collectors.toSet());
+
+
+                SecUserDetails usuario = new SecUserDetails(user,user.getUsername(),
+                user.getPassword(),
+                authorities);
+
+                System.out.println("Service_end: " + usuario.toString());
+                return usuario;
+    }
+
+}
