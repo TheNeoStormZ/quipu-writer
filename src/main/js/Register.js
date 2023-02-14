@@ -39,7 +39,6 @@ const theme = createTheme();
 var message = "ERROR — check it out!";
 
 export default function Register() {
-
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -61,12 +60,12 @@ export default function Register() {
       }
     }
   };
-  const [showAlert, setShowAlert] = React.useState(false)
+  const [showAlert, setShowAlert] = React.useState(false);
   const AlertCustom = () => (
-    <Alert variant="outlined" severity="error"sx={{ m: 2}}>
-    { message }
+    <Alert variant="outlined" severity="error" sx={{ m: 2 }}>
+      {message}
     </Alert>
-  )
+  );
 
   return (
     <ThemeProvider theme={theme}>
@@ -86,12 +85,8 @@ export default function Register() {
           <Typography component="h1" variant="h5">
             Registro
           </Typography>
-          { showAlert ? <AlertCustom /> : null }
-          <Box
-            component="form"
-            onSubmit={handleSubmit}z
-            sx={{ mt: 1 }}
-          >
+          {showAlert ? <AlertCustom /> : null}
+          <Box component="form" onSubmit={handleSubmit} z sx={{ mt: 1 }}>
             <TextField
               margin="normal"
               required

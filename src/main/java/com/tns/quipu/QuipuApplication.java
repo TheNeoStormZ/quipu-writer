@@ -6,7 +6,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;
 
-import com.tns.quipu.Personaje.Personaje;
 import com.tns.quipu.Personaje.PersonajeRepository;
 import com.tns.quipu.Security.SecurityConfiguration;
 

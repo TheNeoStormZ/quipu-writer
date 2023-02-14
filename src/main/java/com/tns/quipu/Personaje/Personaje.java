@@ -1,11 +1,15 @@
 package com.tns.quipu.Personaje;
 
 import java.math.BigInteger;
-
+import java.util.Date;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.tns.quipu.Usuario.Usuario;
+
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -13,7 +17,12 @@ import lombok.ToString;
 @Getter
 @Setter
 @Document
+@AllArgsConstructor
+@NoArgsConstructor
 public class Personaje {
+
+	public String creador;
+
     @Id
     public BigInteger id;
 
@@ -21,14 +30,18 @@ public class Personaje {
 
     public String primerApellido;
 
-    public Personaje() {
-    }
+    public String segundoApellido;
 
-    public Personaje(String nombre, String primerApellido) {
+    public String lugarNacimiento;
 
-        this.nombre = nombre;
-        this.primerApellido = primerApellido;
+    public Date fechaNacimiento;
 
-    }
+    public String genero;
+
+    public String residencia;
+
+    public String descripcion;
+
+    public String urlIcon;
 
 }

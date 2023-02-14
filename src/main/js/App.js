@@ -7,6 +7,8 @@ import Login from "./Login";
 import theme from "./theme";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Register from "./Register";
+import Characters from "./Characters";
+import CharactersAdd from "./CharacterAdd";
 
 
 
@@ -23,6 +25,8 @@ export default function App() {
              <Route path="/" element= {<Index/>} />
               <Route path="/login" element= {<Login/>} />
               <Route path="/register" element= {<Register/>} />
+              <Route path="/personajes" element= {<Characters/>} />
+              <Route path="/personajes/new" element= {<CharactersAdd/>} />
             </Routes>
     </BrowserRouter>
   );
