@@ -1,7 +1,13 @@
 const React = require("react");
 const ReactDOM = require("react-dom/client");
 import Button from "@mui/material/Button";
-import {Card, CardHeader,CardActions, CardContent, CardActionArea } from "@mui/material";
+import {
+  Card,
+  CardHeader,
+  CardActions,
+  CardContent,
+  CardActionArea,
+} from "@mui/material";
 import CssBaseline from "@mui/material/CssBaseline";
 import Grid from "@mui/material/Grid";
 import Stack from "@mui/material/Stack";
@@ -11,6 +17,9 @@ import Container from "@mui/material/Container";
 import Link from "@mui/material/Link";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Avatar from "@mui/material/Avatar";
+import TextField from "@mui/material/TextField";
+import SearchIcon from "@mui/icons-material/Search";
+import InputAdornment from "@mui/material/InputAdornment";
 
 import axios from "axios";
 
@@ -33,12 +42,25 @@ const theme = createTheme();
 
 export default function Personajes() {
   const [personajes, setPersonajes] = React.useState([]);
+  const [personajesFiltrados, setPersonajesFiltrados] = React.useState([]);
+  const [searchQuery, setSearchQuery] = React.useState("");
+
+  const handleSearchChange = (event) => {
+    const query = event.target.value;
+    setSearchQuery(query);
+
+    const filtered = personajes.filter((personaje) =>
+      personaje.nombre.toLowerCase().includes(query.toLowerCase())
+    );
+    setPersonajesFiltrados(filtered);
+  };
 
   React.useEffect(() => {
     axios
       .get("/api/personajes")
       .then((response) => {
         setPersonajes(response.data);
+        setPersonajesFiltrados(response.data);
       })
       .catch((error) => {
         console.error(error);
@@ -82,12 +104,25 @@ export default function Personajes() {
               spacing={2}
               justifyContent="center"
             ></Stack>
+            <TextField
+              label="Buscar"
+              value={searchQuery}
+              fullWidth
+              onChange={handleSearchChange}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+              }}
+            />
           </Container>
         </Box>
         <Container sx={{ py: 8 }} maxWidth="md">
           {/* End hero unit */}
           <Grid container spacing={4}>
-            {personajes.map((personaje) => (
+            {personajesFiltrados.map((personaje) => (
               <Grid item key={personaje} xs={12} sm={6} md={4}>
                 <Card
                   sx={{
