@@ -37,4 +37,10 @@ public class PageController {
             return "index";
 
 	}
+
+	@RequestMapping(value = "/personaje/info")
+	public String paginaPersonajeInfo() {
+		return "redirect:/personajes";
+
+	}
 }

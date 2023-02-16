@@ -1,5 +1,6 @@
 const React = require("react");
 const ReactDOM = require("react-dom/client");
+import { useNavigate } from "react-router-dom";
 import Button from "@mui/material/Button";
 import {
   Card,
@@ -65,7 +66,16 @@ export default function Personajes() {
       .catch((error) => {
         console.error(error);
       });
+    localStorage.removeItem("personaje");
   }, []);
+
+  const navigate = useNavigate();
+
+  function handleClick(index) {
+    var personajeGuardado = JSON.stringify(personajes[index]);
+    localStorage.setItem("personaje", personajeGuardado);
+    setTimeout(navigate("/personaje/info"),20);
+  }
 
   return (
     <ThemeProvider theme={theme}>
@@ -122,8 +132,8 @@ export default function Personajes() {
         <Container sx={{ py: 8 }} maxWidth="md">
           {/* End hero unit */}
           <Grid container spacing={4}>
-            {personajesFiltrados.map((personaje) => (
-              <Grid item key={personaje} xs={12} sm={6} md={4}>
+            {personajesFiltrados.map((personaje, index) => (
+              <Grid item key={personaje.id} xs={12} sm={6} md={4}>
                 <Card
                   sx={{
                     height: "100%",
@@ -131,7 +141,7 @@ export default function Personajes() {
                     flexDirection: "column",
                   }}
                 >
-                  <CardActionArea>
+                  <CardActionArea onClick={() => handleClick(index)}>
                     <CardHeader
                       avatar={<Avatar alt="Apple" src={personaje.urlIcon} />}
                     />

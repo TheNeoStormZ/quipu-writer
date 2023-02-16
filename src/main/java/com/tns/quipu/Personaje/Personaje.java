@@ -38,6 +38,8 @@ public class Personaje {
 
     public String genero;
 
+    public String altura;
+
     public String residencia;
 
     public String descripcion;

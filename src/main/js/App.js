@@ -9,6 +9,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Register from "./Register";
 import Characters from "./Characters";
 import CharactersAdd from "./CharacterAdd";
+import CharacterInfo from "./CharacterInfo";
 
 
 
@@ -27,6 +28,7 @@ export default function App() {
               <Route path="/register" element= {<Register/>} />
               <Route path="/personajes" element= {<Characters/>} />
               <Route path="/personajes/new" element= {<CharactersAdd/>} />
+              <Route path="/personaje/info" element= {<CharacterInfo/>} />
             </Routes>
     </BrowserRouter>
   );
