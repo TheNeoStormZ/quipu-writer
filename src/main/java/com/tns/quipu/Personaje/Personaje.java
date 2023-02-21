@@ -24,7 +24,7 @@ public class Personaje {
 	public String creador;
 
     @Id
-    public BigInteger id;
+    public String id;
 
     public String nombre;
 

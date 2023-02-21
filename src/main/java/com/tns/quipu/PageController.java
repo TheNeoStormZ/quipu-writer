@@ -43,4 +43,10 @@ public class PageController {
 		return "redirect:/personajes";
 
 	}
+
+	@RequestMapping(value = "/personaje/update")
+	public String paginaPersonajeUpdate() {
+		return "redirect:/personajes";
+
+	}
 }

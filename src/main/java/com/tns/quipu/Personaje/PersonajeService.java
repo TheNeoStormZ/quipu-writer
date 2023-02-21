@@ -1,5 +1,6 @@
 package com.tns.quipu.Personaje;
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -38,9 +39,25 @@ public class PersonajeService {
         return generos;
     }
 
+    @Transactional()
+    public Personaje findById(String id) {
+        return pr.findById(id).orElse(null);
+    }
+
+
     
     @Transactional()
     public void savePersonaje(Personaje personaje) {
+        pr.save(personaje);
+    }
+
+    @Transactional()
+    public void updatePersonaje(Personaje personaje) {
+        Personaje p = pr.findById(personaje.getId()).orElse(null);
+        p.setAltura(p.getAltura());
+        p.setCreador(p.getCreador());
+        p.setDescripcion(p.getDescripcion());
+
         pr.save(personaje);
     }
 

@@ -16,7 +16,7 @@ import PersonIcon from "@mui/icons-material/Person";
 import Autocomplete from "@mui/material/Autocomplete";
 import Grid from "@mui/material/Grid";
 import Avatar from "@mui/material/Avatar";
-import SaveIcon from '@mui/icons-material/Save';
+import SaveAsIcon from '@mui/icons-material/SaveAs';
 
 import axios from "axios";
 
@@ -35,13 +35,29 @@ function Copyright() {
 
 const theme = createTheme();
 
-export default function Creation() {
+function convertirFecha(fechaOriginal) {
+  // Crear objeto Date a partir de la fecha original
+  let fecha = new Date(fechaOriginal);
+
+  // Obtener componentes de la fecha
+  let dia = fecha.getDate().toString().padStart(2, "0");
+  let mes = (fecha.getMonth() + 1).toString().padStart(2, "0");
+  let anio = fecha.getFullYear().toString();
+
+  // Formatear la fecha en la cadena deseada
+  let fechaFormateada = `${anio}-${mes}-${dia}`;
+
+  return fechaFormateada;
+}
+
+export default function Update() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     try {
       await axios
-        .post("/api/personajes/new", {
+        .put("/api/personajes/update", {
+          id: personaje.id,
           nombre: data.get("nombre"),
           primerApellido: data.get("primerApellido"),
           segundoApellido: data.get("segundoApellido"),
@@ -51,7 +67,7 @@ export default function Creation() {
           residencia: data.get("residencia"),
           descripcion: data.get("descripcion"),
           genero: data.get("genero"),
-          urlIcon: data.get("url-icon"),
+          urlIcon: data.get("urlIcon"),
         })
         .then((window.location.href = "/personajes"));
     } catch (err) {
@@ -68,6 +84,7 @@ export default function Creation() {
   );
 
   const [genders, setGenders] = React.useState([]);
+  const [personaje, setPersonaje] = React.useState([]);
 
   React.useEffect(() => {
     axios
@@ -76,11 +93,30 @@ export default function Creation() {
       .catch((error) => console.log(error));
   }, []);
 
+  const personajeStr = localStorage.getItem("personaje");
+  var personajeTemp = personajeStr;
   const [avatarUrl, setAvatarUrl] = React.useState("");
 
+  React.useEffect(() => {
+    if (personajeStr) {
+      personajeTemp = JSON.parse(personajeStr);
+      setPersonaje(personajeTemp);
+    } else {
+      console.log("FATAL ERROR");
+      navigate("/personajes");
+    }
+  }, []);
+
+
   const handleAvatarUrlChange = (event) => {
+    setPersonaje({...personaje, [event.target.name]: event.target.value});
     setAvatarUrl(event.target.value);
   };
+
+  function handleTextChange(e) {
+    setPersonaje({...personaje, [e.target.name]: e.target.value});
+    console.log(personaje)
+  }
 
   return (
     <ThemeProvider theme={theme}>
@@ -95,7 +131,7 @@ export default function Creation() {
           color="text.primary"
           gutterBottom
         >
-          Añadir personaje
+          Actualizar personaje
         </Typography>
         {showAlert ? <AlertCustom /> : null}
         <Box
@@ -110,7 +146,7 @@ export default function Creation() {
           autoComplete="off"
         >
           <div>
-            <Box component="form" onSubmit={handleSubmit} z sx={{ mt: 1 }}>
+            <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
               <div>
                 <Avatar
                   alt="Avatar"
@@ -135,11 +171,15 @@ export default function Creation() {
                   id="outlined-required"
                   label="Nombre"
                   name="nombre"
+                  value={personaje.nombre || ''}
+                  onChange={handleTextChange}
                 />
                 <TextField
                   id="outlined-required"
                   label="Apellido 1"
                   name="primerApellido"
+                  value={personaje.primerApellido || ''}
+                  onChange={handleTextChange}
                 />
               </div>
               <div>
@@ -147,11 +187,15 @@ export default function Creation() {
                   id="outlined-required"
                   label="Apellido 2"
                   name="segundoApellido"
+                  value={personaje.segundoApellido || ''}
+                  onChange={handleTextChange}
                 />
                 <TextField
                   id="outlined-required"
                   label="Residencia"
                   name="residencia"
+                  value={personaje.residencia || ''}
+                  onChange={handleTextChange}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
@@ -177,6 +221,8 @@ export default function Creation() {
                   label="Altura"
                   type="number"
                   name="altura"
+                  value={personaje.altura || ''}
+                  onChange={handleTextChange}
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">cm</InputAdornment>
@@ -186,8 +232,9 @@ export default function Creation() {
                 <TextField
                   id="outlined"
                   label="URL icono"
-                  name="url-icon"
+                  name="urlIcon"
                   onChange={handleAvatarUrlChange}
+                  value={personaje.urlIcon || ''}
                   type="URL"
                   placeholder="https://cdn.webpage.com"
                 />
@@ -195,6 +242,8 @@ export default function Creation() {
                   options={genders}
                   getOptionLabel={(gender) => gender}
                   id="auto-select"
+                  value={personaje.genero || ''}
+                  onChange={handleTextChange}
                   autoSelect
                   freeSolo
                   renderInput={(params) => (
@@ -231,6 +280,8 @@ export default function Creation() {
                   label="Fecha de nacimiento"
                   type="date"
                   name="fechaNacimiento"
+                  value={convertirFecha(personaje.fechaNacimiento) || ''}
+                  onChange={handleTextChange}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
@@ -244,6 +295,8 @@ export default function Creation() {
                   id="outlined-required"
                   label="Lugar de nacimiento"
                   name="lugarNacimiento"
+                  value={personaje.lugarNacimiento || ''}
+                  onChange={handleTextChange}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
@@ -259,6 +312,8 @@ export default function Creation() {
                   id="outlined-textarea"
                   label="Descripción"
                   name="descripcion"
+                  value={personaje.descripcion || ''}
+                  onChange={handleTextChange}
                   multiline
                   rows={4}
                 />
@@ -267,10 +322,10 @@ export default function Creation() {
                 type="submit"
                 fullWidth
                 variant="contained"
-                startIcon={<SaveIcon />}
+                startIcon={<SaveAsIcon />}
                 sx={{ mt: 3, mb: 2 }}
               >
-                Crear personaje
+                Actualizar personaje
               </Button>
             </Box>
           </div>

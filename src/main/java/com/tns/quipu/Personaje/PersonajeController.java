@@ -13,6 +13,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -50,6 +51,29 @@ public class PersonajeController {
 
     @PostMapping(value = "/api/personajes/new")
     public ResponseEntity<String> newPersonaje(@Valid @RequestBody Personaje personaje, Principal principal, BindingResult result) {
+
+        personaje.setCreador(principal.getName());
+
+        if (result.hasErrors()) {
+            FieldError error = result.getFieldError();
+            String message = error.getField() +": " +error.getDefaultMessage();
+            return new ResponseEntity<>(message, HttpStatus.FORBIDDEN);
+        }
+
+        ps.savePersonaje(personaje);
+
+        return new ResponseEntity<>("OK", HttpStatus.CREATED);
+        
+    }
+
+    @PutMapping(value = "/api/personajes/update")
+    public ResponseEntity<String> updatePersonaje(@RequestBody Personaje personaje, Principal principal, BindingResult result) {
+
+        System.out.println("Personaje: " + personaje.toString());
+        System.out.println("Personaje id: " + personaje.getId());
+
+        System.out.println("Personaje encontrado: " + ps.findById(personaje.getId()));
+       
 
         personaje.setCreador(principal.getName());
 

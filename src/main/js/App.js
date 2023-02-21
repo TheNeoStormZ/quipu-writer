@@ -10,7 +10,7 @@ import Register from "./Register";
 import Characters from "./Characters";
 import CharactersAdd from "./CharacterAdd";
 import CharacterInfo from "./CharacterInfo";
-
+import CharacterUpdate from "./CharacterUpdate";
 
 
 export default function App() {
@@ -29,6 +29,7 @@ export default function App() {
               <Route path="/personajes" element= {<Characters/>} />
               <Route path="/personajes/new" element= {<CharactersAdd/>} />
               <Route path="/personaje/info" element= {<CharacterInfo/>} />
+              <Route path="/personaje/update" element= {<CharacterUpdate/>} />
             </Routes>
     </BrowserRouter>
   );

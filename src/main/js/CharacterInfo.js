@@ -21,8 +21,9 @@ import TextField from "@mui/material/TextField";
 import SearchIcon from "@mui/icons-material/Search";
 import { useNavigate } from "react-router-dom";
 import InputAdornment from "@mui/material/InputAdornment";
-
-import axios from "axios";
+import IconButton from "@mui/material/IconButton";
+import EditIcon from "@mui/icons-material/Edit";
+import { Link as LinkRouter } from "react-router-dom";
 
 import Navigation from "./Navigation";
 
@@ -66,11 +67,10 @@ function convertirFecha(fechaOriginal) {
   return fechaFormateada;
 }
 
-var datosPersonaje = [];
-
 export default function Personaje() {
+
   const personajeStr = localStorage.getItem("personaje");
-  const [datosPersonaje, setDdatosPersonaje] = React.useState([]);
+  const [datosPersonaje, setDatosPersonaje] = React.useState([]);
   const [personaje, setPersonaje] = React.useState([]);
   var personajeTemp = personajeStr;
 
@@ -90,7 +90,7 @@ export default function Personaje() {
         personajeTemp.lugarNacimiento,
       ];
 
-      setDdatosPersonaje(datosPersonajeTemp);
+      setDatosPersonaje(datosPersonajeTemp);
 
       for (let i = 0; i < datosPersonaje.length; i++) {
         if (datosPersonaje[i] === "") {
@@ -99,6 +99,7 @@ export default function Personaje() {
           i--;
         }
       }
+
     } else {
       console.log("FATAL ERROR");
       navigate("/personajes");
@@ -149,10 +150,16 @@ export default function Personaje() {
                   gutterBottom
                 >
                   {personaje.nombre}
+                  <IconButton aria-label="edit">
+                    <LinkRouter to="/personaje/update"> <EditIcon /></LinkRouter>
+                  </IconButton>
                 </Typography>
               </div>
               {datosPersonaje.map((personajeDato, index) => (
-                <div style={{ display: "flex", alignItems: "left" }} key={index}>
+                <div
+                  style={{ display: "flex", alignItems: "left" }}
+                  key={index}
+                >
                   <Typography
                     component="h3"
                     variant="h5"
