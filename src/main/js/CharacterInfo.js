@@ -24,8 +24,19 @@ import InputAdornment from "@mui/material/InputAdornment";
 import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
 import { Link as LinkRouter } from "react-router-dom";
+import DeleteIcon from "@mui/icons-material/Delete";
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+} from "@mui/material";
+
 
 import Navigation from "./Navigation";
+
+import axios from "axios";
 
 function Copyright() {
   return (
@@ -68,11 +79,39 @@ function convertirFecha(fechaOriginal) {
 }
 
 export default function Personaje() {
-
   const personajeStr = localStorage.getItem("personaje");
   const [datosPersonaje, setDatosPersonaje] = React.useState([]);
   const [personaje, setPersonaje] = React.useState([]);
   var personajeTemp = personajeStr;
+
+  const [openDelete, setOpenDelete] = React.useState(false);
+
+  const handleClickOpenDelete = () => {
+    setOpenDelete(true);
+  };
+
+  const handleProccesDelete = () => {
+    console.log(personaje)
+    axios.delete('/api/personajes/delete', {
+      data: {
+        id: personaje.id
+      }
+    })
+    .then(response => {
+      console.log('Item deleted successfully');
+      navigate("/personajes");
+      // Aquí puedes hacer algo después de que se elimine el ítem
+    })
+    .catch(error => {
+      console.error('Error deleting item:', error);
+    });
+  }
+
+
+
+  const handleCloseDelete = () => {
+    setOpenDelete(false);
+  };
 
   const navigate = useNavigate();
 
@@ -99,7 +138,6 @@ export default function Personaje() {
           i--;
         }
       }
-
     } else {
       console.log("FATAL ERROR");
       navigate("/personajes");
@@ -108,6 +146,27 @@ export default function Personaje() {
 
   return (
     <ThemeProvider theme={theme}>
+      <Dialog
+        open={openDelete}
+        onClose={handleCloseDelete}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"¿Eliminar personaje?"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            ¿Seguro de que desea eliminar el personaje? Esta acción no se puede deshacer.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleProccesDelete} color="error">Eliminar</Button>
+          <Button onClick={handleCloseDelete} autoFocus>
+            Cancelar
+          </Button>
+        </DialogActions>
+      </Dialog>
       <CssBaseline />
       <Navigation />
       <main>
@@ -151,7 +210,16 @@ export default function Personaje() {
                 >
                   {personaje.nombre}
                   <IconButton aria-label="edit">
-                    <LinkRouter to="/personaje/update"> <EditIcon /></LinkRouter>
+                    <LinkRouter to="/personaje/update">
+                      {" "}
+                      <EditIcon />
+                    </LinkRouter>
+                  </IconButton>
+                  <IconButton
+                    aria-label="delete"
+                    onClick={handleClickOpenDelete}
+                  >
+                    <DeleteIcon />
                   </IconButton>
                 </Typography>
               </div>

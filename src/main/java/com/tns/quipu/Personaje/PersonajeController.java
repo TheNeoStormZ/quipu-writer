@@ -2,6 +2,7 @@ package com.tns.quipu.Personaje;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.validation.Valid;
@@ -11,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -72,7 +74,11 @@ public class PersonajeController {
         System.out.println("Personaje: " + personaje.toString());
         System.out.println("Personaje id: " + personaje.getId());
 
-        System.out.println("Personaje encontrado: " + ps.findById(personaje.getId()));
+        Personaje og = ps.findById(personaje.getId());
+
+        if (!(og.getCreador().equals(principal.getName()))){
+            return new ResponseEntity<>("Not the owner", HttpStatus.FORBIDDEN);
+        }
        
 
         personaje.setCreador(principal.getName());
@@ -89,6 +95,18 @@ public class PersonajeController {
         
     }
 
+    @DeleteMapping(value = "/api/personajes/delete")
+    public ResponseEntity<String> eliminarPersonaje(@RequestBody Map<String,String> mapId, Principal principal) {
+        String id = mapId.get("id");
+        System.out.println("ID: " + id);
+        Personaje personaje = ps.findById(id);
+        if (!(personaje.getCreador().equals(principal.getName()))){
+            return new ResponseEntity<>("Not the owner", HttpStatus.FORBIDDEN);
+        }
+        ps.deletePersonaje(personaje);
+        return new ResponseEntity<>("OK", HttpStatus.ACCEPTED);
+
+    }
     
 
     

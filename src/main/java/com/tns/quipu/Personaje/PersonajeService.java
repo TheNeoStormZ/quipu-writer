@@ -52,6 +52,11 @@ public class PersonajeService {
     }
 
     @Transactional()
+    public void deletePersonaje(Personaje personaje) {
+        pr.delete(personaje);
+    }
+
+    @Transactional()
     public void updatePersonaje(Personaje personaje) {
         Personaje p = pr.findById(personaje.getId()).orElse(null);
         p.setAltura(p.getAltura());
