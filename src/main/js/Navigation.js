@@ -1,23 +1,25 @@
 const React = require("react");
 const ReactDOM = require("react-dom/client");
-import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
-import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
-import Menu from "@mui/material/Menu";
-import MenuIcon from "@mui/icons-material/Menu";
-import Container from "@mui/material/Container";
-import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
-import Tooltip from "@mui/material/Tooltip";
-import MenuItem from "@mui/material/MenuItem";
-import AdbIcon from "@mui/icons-material/Adb";
-import Link from "@mui/material/Link";
+import CollectionsBookmarkIcon from '@mui/icons-material/CollectionsBookmark';
 import LibraryAddIcon from "@mui/icons-material/LibraryAdd";
-import { Link as LinkRouter } from "react-router-dom";
+import LocalLibraryIcon from "@mui/icons-material/LocalLibrary";
+import MenuIcon from "@mui/icons-material/Menu";
+import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
+import AppBar from "@mui/material/AppBar";
+import Avatar from "@mui/material/Avatar";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Container from "@mui/material/Container";
+import IconButton from "@mui/material/IconButton";
+import Link from "@mui/material/Link";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import Toolbar from "@mui/material/Toolbar";
+import Tooltip from "@mui/material/Tooltip";
+import Typography from "@mui/material/Typography";
 
 const pages = ["Historias", "Personajes"];
+const iconosNav =[<CollectionsBookmarkIcon/>,<PeopleAltIcon/>]
 const urls = ["/", "/personajes"];
 const settings = ["Cuenta", "Cerrar sesión"];
 
@@ -59,7 +61,7 @@ function ResponsiveAppBar() {
     <AppBar position="static">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} />
+          <LocalLibraryIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} />
           <Typography
             variant="h6"
             noWrap
@@ -119,7 +121,7 @@ function ResponsiveAppBar() {
               ))}
             </Menu>
           </Box>
-          <AdbIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} />
+          <LocalLibraryIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} />
           <Typography
             variant="h5"
             noWrap
@@ -136,7 +138,7 @@ function ResponsiveAppBar() {
               textDecoration: "none",
             }}
           >
-            LOGO
+            Quipu
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
             {pages.map((page, index) => (
@@ -147,7 +149,7 @@ function ResponsiveAppBar() {
                 component={Link}
                 href={urls[index]}
               >
-                {page}
+                {iconosNav[index]} {page}
               </Button>
             ))}
           </Box>

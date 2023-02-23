@@ -1,38 +1,27 @@
 const React = require("react");
 const ReactDOM = require("react-dom/client");
-import Button from "@mui/material/Button";
-import {
-  Card,
-  CardHeader,
-  CardActions,
-  CardContent,
-  CardActionArea,
-} from "@mui/material";
-import CssBaseline from "@mui/material/CssBaseline";
-import Grid from "@mui/material/Grid";
-import Stack from "@mui/material/Stack";
+import CloseIcon from "@mui/icons-material/Close";
+import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import { Alert, Collapse } from "@mui/material";
+import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
+import Button from "@mui/material/Button";
+import CssBaseline from "@mui/material/CssBaseline";
+import IconButton from "@mui/material/IconButton";
 import Link from "@mui/material/Link";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import Avatar from "@mui/material/Avatar";
-import TextField from "@mui/material/TextField";
-import SearchIcon from "@mui/icons-material/Search";
-import { useNavigate } from "react-router-dom";
-import InputAdornment from "@mui/material/InputAdornment";
-import IconButton from "@mui/material/IconButton";
-import EditIcon from "@mui/icons-material/Edit";
-import { Link as LinkRouter } from "react-router-dom";
-import DeleteIcon from "@mui/icons-material/Delete";
+import Typography from "@mui/material/Typography";
+import { Link as LinkRouter, useNavigate } from "react-router-dom";
+
 import {
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
-  DialogTitle,
+  DialogTitle
 } from "@mui/material";
-
 
 import Navigation from "./Navigation";
 
@@ -82,35 +71,53 @@ export default function Personaje() {
   const personajeStr = localStorage.getItem("personaje");
   const [datosPersonaje, setDatosPersonaje] = React.useState([]);
   const [personaje, setPersonaje] = React.useState([]);
+  const [openExportAlert, setOpenExportAlert] = React.useState(false);
+  const [openExportFailAlert, setOpenExportFailAlert] = React.useState(false);
   var personajeTemp = personajeStr;
 
   const [openDelete, setOpenDelete] = React.useState(false);
+  
 
   const handleClickOpenDelete = () => {
     setOpenDelete(true);
   };
 
   const handleProccesDelete = () => {
-    console.log(personaje)
-    axios.delete('/api/personajes/delete', {
-      data: {
-        id: personaje.id
-      }
-    })
-    .then(response => {
-      console.log('Item deleted successfully');
-      navigate("/personajes");
-      // Aquí puedes hacer algo después de que se elimine el ítem
-    })
-    .catch(error => {
-      console.error('Error deleting item:', error);
-    });
-  }
-
-
+    console.log(personaje);
+    axios
+      .delete("/api/personajes/delete", {
+        data: {
+          id: personaje.id,
+        },
+      })
+      .then((response) => {
+        console.log("Item deleted successfully");
+        navigate("/personajes");
+      })
+      .catch((error) => {
+        console.error("Error deleting item:", error);
+      });
+  };
 
   const handleCloseDelete = () => {
     setOpenDelete(false);
+  };
+
+  const handleExport = () => {
+    axios
+      .get("/api/personajes/" + personaje.id + "/export")
+      .then((response) => {
+        console.log(response);
+        setOpenExportAlert(true);
+        const url = window.URL.createObjectURL(new Blob([JSON.stringify(response.data)]));
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", personaje.nombre + ".json");
+        document.body.appendChild(link);
+        link.click();
+      }) .catch((error) => {
+        setOpenExportFailAlert(true);
+      });
   };
 
   const navigate = useNavigate();
@@ -146,30 +153,75 @@ export default function Personaje() {
 
   return (
     <ThemeProvider theme={theme}>
-      <Dialog
-        open={openDelete}
-        onClose={handleCloseDelete}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">
-          {"¿Eliminar personaje?"}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            ¿Seguro de que desea eliminar el personaje? Esta acción no se puede deshacer.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleProccesDelete} color="error">Eliminar</Button>
-          <Button onClick={handleCloseDelete} autoFocus>
-            Cancelar
-          </Button>
-        </DialogActions>
-      </Dialog>
       <CssBaseline />
       <Navigation />
       <main>
+        <Dialog
+          open={openDelete}
+          onClose={handleCloseDelete}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">
+            {"¿Eliminar personaje?"}
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              ¿Seguro de que desea eliminar el personaje? Esta acción no se
+              puede deshacer.
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleProccesDelete} color="error">
+              Eliminar
+            </Button>
+            <Button onClick={handleCloseDelete} autoFocus>
+              Cancelar
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        <Collapse in={openExportAlert}>
+          <Alert
+            action={
+              <IconButton
+                aria-label="close"
+                color="inherit"
+                size="small"
+                onClick={() => {
+                  setOpenExportAlert(false);
+                }}
+              >
+                <CloseIcon fontSize="inherit" />
+              </IconButton>
+            }
+            sx={{ mb: 2 }}
+          >
+            "¡Archivo exportado con exito!"
+          </Alert>
+        </Collapse>
+
+        <Collapse in={openExportFailAlert}>
+          <Alert severity="error"
+            action={
+              <IconButton
+                aria-label="close"
+                color="inherit"
+                size="small"
+                onClick={() => {
+                  setOpenExportFailAlert(false);
+                }}
+              >
+                <CloseIcon fontSize="inherit" />
+              </IconButton>
+            }
+            sx={{ mb: 2 }}
+          >
+            Ha ocurrido un error al exportar. Intentalo mas tarde.
+          </Alert>
+        </Collapse>
+
+
         <Typography
           sx={{ mt: 2, ml: 2 }}
           component="h1"
@@ -209,12 +261,17 @@ export default function Personaje() {
                   gutterBottom
                 >
                   {personaje.nombre}
+                  <IconButton aria-label="export" onClick={handleExport}>
+                    <CloudDownloadIcon />
+                  </IconButton>
+
                   <IconButton aria-label="edit">
                     <LinkRouter to="/personaje/update">
                       {" "}
                       <EditIcon />
                     </LinkRouter>
                   </IconButton>
+
                   <IconButton
                     aria-label="delete"
                     onClick={handleClickOpenDelete}

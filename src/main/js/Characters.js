@@ -1,26 +1,23 @@
 const React = require("react");
 const ReactDOM = require("react-dom/client");
-import { useNavigate } from "react-router-dom";
-import Button from "@mui/material/Button";
+import SearchIcon from "@mui/icons-material/Search";
 import {
-  Card,
-  CardHeader,
-  CardActions,
-  CardContent,
-  CardActionArea,
+  Card, CardActionArea, CardActions,
+  CardContent, CardHeader
 } from "@mui/material";
+import Avatar from "@mui/material/Avatar";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Container from "@mui/material/Container";
 import CssBaseline from "@mui/material/CssBaseline";
 import Grid from "@mui/material/Grid";
-import Stack from "@mui/material/Stack";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
-import Link from "@mui/material/Link";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-import Avatar from "@mui/material/Avatar";
-import TextField from "@mui/material/TextField";
-import SearchIcon from "@mui/icons-material/Search";
 import InputAdornment from "@mui/material/InputAdornment";
+import Link from "@mui/material/Link";
+import Stack from "@mui/material/Stack";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
+import { useNavigate } from "react-router-dom";
 
 import axios from "axios";
 

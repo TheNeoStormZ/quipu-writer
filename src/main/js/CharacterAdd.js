@@ -1,22 +1,21 @@
 const React = require("react");
 const ReactDOM = require("react-dom/client");
-import CssBaseline from "@mui/material/CssBaseline";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Link from "@mui/material/Link";
-import TextField from "@mui/material/TextField";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-import InputAdornment from "@mui/material/InputAdornment";
 import ChildFriendlyIcon from "@mui/icons-material/ChildFriendly";
-import MapIcon from "@mui/icons-material/Map";
 import EventIcon from "@mui/icons-material/Event";
-import Button from "@mui/material/Button";
-import Navigation from "./Navigation";
+import MapIcon from "@mui/icons-material/Map";
 import PersonIcon from "@mui/icons-material/Person";
-import Autocomplete from "@mui/material/Autocomplete";
-import Grid from "@mui/material/Grid";
-import Avatar from "@mui/material/Avatar";
 import SaveIcon from '@mui/icons-material/Save';
+import Autocomplete from "@mui/material/Autocomplete";
+import Avatar from "@mui/material/Avatar";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import CssBaseline from "@mui/material/CssBaseline";
+import InputAdornment from "@mui/material/InputAdornment";
+import Link from "@mui/material/Link";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
+import Navigation from "./Navigation";
 
 import axios from "axios";
 

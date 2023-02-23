@@ -1,16 +1,13 @@
 const React = require("react");
 const ReactDOM = require("react-dom/client");
-import CssBaseline from "@mui/material/CssBaseline";
-import { ThemeProvider } from "@mui/material/styles";
-import Index from "./index";
-import Login from "./Login";
-import theme from "./theme";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Register from "./Register";
-import Characters from "./Characters";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import CharactersAdd from "./CharacterAdd";
 import CharacterInfo from "./CharacterInfo";
+import Characters from "./Characters";
 import CharacterUpdate from "./CharacterUpdate";
+import Index from "./index";
+import Login from "./Login";
+import Register from "./Register";
 
 
 export default function App() {

@@ -1,11 +1,9 @@
 package com.tns.quipu.Personaje;
 
-import java.math.BigInteger;
 import java.util.Date;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-import com.tns.quipu.Usuario.Usuario;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
