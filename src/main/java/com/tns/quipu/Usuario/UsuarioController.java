@@ -45,9 +45,9 @@ public class UsuarioController {
         this.us = us;
     }
 
-    @GetMapping(value = "/api/usuarios")
-    public List<Usuario> listUsuarios() {
-        return us.findAllUsers();
+    @GetMapping(value = "/alive")
+    public ResponseEntity<String> alive() {
+        return new ResponseEntity<>("I AM ALIVE!!", HttpStatus.ACCEPTED);
     }
 
     @PostMapping(value = "/api/auth/register")
