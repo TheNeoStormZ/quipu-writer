@@ -110,6 +110,34 @@ public class PersonajeController {
 
     }
 
+    @PostMapping(value = "/api/personajes/import")
+    public ResponseEntity<String> importarPersonaje(@RequestBody @Valid Personaje personaje, Principal principal) {
+
+        Personaje personajeFound= null;
+
+        try {
+            personajeFound = ps.findById(personaje.getId());
+
+        }  catch (Exception e) {
+            
+        }
+
+        String message = "Empty message";
+
+        if (personajeFound == null) {
+            message = "Personaje exportado correctamente";
+        } 
+        else {
+            message = "Personaje actualizado correctamente";
+        }
+
+        personaje.setCreador(principal.getName());
+        
+        ps.savePersonaje(personaje);
+        return new ResponseEntity<>(message, HttpStatus.CREATED);
+
+    }
+ 
     @GetMapping(value = "/api/personajes/{id}/export",produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> exportarPersonaje(@PathVariable String id, Principal principal) {
         Personaje personaje = ps.findById(id);

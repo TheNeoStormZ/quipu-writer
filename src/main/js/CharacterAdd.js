@@ -99,7 +99,7 @@ export default function Creation() {
         {showAlert ? <AlertCustom /> : null}
         <Box
           sx={{
-            "& .MuiTextField-root": { m: 1, width: "25ch" },
+            "& .MuiTextField-root": { m:1, width: { xs: '98%', sm: '25ch' }  },
             marginTop: 3,
             display: "flex",
             flexDirection: "column",
@@ -109,7 +109,13 @@ export default function Creation() {
           autoComplete="off"
         >
           <div>
-            <Box component="form" onSubmit={handleSubmit} z sx={{ mt: 1 }}>
+            <Box component="form" onSubmit={handleSubmit} 
+            sx={{
+              mt: 1,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}>
               <div>
                 <Avatar
                   alt="Avatar"

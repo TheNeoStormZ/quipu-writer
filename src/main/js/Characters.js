@@ -2,8 +2,11 @@ const React = require("react");
 const ReactDOM = require("react-dom/client");
 import SearchIcon from "@mui/icons-material/Search";
 import {
-  Card, CardActionArea, CardActions,
-  CardContent, CardHeader
+  Card,
+  CardActionArea,
+  CardActions,
+  CardContent,
+  CardHeader,
 } from "@mui/material";
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
@@ -11,12 +14,14 @@ import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
 import CssBaseline from "@mui/material/CssBaseline";
 import Grid from "@mui/material/Grid";
+import IconButton from "@mui/material/IconButton";
 import InputAdornment from "@mui/material/InputAdornment";
 import Link from "@mui/material/Link";
 import Stack from "@mui/material/Stack";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { useNavigate } from "react-router-dom";
 
 import axios from "axios";
@@ -53,6 +58,34 @@ export default function Personajes() {
     setPersonajesFiltrados(filtered);
   };
 
+  const handleImportInit = (event) => {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const fileContent = JSON.parse(event.target.result);
+      console.log(fileContent);
+      handleSend(fileContent);
+    };
+    reader.readAsText(file);
+  };
+
+  const fileInput = React.useRef(null);
+
+
+  const handleSend = (fileContent) => {
+    console.log(fileContent)
+    axios
+      .post("/api/personajes/import", fileContent, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then((response) => {
+        location.reload()
+      })
+      .catch((error) => console.error(error));
+  };
+
   React.useEffect(() => {
     axios
       .get("/api/personajes")
@@ -71,10 +104,11 @@ export default function Personajes() {
   function handleClick(index) {
     var personajeGuardado = JSON.stringify(personajes[index]);
     localStorage.setItem("personaje", personajeGuardado);
-    setTimeout(navigate("/personaje/info"),20);
+    setTimeout(navigate("/personaje/info"), 20);
   }
 
   return (
+
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Navigation />
@@ -96,6 +130,17 @@ export default function Personajes() {
               gutterBottom
             >
               Personajes
+              <input
+                type="file"
+                id="file"
+                accept="application/json"
+                onChange={handleImportInit}
+                ref={fileInput}
+                style={{ display: "none" }}
+              />
+              <IconButton aria-label="import" onClick={() => fileInput.current.click()}>
+                <CloudUploadIcon />
+              </IconButton>
             </Typography>
             <Typography
               variant="h5"
