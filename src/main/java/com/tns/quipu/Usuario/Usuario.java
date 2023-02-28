@@ -26,7 +26,6 @@ import javax.validation.constraints.Size;
 @Document
 public class Usuario {
 
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	protected BigInteger id;

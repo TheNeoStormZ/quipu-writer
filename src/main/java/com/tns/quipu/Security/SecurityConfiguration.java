@@ -60,12 +60,12 @@ public class SecurityConfiguration {
 		.sessionManagement()
 		.sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 		.authorizeHttpRequests((requests) -> requests
-						.requestMatchers("/built/**", "/login", "/register", "/api/**")
+						.requestMatchers("/built/**", "/login", "/register", "/api/auth/**")
 						.permitAll()
 						.anyRequest().authenticated())
 				.formLogin()
 				.loginPage("/login").defaultSuccessUrl("/").and()
-				.csrf().ignoringRequestMatchers("/api/auth/**").and()
+				.csrf().ignoringRequestMatchers("/api/auth/**","/api/**","/api/personajes/**").and()
 				.logout((logout) -> logout.permitAll());
 
 		http.addFilterAfter(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);

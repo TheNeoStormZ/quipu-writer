@@ -1,13 +1,13 @@
 const React = require("react");
 const ReactDOM = require("react-dom/client");
-import CssBaseline from "@mui/material/CssBaseline";
-import { ThemeProvider } from "@mui/material/styles";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import CharactersAdd from "./CharacterAdd";
+import CharacterInfo from "./CharacterInfo";
+import Characters from "./Characters";
+import CharacterUpdate from "./CharacterUpdate";
 import Index from "./index";
 import Login from "./Login";
-import theme from "./theme";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Register from "./Register";
-
 
 
 export default function App() {
@@ -23,6 +23,10 @@ export default function App() {
              <Route path="/" element= {<Index/>} />
               <Route path="/login" element= {<Login/>} />
               <Route path="/register" element= {<Register/>} />
+              <Route path="/personajes" element= {<Characters/>} />
+              <Route path="/personajes/new" element= {<CharactersAdd/>} />
+              <Route path="/personaje/info" element= {<CharacterInfo/>} />
+              <Route path="/personaje/update" element= {<CharacterUpdate/>} />
             </Routes>
     </BrowserRouter>
   );

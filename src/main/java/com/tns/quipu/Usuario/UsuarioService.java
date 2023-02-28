@@ -32,6 +32,11 @@ public class UsuarioService implements UserDetailsService {
         return ur.findByEmail(email).orElse(null);
     }
 
+    @Transactional(readOnly = true)
+    public Usuario findUserByUsername(String username) {
+        return ur.findByUsername(username).orElse(null);
+    }
+
     @Transactional()
     public void saveUsuario(Usuario usuario) {
         usuario.setPassword(new BCryptPasswordEncoder().encode(usuario.getPassword()));
