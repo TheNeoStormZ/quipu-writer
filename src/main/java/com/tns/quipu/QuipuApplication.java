@@ -22,10 +22,6 @@ public class QuipuApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		/*ps.deleteAll();
-
-		ps.save(new Personaje("Sherlock", "Holmes"));
-		ps.save(new Personaje("John", "Watson"));*/
 
 		System.out.println("Program launch successful");
 	}

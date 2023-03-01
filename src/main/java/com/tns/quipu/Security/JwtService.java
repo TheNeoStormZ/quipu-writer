@@ -25,7 +25,6 @@ public class JwtService {
     }
  
     public String createToken(UserDetails userDetails) {
-        System.out.println(SECRET_KEY);
         String username = userDetails.getUsername();
         Collection<? extends GrantedAuthority> authorities = userDetails.getAuthorities();
         return Jwts.builder()
