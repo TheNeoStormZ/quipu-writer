@@ -3,11 +3,6 @@ package com.tns.quipu.Security;
 
 import java.io.IOException;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -37,7 +32,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             jakarta.servlet.http.HttpServletResponse response, jakarta.servlet.FilterChain filterChain)
             throws jakarta.servlet.ServletException, IOException {
 
-		//final String requestTokenHeader = request.getHeader("Authorization");
 
 		final Cookie requestTokenHeader = WebUtils.getCookie(request,"token");
 		String username = null;
