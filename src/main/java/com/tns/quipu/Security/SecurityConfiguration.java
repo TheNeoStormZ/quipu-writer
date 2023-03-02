@@ -42,8 +42,8 @@ public class SecurityConfiguration {
 		.and()
 		.sessionManagement()
 		.sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-		.authorizeHttpRequests(requests -> requests
-						.requestMatchers("/built/**", "/login", "/register", "/api/auth/**")
+		.authorizeHttpRequests((requests) -> requests
+						.requestMatchers("/built/**", "/login", "/register", "/api/auth/**","/alive")
 						.permitAll()
 						.anyRequest().authenticated())
 				.formLogin()
