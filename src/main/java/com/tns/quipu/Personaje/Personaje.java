@@ -3,7 +3,10 @@ package com.tns.quipu.Personaje;
 import java.util.Date;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import com.tns.quipu.Usuario.Usuario;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,7 +22,8 @@ import lombok.ToString;
 @NoArgsConstructor
 public class Personaje {
 
-	public String creador;
+    @DBRef
+	public Usuario creador;
 
     @Id
     public String id;

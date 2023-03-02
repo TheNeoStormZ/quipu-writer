@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.tns.quipu.Usuario.Usuario;
+
 @Service
 public class PersonajeService {
 
@@ -25,12 +27,12 @@ public class PersonajeService {
     }
 
     @Transactional(readOnly = true)
-    public List<Personaje> findAllUserCharacters(String user) {
+    public List<Personaje> findAllUserCharacters(Usuario user) {
         return pr.findByCreador(user);
     }
 
     @Transactional(readOnly = true)
-    public Set<String> findAllGenders(String user) {
+    public Set<String> findAllGenders(Usuario user) {
         Set<String> generos = findAllUserCharacters(user).stream().map(x -> x.getGenero()).collect(Collectors.toSet());
         generos.addAll(List.of("Masculino","Femenino"));
         return generos;

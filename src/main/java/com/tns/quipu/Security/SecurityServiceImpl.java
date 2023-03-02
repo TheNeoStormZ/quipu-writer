@@ -15,8 +15,6 @@ public class SecurityServiceImpl implements SecurityService {
     @Autowired
     private AuthenticationManager authenticationManager;
 
-    @Autowired
-    private JwtService jwtService;
 
     private final UsuarioService userDetailsService;
 
@@ -27,23 +25,19 @@ public class SecurityServiceImpl implements SecurityService {
 
     @Override
     public boolean login(String username, String password) {
-        System.out.println("usuarioImpl: " + username + " password: " + password);
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
                 userDetails, password, userDetails.getAuthorities());
 
-        System.out.println("P1");
         
         authenticationManager.authenticate(usernamePasswordAuthenticationToken);
 
-        System.out.println("P2");
 
 
         if (usernamePasswordAuthenticationToken.isAuthenticated()) {
             SecurityContextHolder.getContext()
                     .setAuthentication(usernamePasswordAuthenticationToken);
-            System.out.println(("Login correcto"));
             return true;
         }
 

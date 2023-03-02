@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tns.quipu.Usuario.Usuario;
 import com.tns.quipu.Usuario.UsuarioService;
 
 @RestController
@@ -40,14 +41,16 @@ public class PersonajeController {
 
     @GetMapping(value = "/api/personajes")
     public List<Personaje> listPersonajes(Principal principal) {
-        List<Personaje> personajes = ps.findAllUserCharacters(principal.getName());
+        Usuario loggedUser = us.findUserByUsername(principal.getName());
+        List<Personaje> personajes = ps.findAllUserCharacters(loggedUser);
         return personajes;
 
     }
 
     @GetMapping(value = "/api/personajes/generos")
     public Set<String> listGeneros(Principal principal) {
-        Set<String> generos = ps.findAllGenders(principal.getName());
+        Usuario loggedUser = us.findUserByUsername(principal.getName());
+        Set<String> generos = ps.findAllGenders(loggedUser);
         return generos;
 
     }
@@ -56,7 +59,9 @@ public class PersonajeController {
     public ResponseEntity<String> newPersonaje(@Valid @RequestBody Personaje personaje, Principal principal,
             BindingResult result) {
 
-        personaje.setCreador(principal.getName());
+        Usuario loggedUser = us.findUserByUsername(principal.getName());
+
+        personaje.setCreador(loggedUser);
 
         if (result.hasErrors()) {
             FieldError error = result.getFieldError();
@@ -79,11 +84,14 @@ public class PersonajeController {
 
         Personaje og = ps.findById(personaje.getId());
 
-        if (!(og.getCreador().equals(principal.getName()))) {
+        if (!(og.getCreador().getUsername().equals(principal.getName()))) {
             return new ResponseEntity<>("Not the owner", HttpStatus.FORBIDDEN);
         }
 
-        personaje.setCreador(principal.getName());
+        
+        Usuario loggedUser = us.findUserByUsername(principal.getName());
+
+        personaje.setCreador(loggedUser);
 
         if (result.hasErrors()) {
             FieldError error = result.getFieldError();
@@ -102,7 +110,7 @@ public class PersonajeController {
         String id = mapId.get("id");
         System.out.println("ID: " + id);
         Personaje personaje = ps.findById(id);
-        if (!(personaje.getCreador().equals(principal.getName()))) {
+        if (!(personaje.getCreador().getUsername().equals(principal.getName()))) {
             return new ResponseEntity<>("Not the owner", HttpStatus.FORBIDDEN);
         }
         ps.deletePersonaje(personaje);
@@ -131,7 +139,12 @@ public class PersonajeController {
             message = "Personaje actualizado correctamente";
         }
 
-        personaje.setCreador(principal.getName());
+
+
+        
+        Usuario loggedUser = us.findUserByUsername(principal.getName());
+
+        personaje.setCreador(loggedUser);
         
         ps.savePersonaje(personaje);
         return new ResponseEntity<>(message, HttpStatus.CREATED);
@@ -146,7 +159,7 @@ public class PersonajeController {
             return ResponseEntity.notFound().build();
         }
 
-        else if (!(personaje.getCreador().equals(principal.getName()))) {
+        else if (!(personaje.getCreador().getUsername().equals(principal.getName()))) {
             return new ResponseEntity<>("Not the owner", HttpStatus.FORBIDDEN);
         }
 
