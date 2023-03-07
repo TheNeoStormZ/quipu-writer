@@ -5,6 +5,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.doNothing;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -194,6 +195,37 @@ public class PersonajeControllerTest {
                 // Verificar que se hayan invocado los métodos del servicio y del principal
                 verify(ps).findById("123");
                 verify(ps).deletePersonaje(personaje);
+
+        }
+
+
+        @Test
+        public void testUpdatePersonajeSuccess() throws Exception {
+                // Arrange
+                Usuario usuario = new Usuario();
+                usuario.setUsername("user");
+                Personaje personaje = new Personaje(usuario, "1", "Mario", "Fontanero", null, null, null, null, null,
+                                null, null, null);
+
+                Personaje personaje2 = new Personaje(usuario, "1", "MarioEdit", "Font", "Bro", null, null, null, "100",
+                                null, null, null);
+                Principal principal = () -> "user";
+
+                // Definir el comportamiento de los objetos simulados
+                when(ps.findById("1")).thenReturn(personaje);
+                when(us.findUserByUsername("user")).thenReturn(usuario);
+                doNothing().when(ps).savePersonaje(personaje);
+
+                // Invocar el método bajo prueba y verificar el resultado
+                Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
+                mockMvc.perform(put("/api/personajes/update")
+                                .content(gson.toJson(personaje2))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .principal(() -> "user"))
+                                .andExpect(status().isCreated())
+                                .andExpect(content().string("OK"));
+
+                verify(us).findUserByUsername("user");
 
         }
 
