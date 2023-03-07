@@ -23,7 +23,7 @@ import {
   DialogTitle
 } from "@mui/material";
 
-import Navigation from "./Navigation";
+import Navigation from "../Navigation";
 
 import axios from "axios";
 
