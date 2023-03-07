@@ -5,6 +5,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.doNothing;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -136,7 +137,7 @@ public class PersonajeControllerTest {
         void newPersonaje() throws Exception {
                 // Arrange
                 Personaje personaje = new Personaje();
-                personaje.setNombre("Harry Potter");
+                personaje.setNombre("Harry");
                 personaje.setPrimerApellido("Potter");
                 personaje.setSegundoApellido(null);
                 personaje.setLugarNacimiento("Godric's Hollow");
@@ -164,9 +165,36 @@ public class PersonajeControllerTest {
                                 .principal(() -> "user"))
                                 .andExpect(status().isCreated())
                                 .andExpect(content().string("OK"));
-                                
+
                 personaje.setCreador(user);
                 verify(us).findUserByUsername("user");
+        }
+
+        @Test
+        public void testEliminarPersonaje() throws Exception {
+
+                // Arrange
+                Personaje personaje = new Personaje();
+                personaje.setId("123");
+                personaje.setNombre("Batman");
+                Usuario creador = new Usuario();
+                creador.setUsername("user");
+                personaje.setCreador(creador);
+
+                // Simular el comportamiento de los métodos del servicio y del principal
+                when(ps.findById("123")).thenReturn(personaje);
+                when(us.findUserByUsername("user")).thenReturn(creador);
+
+                // Simular una petición HTTP al método del controlador y verificar la respuesta
+                mockMvc.perform(delete("/api/personajes/delete")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("{\"id\":\"123\"}"))
+                                .andExpect(status().isAccepted());
+
+                // Verificar que se hayan invocado los métodos del servicio y del principal
+                verify(ps).findById("123");
+                verify(ps).deletePersonaje(personaje);
+
         }
 
 }
