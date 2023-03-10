@@ -20,7 +20,7 @@ import {
   DialogActions,
   DialogContent,
   DialogContentText,
-  DialogTitle
+  DialogTitle,
 } from "@mui/material";
 
 import Navigation from "../Navigation";
@@ -46,9 +46,9 @@ var nombreDatos = [
   "Apellido 1",
   "Apellido 2",
   "Residencia",
-  "Altura",
+  "Fecha de nacimiento",
   "Genero",
-  "Fecha nacimeinto",
+  "Altura",
   "Lugar de nacimiento",
 ];
 
@@ -76,7 +76,6 @@ export default function Personaje() {
   var personajeTemp = personajeStr;
 
   const [openDelete, setOpenDelete] = React.useState(false);
-  
 
   const handleClickOpenDelete = () => {
     setOpenDelete(true);
@@ -109,42 +108,72 @@ export default function Personaje() {
       .then((response) => {
         console.log(response);
         setOpenExportAlert(true);
-        const url = window.URL.createObjectURL(new Blob([JSON.stringify(response.data)]));
+        const url = window.URL.createObjectURL(
+          new Blob([JSON.stringify(response.data)])
+        );
         const link = document.createElement("a");
         link.href = url;
         link.setAttribute("download", personaje.nombre + ".json");
         document.body.appendChild(link);
         link.click();
-      }) .catch((error) => {
+      })
+      .catch((error) => {
         setOpenExportFailAlert(true);
       });
   };
 
   const navigate = useNavigate();
 
+  function removeEmpty(obj) {
+    return Object.fromEntries(
+      Object.entries(obj).filter(
+        ([_, v]) => Boolean(v) && !(Array.isArray(v) && v.length === 0)
+      )
+    );
+  }
+
   React.useEffect(() => {
     if (personajeStr) {
-      personajeTemp = JSON.parse(personajeStr);
+      personajeTemp = removeEmpty(JSON.parse(personajeStr));
       setPersonaje(personajeTemp);
+
+      // Creamos un array con las keys que queremos excluir del objeto
+      var keysExcluidas = ["id", "nombre", "descripcion","urlIcon"];
+
       var datosPersonajeTemp = [
-        personajeTemp.primerApellido,
-        personajeTemp.segundoApellido,
-        personajeTemp.residencia,
-        personajeTemp.altura + " cm",
-        personajeTemp.genero,
-        convertirFecha(personajeTemp.fechaNacimiento),
-        personajeTemp.lugarNacimiento,
+        Object.keys(personajeTemp)
+          .filter((key) => !keysExcluidas.includes(key))
+          .reduce((obj, key) => {
+            obj[key] = personajeTemp[key];
+            // Si la propiedad es fechaNacimiento y no es undefined, aplicar la función convertirFecha
+            key === "fechaNacimiento" &&
+              (obj[key] = convertirFecha(personajeTemp[key]));
+            // Si la propiedad es altura y no es undefined, añadir el sufijo " cm"
+            key === "altura" && (obj[key] = personajeTemp[key] + " cm");
+            return obj;
+          }, {}),
       ];
+
+      datosPersonajeTemp = Object.values(datosPersonajeTemp[0]);
+      datosPersonajeTemp.shift();
 
       setDatosPersonaje(datosPersonajeTemp);
 
-      for (let i = 0; i < datosPersonaje.length; i++) {
-        if (datosPersonaje[i] === "") {
-          datosPersonaje.splice(i, 1);
-          nombreDatos.splice(i, 1);
-          i--;
+      // Iterar sobre las claves del objeto
+      Object.keys(personajeTemp).forEach((key) => {
+        // Si la propiedad es undefined
+        if (personajeTemp[key] === undefined) {
+          // Buscar el índice del elemento en el array que coincide con la clave
+          var indice = nombreDatos.indexOf(
+            key.charAt(0).toUpperCase() + key.slice(1)
+          );
+          // Si se encuentra el índice
+          if (indice !== -1) {
+            // Eliminar el elemento en ese índice
+            nombreDatos.splice(indice, 1);
+          }
         }
-      }
+      });
     } else {
       console.log("FATAL ERROR");
       navigate("/personajes");
@@ -202,7 +231,8 @@ export default function Personaje() {
         </Collapse>
 
         <Collapse in={openExportFailAlert}>
-          <Alert severity="error"
+          <Alert
+            severity="error"
             action={
               <IconButton
                 aria-label="close"
@@ -220,7 +250,6 @@ export default function Personaje() {
             Ha ocurrido un error al exportar. Intentalo mas tarde.
           </Alert>
         </Collapse>
-
 
         <Typography
           sx={{ mt: 2, ml: 2 }}
@@ -327,7 +356,7 @@ export default function Personaje() {
                   sx={{ mt: 2, ml: 2 }}
                   gutterBottom
                 >
-                  {personaje.descripcion}
+                  {personaje.descripcion || "Sin descripción"}
                 </Typography>
               </div>
             </Box>
