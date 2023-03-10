@@ -15,15 +15,14 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
 import { Link as LinkRouter, useNavigate } from "react-router-dom";
 
-
-import BookIcon from '@mui/icons-material/Book';
+import BookIcon from "@mui/icons-material/Book";
 
 import {
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
-  DialogTitle
+  DialogTitle,
 } from "@mui/material";
 
 import Navigation from "../Navigation";
@@ -45,10 +44,7 @@ function Copyright() {
 
 const theme = createTheme();
 
-var nombreDatosHistoria = [
-  "Nombre de la historia",
-  "Generos narrativos",
-];
+var nombreDatosHistoria = ["Nombre de la historia", "Generos narrativos"];
 
 function convertirFecha(fechaOriginal) {
   // Crear objeto Date a partir de la fecha original
@@ -74,7 +70,6 @@ export default function Historia() {
   var storyTemp = storyStr;
 
   const [openDelete, setOpenDelete] = React.useState(false);
-  
 
   const handleClickOpenDelete = () => {
     setOpenDelete(true);
@@ -107,37 +102,42 @@ export default function Historia() {
       .then((response) => {
         console.log(response);
         setOpenExportAlert(true);
-        const url = window.URL.createObjectURL(new Blob([JSON.stringify(response.data)]));
+        const url = window.URL.createObjectURL(
+          new Blob([JSON.stringify(response.data)])
+        );
         const link = document.createElement("a");
         link.href = url;
         link.setAttribute("download", historia.nombreHistoria + ".json");
         document.body.appendChild(link);
         link.click();
-      }) .catch((error) => {
+      })
+      .catch((error) => {
         setOpenExportFailAlert(true);
       });
   };
 
   const navigate = useNavigate();
 
+  function removeEmpty(obj) {
+    return Object.fromEntries(
+      Object.entries(obj).filter(
+        ([_, v]) => Boolean(v) && !(Array.isArray(v) && v.length === 0)
+      )
+    );
+  }
+
   React.useEffect(() => {
     if (storyStr) {
-      storyTemp = JSON.parse(storyStr);
+      storyTemp = removeEmpty(JSON.parse(storyStr));
       setHistoria(storyTemp);
+
+      var { nombreHistoria, generos } = storyTemp; // desestructuración de objetos
       var datosHistoriaTemp = [
-        storyTemp.nombreHistoria,
-        storyTemp.generos.join(", "),
-      ];
+        nombreHistoria,
+        generos !== undefined ? generos.join(", ") : "Sin géneros",
+      ]; // operador condicional y método join
 
       setDatosHistoria(datosHistoriaTemp);
-
-      for (let i = 0; i < datosHistoria.length; i++) {
-        if (datosHistoria[i] === "") {
-          datosHistoria.splice(i, 1);
-          nombreDatosHistoria.splice(i, 1);
-          i--;
-        }
-      }
     } else {
       console.log("FATAL ERROR");
       navigate("/");
@@ -160,8 +160,8 @@ export default function Historia() {
           </DialogTitle>
           <DialogContent>
             <DialogContentText id="alert-dialog-description">
-              ¿Seguro de que desea eliminar la historia? Esta acción no se
-              puede deshacer.
+              ¿Seguro de que desea eliminar la historia? Esta acción no se puede
+              deshacer.
             </DialogContentText>
           </DialogContent>
           <DialogActions>
@@ -195,7 +195,8 @@ export default function Historia() {
         </Collapse>
 
         <Collapse in={openExportFailAlert}>
-          <Alert severity="error"
+          <Alert
+            severity="error"
             action={
               <IconButton
                 aria-label="close"
@@ -213,7 +214,6 @@ export default function Historia() {
             Ha ocurrido un error al exportar. Intentalo mas tarde.
           </Alert>
         </Collapse>
-
 
         <Typography
           sx={{ mt: 2, ml: 2 }}
@@ -239,9 +239,7 @@ export default function Historia() {
           <div>
             <Box>
               <div style={{ display: "flex", alignItems: "left" }}>
-              <BookIcon
-              sx={{ width: 98, height: 98 }}
-              />
+                <BookIcon sx={{ width: 98, height: 98 }} />
 
                 <Typography
                   component="h3"
@@ -299,28 +297,30 @@ export default function Historia() {
                   </Typography>
                 </div>
               ))}
-              <div>
-                <Typography
-                  component="h3"
-                  variant="h5"
-                  align="left"
-                  color="text.primary"
-                  sx={{ mt: 2, ml: 2 }}
-                  gutterBottom
-                >
-                  Descripción
-                </Typography>
-                <Typography
-                  component="h3"
-                  variant="h5"
-                  align="left"
-                  color="text.secondary"
-                  sx={{ mt: 2, ml: 2 }}
-                  gutterBottom
-                >
-                  {historia.descripcion}
-                </Typography>
-              </div>
+              {historia.descripcion && (
+                <div>
+                  <Typography
+                    component="h3"
+                    variant="h5"
+                    align="left"
+                    color="text.primary"
+                    sx={{ mt: 2, ml: 2 }}
+                    gutterBottom
+                  >
+                    Descripción
+                  </Typography>
+                  <Typography
+                    component="h3"
+                    variant="h5"
+                    align="left"
+                    color="text.secondary"
+                    sx={{ mt: 2, ml: 2 }}
+                    gutterBottom
+                  >
+                    {historia.descripcion}
+                  </Typography>
+                </div>
+              )}
             </Box>
           </div>
         </Box>
