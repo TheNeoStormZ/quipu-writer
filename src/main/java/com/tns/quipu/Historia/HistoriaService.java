@@ -10,27 +10,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.tns.quipu.Historia.Trama.Trama;
 import com.tns.quipu.Usuario.Usuario;
 
 @Service
 public class HistoriaService {
 
-    private HistoriaRepository pr;
+    private HistoriaRepository hr;
 
     @Autowired
-    public HistoriaService(HistoriaRepository pr) {
-        this.pr = pr;
+    public HistoriaService(HistoriaRepository hr) {
+        this.hr = hr;
     }
 
     
     @Transactional(readOnly = true)
     public List<Historia> findAllStories() {
-        return pr.findAll();
+        return hr.findAll();
     }
 
     @Transactional(readOnly = true)
     public List<Historia> findAllUserStories(Usuario user) {
-        return pr.findByCreador(user);
+        return hr.findByCreador(user);
     }
 
     @Transactional(readOnly = true)
@@ -43,28 +44,33 @@ public class HistoriaService {
 
     @Transactional()
     public Historia findById(String id) {
-        return pr.findById(id).orElse(null);
+        return hr.findById(id).orElse(null);
     }
 
 
     
     @Transactional()
     public void saveHistoria(Historia historia) {
-        pr.save(historia);
+        hr.save(historia);
     }
 
     @Transactional()
     public void deleteHistoria(Historia historia) {
-        pr.delete(historia);
+        hr.delete(historia);
     }
 
     @Transactional()
     public void updateHistoria(Historia historia) {
-        Historia p = pr.findById(historia.getId()).orElse(null);
-        p.setCreador(p.getCreador());
-        p.setDescripcion(p.getDescripcion());
+        Historia h = hr.findById(historia.getId()).orElse(null);
+        h.setCreador(h.getCreador());
+        h.setDescripcion(h.getDescripcion());
 
-        pr.save(historia);
+        hr.save(historia);
+    }
+
+    @Transactional()
+    public Historia findByTrama(Trama trama) {
+        return hr.findByTramasContains(trama);
     }
 
 

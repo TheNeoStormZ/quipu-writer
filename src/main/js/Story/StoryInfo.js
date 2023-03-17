@@ -16,6 +16,10 @@ import Typography from "@mui/material/Typography";
 import { Link as LinkRouter, useNavigate } from "react-router-dom";
 
 import BookIcon from "@mui/icons-material/Book";
+import CreateNewFolderIcon from "@mui/icons-material/CreateNewFolder";
+
+import Container from "@mui/material/Container";
+import Grid from "@mui/material/Grid";
 
 import {
   Dialog,
@@ -23,6 +27,14 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+} from "@mui/material";
+
+import {
+  Card,
+  CardActionArea,
+  CardActions,
+  CardContent,
+  CardHeader,
 } from "@mui/material";
 
 import Navigation from "../Navigation";
@@ -71,6 +83,8 @@ export default function Historia() {
 
   const [openDelete, setOpenDelete] = React.useState(false);
 
+  const [arcs, setArcs] = React.useState([]);
+
   const handleClickOpenDelete = () => {
     setOpenDelete(true);
   };
@@ -118,6 +132,10 @@ export default function Historia() {
 
   const navigate = useNavigate();
 
+  const handleNewArc = async (event) => {
+    navigate("/historia/tramas/add");
+  };
+
   function removeEmpty(obj) {
     return Object.fromEntries(
       Object.entries(obj).filter(
@@ -126,10 +144,17 @@ export default function Historia() {
     );
   }
 
+  function handleClick(index) {
+    var tramaGuardada = JSON.stringify(arcs[index]);
+    localStorage.setItem("trama", tramaGuardada);
+    setTimeout(navigate("/historia/trama/info"), 20);
+  }
+
   React.useEffect(() => {
     if (storyStr) {
       storyTemp = removeEmpty(JSON.parse(storyStr));
       setHistoria(storyTemp);
+      localStorage.removeItem("trama");
 
       var { nombreHistoria, generos } = storyTemp; // desestructuración de objetos
       var datosHistoriaTemp = [
@@ -138,12 +163,26 @@ export default function Historia() {
       ]; // operador condicional y método join
 
       setDatosHistoria(datosHistoriaTemp);
+      setArcs(storyTemp.tramas)
     } else {
       console.log("FATAL ERROR");
       navigate("/");
     }
   }, []);
-
+/*
+  React.useEffect(() => {
+    // Solo se ejecuta si historia.id no es undefined
+    if (historia.id) {
+      axios
+        .get("/api/historia/" + historia.id + "/tramas")
+        .then((response) => {
+          console.log(response.data);
+          setArcs(response.data);
+        })
+        .catch((error) => console.log(error));
+    }
+  }, [historia.id]); // Aquí pasamos historia.id como dependencia para que se ejecute cada vez que cambie
+*/
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -321,9 +360,64 @@ export default function Historia() {
                   </Typography>
                 </div>
               )}
+              <div>
+                <Typography
+                  component="h3"
+                  variant="h5"
+                  align="left"
+                  color="text.primary"
+                  sx={{ mt: 2, ml: 2 }}
+                  gutterBottom
+                >
+                  Tramas
+                </Typography>
+                <Button
+                  variant="contained"
+                  endIcon={<CreateNewFolderIcon />}
+                  sx={{ mt: 2, ml: 2 }}
+                  onClick={handleNewArc}
+                >
+                  Añadir Trama
+                </Button>
+              </div>
             </Box>
           </div>
         </Box>
+        <Container sx={{ py: 2 }} maxWidth="md">
+                {/* End hero unit */}
+                <Grid container spacing={4}>
+                  {Array.isArray(arcs) && !arcs.some(e => e === null) && arcs.map((trama, index) => (
+                    <Grid item key={trama.id} xs={12} sm={6} md={4}>
+                      <Card
+                        sx={{
+                          height: "100%",
+                          display: "flex",
+                          flexDirection: "column",
+                        }}
+                      >
+                        <CardActionArea onClick={() => handleClick(index)}>
+                          <CardHeader avatar={<BookIcon />} />
+
+                          <CardContent sx={{ flexGrow: 1 }}>
+                            <Typography
+                              gutterBottom
+                              variant="h5"
+                              component="h2"
+                            >
+                              {trama.nombreTrama}
+                            </Typography>
+                            <Typography>{trama.descripcion}</Typography>
+                          </CardContent>
+                        </CardActionArea>
+                        <CardActions>
+                          <Button size="small">View</Button>
+                          <Button size="small">Edit</Button>
+                        </CardActions>
+                      </Card>
+                    </Grid>
+                  ))}
+                </Grid>
+              </Container>
       </main>
       {/* Footer */}
       <Box sx={{ bgcolor: "background.paper", p: 6 }} component="footer">

@@ -11,6 +11,10 @@ import StoryAdd from "./Story/StoryAdd";
 import StoryInfo from "./Story/StoryInfo";
 import StoryUpdate from "./Story/StoryUpdate"
 
+import StoryArcAdd from "./Story/StoryArc/StoryArcAdd";
+import StoryArcInfo from "./Story/StoryArc/StoryArcInfo";
+import StoryArcUpdate from "./Story/StoryArc/StoryArcUpdate";
+
 import Index from "./index";
 import Login from "./Login";
 import Register from "./Register";
@@ -36,6 +40,9 @@ export default function App() {
               <Route path="/historias/new" element= {<StoryAdd/>} />
               <Route path="/historia/info" element= {<StoryInfo/>} />
               <Route path="/historia/update" element= {<StoryUpdate/>} />
+              <Route path="/historia/tramas/add" element= {<StoryArcAdd/>} />
+              <Route path="/historia/trama/info" element= {<StoryArcInfo/>} />
+              <Route path="/historia/trama/update" element= {<StoryArcUpdate/>} />
             </Routes>
     </BrowserRouter>
   );

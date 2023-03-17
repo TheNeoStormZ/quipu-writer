@@ -61,12 +61,12 @@ public class HistoriaController {
     }
 
     @PostMapping(value = "/api/historias/new")
-    public ResponseEntity<String> newPersonaje(@Valid @RequestBody Historia personaje, Principal principal,
+    public ResponseEntity<String> newHistoria(@Valid @RequestBody Historia historia, Principal principal,
             BindingResult result) {
 
         Usuario loggedUser = us.findUserByUsername(principal.getName());
 
-        personaje.setCreador(loggedUser);
+        historia.setCreador(loggedUser);
 
         if (result.hasErrors()) {
             FieldError error = result.getFieldError();
@@ -74,20 +74,18 @@ public class HistoriaController {
             return new ResponseEntity<>(message, HttpStatus.FORBIDDEN);
         }
 
-        hs.saveHistoria(personaje);
+        hs.saveHistoria(historia);
 
         return new ResponseEntity<>("OK", HttpStatus.CREATED);
 
     }
 
     @PutMapping(value = "/api/historias/update")
-    public ResponseEntity<String> updatePersonaje(@RequestBody Historia personaje, Principal principal,
+    public ResponseEntity<String> updateHistoria(@RequestBody Historia historia, Principal principal,
             BindingResult result) {
 
-        System.out.println("Historia: " + personaje.toString());
-        System.out.println("Historia id: " + personaje.getId());
 
-        Historia og = hs.findById(personaje.getId());
+        Historia og = hs.findById(historia.getId());
 
         if (!(og.getCreador().getUsername().equals(principal.getName()))) {
             return new ResponseEntity<>("Not the owner", HttpStatus.FORBIDDEN);
@@ -96,7 +94,7 @@ public class HistoriaController {
         
         Usuario loggedUser = us.findUserByUsername(principal.getName());
 
-        personaje.setCreador(loggedUser);
+        historia.setCreador(loggedUser);
 
         if (result.hasErrors()) {
             FieldError error = result.getFieldError();
@@ -104,31 +102,35 @@ public class HistoriaController {
             return new ResponseEntity<>(message, HttpStatus.FORBIDDEN);
         }
 
-        hs.saveHistoria(personaje);
+        if (historia.getTramas().isEmpty()) {
+            historia.setTramas(og.getTramas());
+        }
+
+        hs.saveHistoria(historia);
 
         return new ResponseEntity<>("OK", HttpStatus.CREATED);
 
     }
 
     @DeleteMapping(value = "/api/historias/delete")
-    public ResponseEntity<String> eliminarPersonaje(@RequestBody Map<String, String> mapId, Principal principal) {
+    public ResponseEntity<String> eliminarHistoria(@RequestBody Map<String, String> mapId, Principal principal) {
         String id = mapId.get("id");
-        Historia personaje = hs.findById(id);
-        if (!(personaje.getCreador().getUsername().equals(principal.getName()))) {
+        Historia historia = hs.findById(id);
+        if (!(historia.getCreador().getUsername().equals(principal.getName()))) {
             return new ResponseEntity<>("Not the owner", HttpStatus.FORBIDDEN);
         }
-        hs.deleteHistoria(personaje);
+        hs.deleteHistoria(historia);
         return new ResponseEntity<>("OK", HttpStatus.ACCEPTED);
 
     }
 
     @PostMapping(value = "/api/historias/import")
-    public ResponseEntity<String> importarPersonaje(@RequestBody @Valid Historia personaje, Principal principal) {
+    public ResponseEntity<String> importarHistoria(@RequestBody @Valid Historia historia, Principal principal) {
 
-        Historia personajeFound= null;
+        Historia historiaFound= null;
 
         try {
-            personajeFound = hs.findById(personaje.getId());
+            historiaFound = hs.findById(historia.getId());
 
         }  catch (Exception e) {
             
@@ -136,11 +138,11 @@ public class HistoriaController {
 
         String message = "Empty message";
 
-        if (personajeFound == null) {
-            message = "Personaje exportado correctamente";
+        if (historiaFound == null) {
+            message = "Historia exportada correctamente";
         } 
         else {
-            message = "Personaje actualizado correctamente";
+            message = "Hstoria actualizada correctamente";
         }
 
 
@@ -148,29 +150,29 @@ public class HistoriaController {
         
         Usuario loggedUser = us.findUserByUsername(principal.getName());
 
-        personaje.setCreador(loggedUser);
+        historia.setCreador(loggedUser);
         
-        hs.saveHistoria(personaje);
+        hs.saveHistoria(historia);
         return new ResponseEntity<>(message, HttpStatus.CREATED);
 
     }
  
     @GetMapping(value = "/api/historias/{id}/export",produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> exportarPersonaje(@PathVariable String id, Principal principal) {
-        Historia personaje = hs.findById(id);
+    public ResponseEntity<String> exportarHistoria(@PathVariable String id, Principal principal) {
+        Historia historia = hs.findById(id);
 
-        if (personaje == null) {
+        if (historia == null) {
             return ResponseEntity.notFound().build();
         }
 
-        else if (!(personaje.getCreador().getUsername().equals(principal.getName()))) {
+        else if (!(historia.getCreador().getUsername().equals(principal.getName()))) {
             return new ResponseEntity<>("Not the owner", HttpStatus.FORBIDDEN);
         }
 
         try {
             // Convierte el objeto a formato JSON
             ObjectMapper objectMapper = new ObjectMapper();
-            String elementoJson = objectMapper.writeValueAsString(personaje);
+            String elementoJson = objectMapper.writeValueAsString(historia);
             Gson gson = new Gson();
 
             JsonElement jsonElement = gson.fromJson(elementoJson, JsonElement.class);
