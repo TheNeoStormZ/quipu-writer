@@ -23,7 +23,10 @@ import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { useNavigate } from "react-router-dom";
 
+import Badge from "@mui/material/Badge";
+
 import BookIcon from "@mui/icons-material/Book";
+import MapIcon from "@mui/icons-material/Map";
 
 import axios from "axios";
 
@@ -195,9 +198,10 @@ export default function Historias() {
                       <Typography>{historia.descripcion}</Typography>
                     </CardContent>
                   </CardActionArea>
-                  <CardActions>
-                    <Button size="small">View</Button>
-                    <Button size="small">Edit</Button>
+                  <CardActions sx={{ width: '100%', justifyContent: 'flex-end', pr:3, mt:"auto"}}>
+                    <Badge badgeContent={historia.tramas.length} color="primary">
+                      <MapIcon color="action" />
+                    </Badge>
                   </CardActions>
                 </Card>
               </Grid>

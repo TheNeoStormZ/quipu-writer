@@ -18,7 +18,6 @@ import { Link as LinkRouter, useNavigate } from "react-router-dom";
 import SubdirectoryArrowRightIcon from "@mui/icons-material/SubdirectoryArrowRight";
 import MapIcon from "@mui/icons-material/Map";
 
-import BookIcon from "@mui/icons-material/Book";
 
 import {
   Dialog,

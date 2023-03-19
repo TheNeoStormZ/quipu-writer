@@ -16,6 +16,7 @@ import Typography from "@mui/material/Typography";
 import { Link as LinkRouter, useNavigate } from "react-router-dom";
 
 import BookIcon from "@mui/icons-material/Book";
+import MapIcon from "@mui/icons-material/Map";
 import CreateNewFolderIcon from "@mui/icons-material/CreateNewFolder";
 
 import Container from "@mui/material/Container";
@@ -169,20 +170,7 @@ export default function Historia() {
       navigate("/");
     }
   }, []);
-/*
-  React.useEffect(() => {
-    // Solo se ejecuta si historia.id no es undefined
-    if (historia.id) {
-      axios
-        .get("/api/historia/" + historia.id + "/tramas")
-        .then((response) => {
-          console.log(response.data);
-          setArcs(response.data);
-        })
-        .catch((error) => console.log(error));
-    }
-  }, [historia.id]); // Aquí pasamos historia.id como dependencia para que se ejecute cada vez que cambie
-*/
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -396,7 +384,7 @@ export default function Historia() {
                         }}
                       >
                         <CardActionArea onClick={() => handleClick(index)}>
-                          <CardHeader avatar={<BookIcon />} />
+                          <CardHeader avatar={<MapIcon />} />
 
                           <CardContent sx={{ flexGrow: 1 }}>
                             <Typography

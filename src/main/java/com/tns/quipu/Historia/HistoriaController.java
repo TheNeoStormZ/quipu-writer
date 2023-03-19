@@ -23,9 +23,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tns.quipu.Historia.Trama.Trama;
+import com.tns.quipu.Historia.Trama.TramaService;
 import com.tns.quipu.Usuario.Usuario;
 import com.tns.quipu.Usuario.UsuarioService;
 
@@ -36,12 +39,15 @@ public class HistoriaController {
 
     private final HistoriaService hs;
 
+    private final TramaService ts;
+
     @Autowired
     private UsuarioService us;
 
     @Autowired
-    public HistoriaController(HistoriaService hs) {
+    public HistoriaController(HistoriaService hs, TramaService ts) {
         this.hs = hs;
+        this.ts = ts;
     }
 
     @GetMapping(value = "/api/historias")
@@ -119,7 +125,10 @@ public class HistoriaController {
         if (!(historia.getCreador().getUsername().equals(principal.getName()))) {
             return new ResponseEntity<>("Not the owner", HttpStatus.FORBIDDEN);
         }
+        historia.getTramas().stream().forEach(x -> ts.deleteTrama(x));
+
         hs.deleteHistoria(historia);
+
         return new ResponseEntity<>("OK", HttpStatus.ACCEPTED);
 
     }
@@ -152,7 +161,20 @@ public class HistoriaController {
 
         historia.setCreador(loggedUser);
         
-        hs.saveHistoria(historia);
+
+        List<Trama> tramasAntiguas = historia.getTramas();
+
+        historia.purgeDepedencies();
+
+        tramasAntiguas.stream().forEachOrdered(x -> {
+            x.setCreador(loggedUser);
+            x.setId(null);
+            ts.saveTrama(x);
+            historia.añadirTrama(x);
+          });
+
+          hs.saveHistoria(historia);
+
         return new ResponseEntity<>(message, HttpStatus.CREATED);
 
     }
@@ -180,6 +202,13 @@ public class HistoriaController {
             JsonObject jsonObject = jsonElement.getAsJsonObject();
 
             jsonObject.remove("creador");
+
+            JsonArray tramasJson = jsonObject.get("tramas").getAsJsonArray();
+
+
+            for (JsonElement trama : tramasJson) {
+                trama.getAsJsonObject().remove("creador");
+            }
 
             elementoJson = gson.toJson(jsonElement);
 

@@ -29,7 +29,7 @@ import lombok.ToString;
 public class Historia {
 
     @DBRef
-	public Usuario creador;
+    public Usuario creador;
 
     @Id
     public String id;
@@ -44,21 +44,24 @@ public class Historia {
 
     public String descripcion;
 
-    public void añadirTrama(Trama t){
-        if (!(tramas.contains(t))){
-        tramas.add(t);
-    }else {
-        System.out.println("Trama contenida");
-    }
+    public void añadirTrama(Trama t) {
+        if (!(tramas.contains(t))) {
+            tramas.add(t);
+        } else {
+            System.out.println("Trama contenida");
+        }
     }
 
-    
-    public void eliminarTrama(Trama t){
-        if ((tramas.contains(t))){
-        tramas.remove(t);
-    }else {
-        System.out.println("Trama no contenida");
+    public void eliminarTrama(Trama t) {
+        if ((tramas.contains(t))) {
+            tramas.remove(t);
+        } else {
+            System.out.println("Trama no contenida");
+        }
     }
+
+    public void purgeDepedencies() {
+        tramas =  new ArrayList<>();
     }
 
 }
