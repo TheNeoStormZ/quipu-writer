@@ -58,7 +58,7 @@ public class EscenaController {
             return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
         }
 
-        List<Escena> escenas = historia.getEscenas();
+        List<Escena> escenas = historia.obtenerEscenas();
         return new ResponseEntity<>(escenas, HttpStatus.OK);
     }
 

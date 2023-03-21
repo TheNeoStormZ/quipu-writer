@@ -20,6 +20,7 @@ import FilterHdrIcon from "@mui/icons-material/FilterHdr";
 import EventIcon from "@mui/icons-material/Event";
 import InputAdornment from "@mui/material/InputAdornment";
 
+import MusicNoteIcon from '@mui/icons-material/MusicNote';
 
 import axios from "axios";
 
@@ -49,10 +50,11 @@ export default function Creation() {
     const data = new FormData(event.currentTarget);
     try {
       await axios
-        .post("/api/historia/trama/" + trama.id  + "/escena/new", {
+        .post("/api/historia/trama/" + trama.id + "/escena/new", {
           nombreEscena: data.get("nombreEscena"),
           ubicacion: data.get("ubicacion"),
           fecha: data.get("fechaEscena"),
+          musica: data.get("musica"),
           descripcion: data.get("descripcion"),
         })
         .then((response) => {
@@ -61,7 +63,9 @@ export default function Creation() {
 
           // Guardar el objeto JSON en el localStorage como trama
           localStorage.setItem("historia", JSON.stringify(historia_recv));
-          var trama_temp = historia_recv.tramas.find(trama_find => trama_find.id === trama.id);
+          var trama_temp = historia_recv.tramas.find(
+            (trama_find) => trama_find.id === trama.id
+          );
           console.log(trama_temp);
           localStorage.setItem("trama", JSON.stringify(trama_temp));
 
@@ -83,8 +87,6 @@ export default function Creation() {
 
   const storyStr = localStorage.getItem("historia");
   const [historia, setHistoria] = React.useState([]);
-
-  
 
   React.useEffect(() => {
     if (storyStr) {
@@ -184,6 +186,22 @@ export default function Creation() {
           />
 
           <TextField
+            margin="normal"
+            id="musica"
+            label="Url de la musica"
+            name="musica"
+            autoComplete="musica"
+            type="url"
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <MusicNoteIcon />
+                </InputAdornment>
+              ),
+            }}
+          />
+
+          <TextField
             id="outlined-required"
             label="Fecha de la escena"
             type="date"
@@ -196,8 +214,6 @@ export default function Creation() {
               ),
             }}
           />
-
-
 
           <TextField
             fullWidth

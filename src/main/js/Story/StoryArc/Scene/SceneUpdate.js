@@ -14,13 +14,13 @@ import Navigation from "../../../Navigation";
 import { useNavigate } from "react-router-dom";
 
 import SubdirectoryArrowRightIcon from "@mui/icons-material/SubdirectoryArrowRight";
-import FilterHdrIcon from '@mui/icons-material/FilterHdr';
+import FilterHdrIcon from "@mui/icons-material/FilterHdr";
 
 import InputAdornment from "@mui/material/InputAdornment";
 import EventIcon from "@mui/icons-material/Event";
 import MapIcon from "@mui/icons-material/Map";
 
-import BookIcon from "@mui/icons-material/Book";
+import MusicNoteIcon from '@mui/icons-material/MusicNote';
 
 import axios from "axios";
 
@@ -67,6 +67,7 @@ export default function Update() {
           nombreEscena: data.get("nombreEscena"),
           ubicacion: data.get("ubicacion"),
           fecha: data.get("fecha"),
+          musica: data.get("musica"),
           descripcion: data.get("descripcion"),
         })
         .then((response) => {
@@ -75,10 +76,14 @@ export default function Update() {
 
           localStorage.setItem("historia", JSON.stringify(historia_recv));
 
-          var trama_temp = historia_recv.tramas.find(trama_find => trama_find.id === trama.id);
+          var trama_temp = historia_recv.tramas.find(
+            (trama_find) => trama_find.id === trama.id
+          );
           localStorage.setItem("trama", JSON.stringify(trama_temp));
 
-          var escena_temp = trama_temp.escenas.find(escena_find => escena_find.id === escena.id);
+          var escena_temp = trama_temp.escenas.find(
+            (escena_find) => escena_find.id === escena.id
+          );
           localStorage.setItem("escena", JSON.stringify(escena_temp));
 
           // Redirigir a la página principal
@@ -213,6 +218,24 @@ export default function Update() {
               startAdornment: (
                 <InputAdornment position="start">
                   <MapIcon />
+                </InputAdornment>
+              ),
+            }}
+          />
+
+          <TextField
+            margin="normal"
+            id="musica"
+            label="Url de la musica"
+            name="musica"
+            autoComplete="musica"
+            type="url"
+            value={escena.musica || ""}
+            onChange={handleTextChange}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <MusicNoteIcon />
                 </InputAdornment>
               ),
             }}

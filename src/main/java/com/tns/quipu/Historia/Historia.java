@@ -69,12 +69,12 @@ public class Historia {
         tramas =  new ArrayList<>();
     }
 
-    public List<Escena> getEscenas(){
+    public List<Escena> obtenerEscenas(){
         return tramas.stream().map(x -> x.getEscenas()).filter(Objects::nonNull).flatMap(List::stream).collect(Collectors.toList());
     }
 
-    public Set<Personaje> getPersonajes(){
-        return this.getEscenas().stream().map(x -> x.getPersonajesInvolucrados()).filter(Objects::nonNull).flatMap(List::stream).collect(Collectors.toSet());
+    public Set<Personaje> obtenerPersonajes(){
+        return this.obtenerEscenas().stream().map(x -> x.getPersonajesInvolucrados()).filter(Objects::nonNull).flatMap(List::stream).collect(Collectors.toSet());
     }
 
 }

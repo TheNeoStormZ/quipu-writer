@@ -47,8 +47,8 @@ public class EscenaService {
 
     
     @Transactional()
-    public void saveEscena(Escena Escena) {
-        er.save(Escena);
+    public void saveEscena(Escena escena) {
+        er.save(escena);
     }
 
     @Transactional()

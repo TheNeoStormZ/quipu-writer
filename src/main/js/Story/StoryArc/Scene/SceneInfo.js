@@ -18,6 +18,8 @@ import { Link as LinkRouter, useNavigate } from "react-router-dom";
 import SubdirectoryArrowRightIcon from "@mui/icons-material/SubdirectoryArrowRight";
 import FilterHdrIcon from "@mui/icons-material/FilterHdr";
 
+import ReactPlayer from 'react-player'
+
 import {
   Dialog,
   DialogActions,
@@ -148,7 +150,7 @@ export default function Escena() {
       setEscena(sceneTemp);
 
       // Creamos un array con las keys que queremos excluir del objeto
-      var keysExcluidas = ["id", "nombreEscena", "descripcion"];
+      var keysExcluidas = ["id", "nombreEscena", "descripcion","musica"];
 
       var datosEscenaTemp = [
         Object.keys(sceneTemp)
@@ -356,6 +358,46 @@ export default function Escena() {
                   >
                     {escena.descripcion}
                   </Typography>
+                </div>
+              )}
+
+              {escena.descripcion && (
+                <div>
+                  <Typography
+                    component="h3"
+                    variant="h5"
+                    align="left"
+                    color="text.primary"
+                    sx={{ mt: 2, ml: 2 }}
+                    gutterBottom
+                  >
+                    Descripción
+                  </Typography>
+                  <Typography
+                    component="h3"
+                    variant="h5"
+                    align="left"
+                    color="text.secondary"
+                    sx={{ mt: 2, ml: 2 }}
+                    gutterBottom
+                  >
+                    {escena.descripcion}
+                  </Typography>
+                </div>
+              )}{escena.musica && ReactPlayer.canPlay(escena.musica) && (
+                <div>
+                  <Typography
+                    component="h3"
+                    variant="h5"
+                    align="left"
+                    color="text.primary"
+                    sx={{ mt: 2, ml: 2 }}
+                    gutterBottom
+                  >
+                    Musica de fondo
+                  </Typography>
+
+                  <ReactPlayer url={escena.musica} width="100%" height="auto" style={{ margin: "auto" }} />
                 </div>
               )}
             </Box>

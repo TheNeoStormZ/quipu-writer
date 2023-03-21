@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.tns.quipu.Historia.Trama.Trama;
+import com.tns.quipu.Historia.Trama.TramaService;
 import com.tns.quipu.Usuario.Usuario;
 
 @Service
@@ -18,9 +19,12 @@ public class HistoriaService {
 
     private HistoriaRepository hr;
 
+    private TramaService ts;
+
     @Autowired
-    public HistoriaService(HistoriaRepository hr) {
+    public HistoriaService(HistoriaRepository hr,TramaService ts) {
         this.hr = hr;
+        this.ts = ts;
     }
 
     
@@ -56,6 +60,8 @@ public class HistoriaService {
 
     @Transactional()
     public void deleteHistoria(Historia historia) {
+        historia.getTramas().stream().forEach(x -> ts.deleteTrama(x));
+        historia.purgeDepedencies();
         hr.delete(historia);
     }
 

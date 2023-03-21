@@ -12,7 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.tns.quipu.Historia.Historia;
 import com.tns.quipu.Historia.HistoriaRepository;
+import com.tns.quipu.Historia.HistoriaService;
 import com.tns.quipu.Historia.Trama.Escena.Escena;
+import com.tns.quipu.Historia.Trama.Escena.EscenaService;
 import com.tns.quipu.Usuario.Usuario;
 
 @Service
@@ -20,11 +22,13 @@ public class TramaService {
 
     private TramaRepository tr;
     private HistoriaRepository hr;
+    private EscenaService es;
 
     @Autowired
-    public TramaService(TramaRepository tr, HistoriaRepository hr) {
+    public TramaService(TramaRepository tr, HistoriaRepository hr,EscenaService es) {
         this.tr = tr;
         this.hr = hr;
+        this.es = es;
     }
 
     
@@ -55,6 +59,9 @@ public class TramaService {
         Historia h = hr.findByTramasContains(trama);
         h.eliminarTrama(trama);
         hr.save(h);
+
+        trama.getEscenas().stream().forEach(x -> es.deleteEscena(x));
+
         tr.delete(trama);
     }
 

@@ -42,6 +42,8 @@ public class Escena {
 
     public Date fecha;
 
+    public String musica;
+
     public List<Personaje> personajesInvolucrados;
 
 

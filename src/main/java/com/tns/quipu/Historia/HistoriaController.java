@@ -29,6 +29,8 @@ import com.google.gson.JsonObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tns.quipu.Historia.Trama.Trama;
 import com.tns.quipu.Historia.Trama.TramaService;
+import com.tns.quipu.Historia.Trama.Escena.Escena;
+import com.tns.quipu.Historia.Trama.Escena.EscenaService;
 import com.tns.quipu.Usuario.Usuario;
 import com.tns.quipu.Usuario.UsuarioService;
 
@@ -41,13 +43,16 @@ public class HistoriaController {
 
     private final TramaService ts;
 
+    private final EscenaService es;
+
     @Autowired
     private UsuarioService us;
 
     @Autowired
-    public HistoriaController(HistoriaService hs, TramaService ts) {
+    public HistoriaController(HistoriaService hs, TramaService ts,EscenaService es) {
         this.hs = hs;
         this.ts = ts;
+        this.es = es;
     }
 
     @GetMapping(value = "/api/historias")
@@ -125,7 +130,6 @@ public class HistoriaController {
         if (!(historia.getCreador().getUsername().equals(principal.getName()))) {
             return new ResponseEntity<>("Not the owner", HttpStatus.FORBIDDEN);
         }
-        historia.getTramas().stream().forEach(x -> ts.deleteTrama(x));
 
         hs.deleteHistoria(historia);
 
@@ -162,16 +166,25 @@ public class HistoriaController {
         historia.setCreador(loggedUser);
         
 
-        List<Trama> tramasAntiguas = historia.getTramas();
+        List<Trama> tramasBackup = historia.getTramas();
 
         historia.purgeDepedencies();
 
-        tramasAntiguas.stream().forEachOrdered(x -> {
+        for (Trama x : tramasBackup) {
             x.setCreador(loggedUser);
             x.setId(null);
+
+            for (Escena e : x.getEscenas()){
+                e.setCreador(loggedUser);
+                e.setId(null);
+                es.saveEscena(e);
+                x.añadirEscena(e);
+            }
+            
             ts.saveTrama(x);
             historia.añadirTrama(x);
-          });
+          }
+          
 
           hs.saveHistoria(historia);
 
@@ -208,6 +221,10 @@ public class HistoriaController {
 
             for (JsonElement trama : tramasJson) {
                 trama.getAsJsonObject().remove("creador");
+                 JsonArray escenas = trama.getAsJsonObject().get("escenas").getAsJsonArray();
+                 for (JsonElement escena : escenas) {
+                    escena.getAsJsonObject().remove("creador");
+                 }
             }
 
             elementoJson = gson.toJson(jsonElement);

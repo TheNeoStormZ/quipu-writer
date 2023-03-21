@@ -73,4 +73,8 @@ public class Trama {
         }
     }
 
+    public void purgeDependencies() {
+        escenas = new ArrayList<>();
+    }
+
 }
