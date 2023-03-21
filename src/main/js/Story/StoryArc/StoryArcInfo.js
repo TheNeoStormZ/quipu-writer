@@ -15,9 +15,13 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
 import { Link as LinkRouter, useNavigate } from "react-router-dom";
 
+import Container from "@mui/material/Container";
+import Grid from "@mui/material/Grid";
+
 import SubdirectoryArrowRightIcon from "@mui/icons-material/SubdirectoryArrowRight";
 import MapIcon from "@mui/icons-material/Map";
 
+import FilterHdrIcon from '@mui/icons-material/FilterHdr';
 
 import {
   Dialog,
@@ -25,6 +29,14 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+} from "@mui/material";
+
+import {
+  Card,
+  CardActionArea,
+  CardActions,
+  CardContent,
+  CardHeader,
 } from "@mui/material";
 
 import Navigation from "../../Navigation";
@@ -43,6 +55,7 @@ function Copyright() {
     </Typography>
   );
 }
+
 
 const theme = createTheme();
 
@@ -74,7 +87,20 @@ export default function Trama() {
   const [openDelete, setOpenDelete] = React.useState(false);
   const storyStr = localStorage.getItem("historia");
   const [historia, setHistoria] = React.useState([]);
+  const [scenes, setScenes] = React.useState([]);
 
+  const navigate = useNavigate();
+
+  function handleClick(index) {
+    var escenaGuardada = JSON.stringify(scenes[index]);
+    localStorage.setItem("escena", escenaGuardada);
+    setTimeout(navigate("/historia/trama/escena/info"), 20);
+  }
+
+  const handleNewScene = async (event) => {
+    navigate("/historia/trama/escenas/add");
+  };
+  
   const handleClickOpenDelete = () => {
     setOpenDelete(true);
   };
@@ -94,7 +120,7 @@ export default function Trama() {
 
         // Guardar el objeto JSON en el localStorage como historia
         localStorage.setItem("historia", JSON.stringify(historia));
-        
+
         navigate("/historia/info");
       })
       .catch((error) => {
@@ -106,7 +132,6 @@ export default function Trama() {
     setOpenDelete(false);
   };
 
-  const navigate = useNavigate();
 
   function removeEmpty(obj) {
     return Object.fromEntries(
@@ -117,9 +142,19 @@ export default function Trama() {
   }
 
   React.useEffect(() => {
+    if (storyStr) {
+      setHistoria(JSON.parse(storyStr));
+    } else {
+      console.log("FATAL ERROR");
+      navigate("/");
+    }
+  }, []);
+
+  React.useEffect(() => {
     if (tramaStr) {
       arcTemp = removeEmpty(JSON.parse(tramaStr));
       setTrama(arcTemp);
+      setScenes(arcTemp.escenas);
 
       var { nombreTrama } = arcTemp; // desestructuración de objetos
       var datosTramaTemp = [nombreTrama];
@@ -318,8 +353,60 @@ export default function Trama() {
                 </div>
               )}
             </Box>
+            <Typography
+              component="h3"
+              variant="h5"
+              align="left"
+              color="text.primary"
+              sx={{ mt: 2, ml: 2 }}
+              gutterBottom
+            >
+              Escenas
+            </Typography>
+            <Button
+              variant="contained"
+              endIcon={<FilterHdrIcon />}
+              sx={{ mt: 2, ml: 2 }}
+              onClick={handleNewScene}
+            >
+              Añadir Escena
+            </Button>
           </div>
         </Box>
+
+        <Container sx={{ py: 2 }} maxWidth="md">
+          {/* End hero unit */}
+          <Grid container spacing={4}>
+            {Array.isArray(scenes) &&
+              !scenes.some((e) => e === null) &&
+              scenes.map((escena, index) => (
+                <Grid item key={escena.id} xs={12} sm={6} md={4}>
+                  <Card
+                    sx={{
+                      height: "100%",
+                      display: "flex",
+                      flexDirection: "column",
+                    }}
+                  >
+                    <CardActionArea onClick={() => handleClick(index)}>
+                      <CardHeader avatar={<FilterHdrIcon />} />
+
+                      <CardContent sx={{ flexGrow: 1 }}>
+                        <Typography gutterBottom variant="h5" component="h2">
+                          {escena.nombreEscena}
+                        </Typography>
+                        <Typography>{escena.descripcion}</Typography>
+                      </CardContent>
+                    </CardActionArea>
+                    <CardActions>
+                      <Button size="small">View</Button>
+                      <Button size="small">Edit</Button>
+                    </CardActions>
+                  </Card>
+                </Grid>
+              ))}
+          </Grid>
+        </Container>
       </main>
       {/* Footer */}
       <Box sx={{ bgcolor: "background.paper", p: 6 }} component="footer">

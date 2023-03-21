@@ -3,6 +3,9 @@ package com.tns.quipu.Historia;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotBlank;
 
@@ -12,6 +15,8 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.tns.quipu.Historia.Trama.Trama;
+import com.tns.quipu.Historia.Trama.Escena.Escena;
+import com.tns.quipu.Personaje.Personaje;
 import com.tns.quipu.Usuario.Usuario;
 
 import lombok.AllArgsConstructor;
@@ -62,6 +67,14 @@ public class Historia {
 
     public void purgeDepedencies() {
         tramas =  new ArrayList<>();
+    }
+
+    public List<Escena> getEscenas(){
+        return tramas.stream().map(x -> x.getEscenas()).filter(Objects::nonNull).flatMap(List::stream).collect(Collectors.toList());
+    }
+
+    public Set<Personaje> getPersonajes(){
+        return this.getEscenas().stream().map(x -> x.getPersonajesInvolucrados()).filter(Objects::nonNull).flatMap(List::stream).collect(Collectors.toSet());
     }
 
 }

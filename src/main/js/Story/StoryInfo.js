@@ -22,6 +22,9 @@ import CreateNewFolderIcon from "@mui/icons-material/CreateNewFolder";
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 
+import Badge from "@mui/material/Badge";
+import FilterHdrIcon from "@mui/icons-material/FilterHdr";
+
 import {
   Dialog,
   DialogActions,
@@ -164,7 +167,7 @@ export default function Historia() {
       ]; // operador condicional y método join
 
       setDatosHistoria(datosHistoriaTemp);
-      setArcs(storyTemp.tramas)
+      setArcs(storyTemp.tramas);
     } else {
       console.log("FATAL ERROR");
       navigate("/");
@@ -372,40 +375,49 @@ export default function Historia() {
           </div>
         </Box>
         <Container sx={{ py: 2 }} maxWidth="md">
-                {/* End hero unit */}
-                <Grid container spacing={4}>
-                  {Array.isArray(arcs) && !arcs.some(e => e === null) && arcs.map((trama, index) => (
-                    <Grid item key={trama.id} xs={12} sm={6} md={4}>
-                      <Card
-                        sx={{
-                          height: "100%",
-                          display: "flex",
-                          flexDirection: "column",
-                        }}
-                      >
-                        <CardActionArea onClick={() => handleClick(index)}>
-                          <CardHeader avatar={<MapIcon />} />
+          {/* End hero unit */}
+          <Grid container spacing={4}>
+            {Array.isArray(arcs) &&
+              !arcs.some((e) => e === null) &&
+              arcs.map((trama, index) => (
+                <Grid item key={trama.id} xs={12} sm={6} md={4}>
+                  <Card
+                    sx={{
+                      height: "100%",
+                      display: "flex",
+                      flexDirection: "column",
+                    }}
+                  >
+                    <CardActionArea onClick={() => handleClick(index)}>
+                      <CardHeader avatar={<MapIcon />} />
 
-                          <CardContent sx={{ flexGrow: 1 }}>
-                            <Typography
-                              gutterBottom
-                              variant="h5"
-                              component="h2"
-                            >
-                              {trama.nombreTrama}
-                            </Typography>
-                            <Typography>{trama.descripcion}</Typography>
-                          </CardContent>
-                        </CardActionArea>
-                        <CardActions>
-                          <Button size="small">View</Button>
-                          <Button size="small">Edit</Button>
-                        </CardActions>
-                      </Card>
-                    </Grid>
-                  ))}
+                      <CardContent sx={{ flexGrow: 1 }}>
+                        <Typography gutterBottom variant="h5" component="h2">
+                          {trama.nombreTrama}
+                        </Typography>
+                        <Typography>{trama.descripcion}</Typography>
+                      </CardContent>
+                    </CardActionArea>
+                    <CardActions
+                      sx={{
+                        width: "100%",
+                        justifyContent: "flex-end",
+                        pr: 3,
+                        mt: "auto",
+                      }}
+                    >
+                      <Badge
+                        badgeContent={trama.escenas.length}
+                        color="primary"
+                      >
+                        <FilterHdrIcon color="action" />
+                      </Badge>
+                    </CardActions>
+                  </Card>
                 </Grid>
-              </Container>
+              ))}
+          </Grid>
+        </Container>
       </main>
       {/* Footer */}
       <Box sx={{ bgcolor: "background.paper", p: 6 }} component="footer">

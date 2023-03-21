@@ -1,5 +1,6 @@
 package com.tns.quipu.Historia.Trama;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -10,6 +11,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.tns.quipu.Historia.Trama.Escena.Escena;
 import com.tns.quipu.Usuario.Usuario;
 
 import lombok.AllArgsConstructor;
@@ -37,6 +39,9 @@ public class Trama {
 
     public String descripcion;
 
+    @DBRef
+    public List<Escena> escenas = new ArrayList<>();
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -50,6 +55,22 @@ public class Trama {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    public void añadirEscena(Escena e) {
+        if (!(escenas.contains(e))) {
+            escenas.add(e);
+        } else {
+            System.out.println("Escena contenida");
+        }
+    }
+
+    public void eliminarEscena(Escena e) {
+        if ((escenas.contains(e))) {
+            escenas.remove(e);
+        } else {
+            System.out.println("Escena no contenida");
+        }
     }
 
 }

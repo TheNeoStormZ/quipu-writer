@@ -98,8 +98,6 @@ public class TramaController {
 
         hs.saveHistoria(og);
 
-        System.out.println(og);
-
         return new ResponseEntity<>(og, HttpStatus.CREATED);
 
     }

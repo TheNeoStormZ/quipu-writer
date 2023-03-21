@@ -15,6 +15,8 @@ import { useNavigate } from "react-router-dom";
 
 import BookIcon from "@mui/icons-material/Book";
 
+import SubdirectoryArrowRightIcon from "@mui/icons-material/SubdirectoryArrowRight";
+
 import axios from "axios";
 
 function Copyright() {
@@ -48,7 +50,6 @@ function convertirFecha(fechaOriginal) {
 }
 
 export default function Update() {
-
   const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
@@ -84,20 +85,26 @@ export default function Update() {
     </Alert>
   );
 
-
   const [historia, setHistoria] = React.useState([]);
   const [trama, setTrama] = React.useState([]);
 
-  
   const tramaStr = localStorage.getItem("trama");
   const storyStr = localStorage.getItem("historia");
   var tramaTemp = tramaStr;
 
   React.useEffect(() => {
+    if (storyStr) {
+      setHistoria(JSON.parse(storyStr));
+    } else {
+      console.log("FATAL ERROR");
+      navigate("/");
+    }
+  }, []);
+
+  React.useEffect(() => {
     if (tramaStr) {
       tramaTemp = JSON.parse(tramaStr);
       setTrama(tramaTemp);
-      setHistoria(JSON.parse(storyStr));
     } else {
       console.log("FATAL ERROR");
       navigate("/");
@@ -121,6 +128,19 @@ export default function Update() {
           color="text.primary"
           gutterBottom
         >
+          {historia.nombreHistoria}
+        </Typography>
+
+        <Typography
+          sx={{ mt: 2, ml: 4 }}
+          component="h1"
+          variant="h4"
+          align="left"
+          color="text.primary"
+          gutterBottom
+        >
+          {" "}
+          <SubdirectoryArrowRightIcon />
           Actualizar trama
         </Typography>
         {showAlert ? <AlertCustom /> : null}

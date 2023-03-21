@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.tns.quipu.Historia.Historia;
 import com.tns.quipu.Historia.HistoriaRepository;
+import com.tns.quipu.Historia.Trama.Escena.Escena;
 import com.tns.quipu.Usuario.Usuario;
 
 @Service
@@ -28,12 +29,12 @@ public class TramaService {
 
     
     @Transactional(readOnly = true)
-    public List<Trama> findAllArcs() {
+    public List<Trama> findAllScenes() {
         return tr.findAll();
     }
 
     @Transactional(readOnly = true)
-    public List<Trama> findAllUserArcs(Usuario user) {
+    public List<Trama> findAllUserScenes(Usuario user) {
         return tr.findByCreador(user);
     }
 
@@ -65,6 +66,11 @@ public class TramaService {
         t.setDescripcion(t.getDescripcion());
 
         tr.save(trama);
+    }
+
+    @Transactional()
+    public Trama findByEscena(Escena escena) {
+        return tr.findByEscenasContains(escena);
     }
 
 
