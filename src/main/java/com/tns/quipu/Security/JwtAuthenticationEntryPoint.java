@@ -3,7 +3,6 @@ package com.tns.quipu.Security;
 import java.io.IOException;
 import java.io.Serializable;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.security.core.AuthenticationException;

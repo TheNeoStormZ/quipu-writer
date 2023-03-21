@@ -6,7 +6,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;
 
-import com.tns.quipu.Personaje.Personaje;
 import com.tns.quipu.Personaje.PersonajeRepository;
 import com.tns.quipu.Security.SecurityConfiguration;
 
@@ -23,10 +22,6 @@ public class QuipuApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		/*ps.deleteAll();
-
-		ps.save(new Personaje("Sherlock", "Holmes"));
-		ps.save(new Personaje("John", "Watson"));*/
 
 		System.out.println("Program launch successful");
 	}
