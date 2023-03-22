@@ -18,7 +18,10 @@ import { Link as LinkRouter, useNavigate } from "react-router-dom";
 import SubdirectoryArrowRightIcon from "@mui/icons-material/SubdirectoryArrowRight";
 import FilterHdrIcon from "@mui/icons-material/FilterHdr";
 
-import ReactPlayer from 'react-player'
+import Container from "@mui/material/Container";
+import Grid from "@mui/material/Grid";
+
+import ReactPlayer from "react-player";
 
 import {
   Dialog,
@@ -26,6 +29,14 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+} from "@mui/material";
+
+import {
+  Card,
+  CardActionArea,
+  CardActions,
+  CardContent,
+  CardHeader,
 } from "@mui/material";
 
 import Navigation from "../../../Navigation";
@@ -82,6 +93,10 @@ export default function Escena() {
   const [historia, setHistoria] = React.useState([]);
   const [trama, setTrama] = React.useState([]);
 
+  const [personajesInvolucrados, setPersonajesInvolucrados] = React.useState(
+    []
+  );
+
   const handleClickOpenDelete = () => {
     setOpenDelete(true);
   };
@@ -93,9 +108,7 @@ export default function Escena() {
       console.log("FATAL ERROR");
       navigate("/");
     }
-  }, []);
 
-  React.useEffect(() => {
     if (arcStr) {
       setTrama(JSON.parse(arcStr));
     } else {
@@ -105,7 +118,6 @@ export default function Escena() {
   }, []);
 
   const handleProccesDelete = () => {
-    console.log(escena);
     axios
       .delete("/api/historia/trama/escena/delete", {
         data: {
@@ -120,7 +132,9 @@ export default function Escena() {
         // Guardar el objeto JSON en el localStorage como trama
         localStorage.setItem("historia", JSON.stringify(historia_recv));
 
-        var trama_temp = historia_recv.tramas.find(trama_find => trama_find.id === trama.id);
+        var trama_temp = historia_recv.tramas.find(
+          (trama_find) => trama_find.id === trama.id
+        );
         localStorage.setItem("trama", JSON.stringify(trama_temp));
 
         navigate("/historia/trama/info");
@@ -144,13 +158,28 @@ export default function Escena() {
     );
   }
 
+  function handleClick(index) {
+    var personajeGuardado = JSON.stringify(personajesInvolucrados[index]);
+    localStorage.setItem("personaje", personajeGuardado);
+    setTimeout(navigate("/personaje/info"), 20);
+  }
+
   React.useEffect(() => {
     if (escenaStr) {
       sceneTemp = removeEmpty(JSON.parse(escenaStr));
       setEscena(sceneTemp);
 
+      //Guardamos en una lista independiente los personajes de la escena para poder listarlos correctamente
+      setPersonajesInvolucrados(sceneTemp.personajesInvolucrados);
+
       // Creamos un array con las keys que queremos excluir del objeto
-      var keysExcluidas = ["id", "nombreEscena", "descripcion","musica"];
+      var keysExcluidas = [
+        "id",
+        "nombreEscena",
+        "descripcion",
+        "musica",
+        "personajesInvolucrados",
+      ];
 
       var datosEscenaTemp = [
         Object.keys(sceneTemp)
@@ -166,7 +195,6 @@ export default function Escena() {
 
       datosEscenaTemp = Object.values(datosEscenaTemp[0]);
       datosEscenaTemp.shift();
-
       setDatosEscena(datosEscenaTemp);
     } else {
       console.log("FATAL ERROR");
@@ -384,7 +412,8 @@ export default function Escena() {
                     {escena.descripcion}
                   </Typography>
                 </div>
-              )}{escena.musica && ReactPlayer.canPlay(escena.musica) && (
+              )}
+              {escena.musica && ReactPlayer.canPlay(escena.musica) && (
                 <div>
                   <Typography
                     component="h3"
@@ -397,9 +426,69 @@ export default function Escena() {
                     Musica de fondo
                   </Typography>
 
-                  <ReactPlayer url={escena.musica} width="100%" height="auto" style={{ margin: "auto" }} />
+                  <ReactPlayer
+                    url={escena.musica}
+                    width="100%"
+                    height="auto"
+                    style={{ margin: "auto" }}
+                  />
                 </div>
               )}
+
+              {escena.personajesInvolucrados &&
+                Array.isArray(personajesInvolucrados) && (
+                  <Typography
+                    component="h3"
+                    variant="h5"
+                    align="left"
+                    color="text.primary"
+                    sx={{ mt: 2 }}
+                    gutterBottom
+                  >
+                    Personajes involucrados
+                  </Typography>
+                )}
+
+              <Container sx={{ py: 2 }} maxWidth="md">
+                {/* End hero unit */}
+                <Grid container spacing={4}>
+                  {Array.isArray(personajesInvolucrados) &&
+                    personajesInvolucrados.map((personaje, index) => (
+                      <Grid item key={personaje.id} xs={12} sm={6} md={4}>
+                        <Card
+                          sx={{
+                            height: "100%",
+                            display: "flex",
+                            flexDirection: "column",
+                          }}
+                        >
+                          <CardActionArea onClick={() => handleClick(index)}>
+                            <CardHeader
+                              avatar={
+                                <Avatar alt="Apple" src={personaje.urlIcon} />
+                              }
+                            />
+
+                            <CardContent sx={{ flexGrow: 1 }}>
+                              <Typography
+                                gutterBottom
+                                variant="h5"
+                                component="h2"
+                              >
+                                {personaje.nombre}
+                              </Typography>
+                              <Typography>{personaje.descripcion}</Typography>
+                            </CardContent>
+                          </CardActionArea>
+                          <CardActions>
+                            <Button size="small">View</Button>
+                            <Button size="small">Edit</Button>
+                          </CardActions>
+                        </Card>
+                      </Grid>
+                    ))}
+                </Grid>
+              </Container>
             </Box>
           </div>
         </Box>

@@ -20,7 +20,9 @@ import FilterHdrIcon from "@mui/icons-material/FilterHdr";
 import EventIcon from "@mui/icons-material/Event";
 import InputAdornment from "@mui/material/InputAdornment";
 
-import MusicNoteIcon from '@mui/icons-material/MusicNote';
+import MusicNoteIcon from "@mui/icons-material/MusicNote";
+
+
 
 import axios from "axios";
 
@@ -44,6 +46,7 @@ export default function Creation() {
 
   const arcStr = localStorage.getItem("trama");
   const [trama, setTrama] = React.useState([]);
+  const [selectedCharacters, setSelectedCharacters] = React.useState([]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -56,6 +59,7 @@ export default function Creation() {
           fecha: data.get("fechaEscena"),
           musica: data.get("musica"),
           descripcion: data.get("descripcion"),
+          personajesInvolucrados: selectedCharacters,
         })
         .then((response) => {
           // Obtener el objeto JSON que se recibe de respuesta
@@ -88,6 +92,8 @@ export default function Creation() {
   const storyStr = localStorage.getItem("historia");
   const [historia, setHistoria] = React.useState([]);
 
+  const [personajes, setPersonajes] = React.useState([]);
+
   React.useEffect(() => {
     if (storyStr) {
       setHistoria(JSON.parse(storyStr));
@@ -103,6 +109,15 @@ export default function Creation() {
       navigate("/");
     }
   }, []);
+
+  React.useEffect(() => {
+    axios
+      .get("/api/personajes")
+      .then((response) => {
+        setPersonajes(response.data);
+      })
+      .catch((error) => console.log(error));
+  });
 
   return (
     <ThemeProvider theme={theme}>
@@ -214,6 +229,33 @@ export default function Creation() {
               ),
             }}
           />
+          <Box
+            sx={{
+              "& .MuiTextField-root": { m: 1, width: "100%" },
+            }}
+          >
+            <Autocomplete
+              multiple
+              fullWidth
+              options={personajes}
+              getOptionLabel={(personaje) => personaje.nombre}
+              id="tags-outlined"
+              autoSelect
+              onChange={(event, value) => setSelectedCharacters(value)}
+              sx={{ minWidth: 200 }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Personajes"
+                  name="personajes"
+                  InputProps={{
+                    ...params.InputProps,
+                  }}
+                />
+              )}
+              isOptionEqualToValue={(option, value) => option.id === value.id}
+            />
+          </Box>
 
           <TextField
             fullWidth

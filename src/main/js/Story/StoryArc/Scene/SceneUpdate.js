@@ -69,6 +69,7 @@ export default function Update() {
           fecha: data.get("fecha"),
           musica: data.get("musica"),
           descripcion: data.get("descripcion"),
+          personajesInvolucrados: selectedCharacters,
         })
         .then((response) => {
           // Obtener el objeto JSON que se recibe de respuesta
@@ -106,6 +107,9 @@ export default function Update() {
   const [trama, setTrama] = React.useState([]);
   const [escena, setEscena] = React.useState([]);
 
+  const [selectedCharacters, setSelectedCharacters] = React.useState([]);
+  const [personajes, setPersonajes] = React.useState([]);
+
   const tramaStr = localStorage.getItem("trama");
   const storyStr = localStorage.getItem("historia");
 
@@ -128,11 +132,21 @@ export default function Update() {
 
     if (sceneStr) {
       setEscena(JSON.parse(sceneStr));
+      setSelectedCharacters(JSON.parse(sceneStr).personajesInvolucrados);
     } else {
       console.log("FATAL ERROR");
       navigate("/");
     }
   }, []);
+
+  React.useEffect(() => {
+    axios
+      .get("/api/personajes")
+      .then((response) => {
+        setPersonajes(response.data);
+      })
+      .catch((error) => console.log(error));
+  });
 
   function handleTextChange(e) {
     setEscena({ ...escena, [e.target.name]: e.target.value });
@@ -256,6 +270,35 @@ export default function Update() {
               ),
             }}
           />
+
+<Box
+            sx={{
+              "& .MuiTextField-root": { m: 1, width: "100%" },
+            }}
+          >
+            <Autocomplete
+              multiple
+              fullWidth
+              options={personajes}
+              getOptionLabel={(personaje) => personaje.nombre}
+              id="tags-outlined"
+              autoSelect
+              onChange={(event, value) => setSelectedCharacters(value)}
+              value= {selectedCharacters || []}
+              sx={{ minWidth: 200 }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Personajes"
+                  name="personajes"
+                  InputProps={{
+                    ...params.InputProps,
+                  }}
+                />
+              )}
+              isOptionEqualToValue={(option, value) => option.id === value.id}
+            />
+          </Box>
 
           <TextField
             fullWidth

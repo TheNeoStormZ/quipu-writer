@@ -34,7 +34,7 @@ export default function Creation() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log(selectedGenres);
+
     try {
       await axios
         .post("/api/historias/new", {

@@ -31,6 +31,8 @@ import com.tns.quipu.Historia.Trama.Trama;
 import com.tns.quipu.Historia.Trama.TramaService;
 import com.tns.quipu.Historia.Trama.Escena.Escena;
 import com.tns.quipu.Historia.Trama.Escena.EscenaService;
+import com.tns.quipu.Personaje.Personaje;
+import com.tns.quipu.Personaje.PersonajeService;
 import com.tns.quipu.Usuario.Usuario;
 import com.tns.quipu.Usuario.UsuarioService;
 
@@ -45,14 +47,18 @@ public class HistoriaController {
 
     private final EscenaService es;
 
+    private final PersonajeService ps;
+
+
     @Autowired
     private UsuarioService us;
 
     @Autowired
-    public HistoriaController(HistoriaService hs, TramaService ts,EscenaService es) {
+    public HistoriaController(HistoriaService hs, TramaService ts,EscenaService es, PersonajeService ps) {
         this.hs = hs;
         this.ts = ts;
         this.es = es;
+        this.ps = ps;
     }
 
     @GetMapping(value = "/api/historias")
@@ -177,8 +183,33 @@ public class HistoriaController {
             for (Escena e : x.getEscenas()){
                 e.setCreador(loggedUser);
                 e.setId(null);
+
+                List<Personaje> oldPersonajesInvolucrados =  e.getPersonajesInvolucrados();
+                e.purgeDepedencies();
+
+                for (Personaje p : oldPersonajesInvolucrados) {
+                    if (p.getId()!=null){
+                        Personaje pFound = ps.findById(p.getId());
+                        if (pFound==null) {
+        
+                            p.setCreador(loggedUser);
+                            ps.savePersonaje(p);
+                            e.añadirPersonaje(p);
+                        }
+                        else if (pFound.getCreador()==null) {
+                            pFound.setCreador(loggedUser);
+                            ps.savePersonaje(pFound);
+                            e.añadirPersonaje(pFound);
+                        }
+                        else if (pFound.getCreador().getUsername().equals(principal.getName())) {
+                                e.añadirPersonaje(pFound);
+                        } 
+                    }
+                }
+
                 es.saveEscena(e);
                 x.añadirEscena(e);
+
             }
             
             ts.saveTrama(x);

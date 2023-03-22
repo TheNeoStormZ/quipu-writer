@@ -39,6 +39,7 @@ public class EscenaController {
     private final EscenaService es;
     private final HistoriaService hs;
     private final TramaService ts;
+    
 
     @Autowired
     private UsuarioService us;

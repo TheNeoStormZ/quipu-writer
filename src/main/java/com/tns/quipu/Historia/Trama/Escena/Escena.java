@@ -1,5 +1,6 @@
 package com.tns.quipu.Historia.Trama.Escena;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -44,7 +45,8 @@ public class Escena {
 
     public String musica;
 
-    public List<Personaje> personajesInvolucrados;
+    @DBRef
+    public List<Personaje> personajesInvolucrados = new ArrayList<>();
 
 
 
@@ -61,6 +63,18 @@ public class Escena {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    public void purgeDepedencies() {
+        personajesInvolucrados = new ArrayList<>();
+    }
+
+    public void añadirPersonaje(Personaje p) {
+        if (!(personajesInvolucrados.contains(p))) {
+            personajesInvolucrados.add(p);
+        } else {
+            System.out.println("Personaje contenido");
+        }
     }
 
 }
