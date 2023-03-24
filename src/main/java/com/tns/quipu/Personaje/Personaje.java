@@ -2,6 +2,7 @@ package com.tns.quipu.Personaje;
 
 import java.util.Date;
 
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -9,6 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import com.tns.quipu.Usuario.Usuario;
 
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,10 +22,11 @@ import lombok.ToString;
 @Document
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode
 public class Personaje {
 
     @DBRef
-	public Usuario creador;
+    public Usuario creador;
 
     @Id
     public String id;
@@ -47,5 +50,12 @@ public class Personaje {
     public String descripcion;
 
     public String urlIcon;
+
+    //Propiedades derivdas calculadas durante el uso de PersonajeController
+
+    private Integer numEscenas;
+
+    private Integer numHistorias;
+
 
 }

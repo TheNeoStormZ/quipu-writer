@@ -21,6 +21,7 @@ import Typography from "@mui/material/Typography";
 const pages = ["Historias", "Personajes"];
 const iconosNav =[<CollectionsBookmarkIcon/>,<PeopleAltIcon/>]
 const urls = ["/", "/personajes"];
+const urls_add = ["/historias", "/personajes"];
 const settings = ["Cuenta", "Cerrar sesión"];
 
 function ResponsiveAppBar() {
@@ -176,7 +177,7 @@ function ResponsiveAppBar() {
               onClose={handleCloseAddMenu}
             >
               {pages.map((page, index) => (
-                <MenuItem key={page} component={Link} href={urls[index]+'/new'}>
+                <MenuItem key={page} component={Link} href={urls_add[index]+'/new'}>
                   <Typography textAlign="center">{page}</Typography>
                 </MenuItem>
               ))}

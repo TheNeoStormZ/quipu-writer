@@ -49,4 +49,16 @@ public class PageController {
 		return "redirect:/personajes";
 
 	}
+
+	@RequestMapping(value = "/historias/new")
+	public String paginaHistoriaNew() {
+		return "index";
+
+	}
+
+	@RequestMapping(value = "/historia/info")
+	public String paginaHistoriaInfo() {
+		return "redirect:/";
+
+	}
 }

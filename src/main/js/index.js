@@ -1,19 +1,35 @@
 const React = require("react");
 const ReactDOM = require("react-dom/client");
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import SearchIcon from "@mui/icons-material/Search";
+import {
+  Card,
+  CardActionArea,
+  CardActions,
+  CardContent,
+  CardHeader,
+} from "@mui/material";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import Card from "@mui/material/Card";
-import CardActions from "@mui/material/CardActions";
-import CardContent from "@mui/material/CardContent";
-import CardMedia from "@mui/material/CardMedia";
 import Container from "@mui/material/Container";
 import CssBaseline from "@mui/material/CssBaseline";
 import Grid from "@mui/material/Grid";
+import IconButton from "@mui/material/IconButton";
+import InputAdornment from "@mui/material/InputAdornment";
 import Link from "@mui/material/Link";
 import Stack from "@mui/material/Stack";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import { Link as LinkRouter } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+
+import Badge from "@mui/material/Badge";
+
+import BookIcon from "@mui/icons-material/Book";
+import MapIcon from "@mui/icons-material/Map";
+import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
+
+import axios from "axios";
 
 import Navigation from "./Navigation";
 
@@ -30,15 +46,75 @@ function Copyright() {
   );
 }
 
-const cards = [1, 2, 3, 4];
-
 const theme = createTheme();
 
-export default function Album() {
+export default function Historias() {
+  const [historias, setHistorias] = React.useState([]);
+  const [historiasFiltradas, setHistoriasFiltradas] = React.useState([]);
+  const [searchQuery, setSearchQuery] = React.useState("");
+
+  const handleSearchChange = (event) => {
+    const query = event.target.value;
+    setSearchQuery(query);
+
+    const filtered = historias.filter((historia) =>
+      historia.nombreHistoria.toLowerCase().includes(query.toLowerCase())
+    );
+    setHistoriasFiltradas(filtered);
+  };
+
+  const handleImportInit = (event) => {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const fileContent = JSON.parse(event.target.result);
+      console.log(fileContent);
+      handleSend(fileContent);
+    };
+    reader.readAsText(file);
+  };
+
+  const fileInput = React.useRef(null);
+
+  const handleSend = (fileContent) => {
+    console.log(fileContent);
+    axios
+      .post("/api/historias/import", fileContent, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then((response) => {
+        location.reload();
+      })
+      .catch((error) => console.error(error));
+  };
+
+  React.useEffect(() => {
+    axios
+      .get("/api/historias")
+      .then((response) => {
+        setHistorias(response.data);
+        setHistoriasFiltradas(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+    localStorage.removeItem("historia");
+  }, []);
+
+  const navigate = useNavigate();
+
+  function handleClick(index) {
+    var historiaGuardado = JSON.stringify(historias[index]);
+    localStorage.setItem("historia", historiaGuardado);
+    setTimeout(navigate("/historia/info"), 20);
+  }
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Navigation/>
+      <Navigation />
       <main>
         {/* Hero unit */}
         <Box
@@ -56,7 +132,21 @@ export default function Album() {
               color="text.primary"
               gutterBottom
             >
-              Quipu Preview
+              Historias
+              <input
+                type="file"
+                id="file"
+                accept="application/json"
+                onChange={handleImportInit}
+                ref={fileInput}
+                style={{ display: "none" }}
+              />
+              <IconButton
+                aria-label="import"
+                onClick={() => fileInput.current.click()}
+              >
+                <CloudUploadIcon />
+              </IconButton>
             </Typography>
             <Typography
               variant="h5"
@@ -71,18 +161,27 @@ export default function Album() {
               direction="row"
               spacing={2}
               justifyContent="center"
-            >
-              <Button variant="contained">
-                <LinkRouter to="/login">Login</LinkRouter>
-              </Button>
-            </Stack>
+            ></Stack>
+            <TextField
+              label="Buscar"
+              value={searchQuery}
+              fullWidth
+              onChange={handleSearchChange}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+              }}
+            />
           </Container>
         </Box>
         <Container sx={{ py: 8 }} maxWidth="md">
           {/* End hero unit */}
           <Grid container spacing={4}>
-            {cards.map((card) => (
-              <Grid item key={card} xs={12} sm={6} md={4}>
+            {historiasFiltradas.map((historia, index) => (
+              <Grid item key={historia.id} xs={12} sm={6} md={4}>
                 <Card
                   sx={{
                     height: "100%",
@@ -90,22 +189,37 @@ export default function Album() {
                     flexDirection: "column",
                   }}
                 >
-                  <CardMedia
-                    component="img"
-                    image="https://source.unsplash.com/random"
-                    alt="random"
-                  />
-                  <CardContent sx={{ flexGrow: 1 }}>
-                    <Typography gutterBottom variant="h5" component="h2">
-                      Titulo de historia
-                    </Typography>
-                    <Typography>
-                      Esta es la decripción de la historia
-                    </Typography>
-                  </CardContent>
-                  <CardActions>
-                    <Button size="small">View</Button>
-                    <Button size="small">Edit</Button>
+                  <CardActionArea onClick={() => handleClick(index)}>
+                    <CardHeader avatar={<BookIcon />} />
+
+                    <CardContent sx={{ flexGrow: 1 }}>
+                      <Typography gutterBottom variant="h5" component="h2">
+                        {historia.nombreHistoria}
+                      </Typography>
+                      <Typography>{historia.descripcion}</Typography>
+                    </CardContent>
+                  </CardActionArea>
+                  <CardActions
+                    sx={{
+                      width: "100%",
+                      justifyContent: "flex-end",
+                      pr: 3,
+                      mt: "auto",
+                    }}
+                  >
+                    <Badge
+                      badgeContent={historia.tramas.length}
+                      color="primary"
+                    >
+                      <MapIcon color="action" />
+                    </Badge>
+                    <Badge
+                      badgeContent={historia.numPersonajes}
+                      color="primary"
+                      sx={{ pl: 2 }}
+                    >
+                      <PeopleAltIcon color="action" />
+                    </Badge>
                   </CardActions>
                 </Card>
               </Grid>

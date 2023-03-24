@@ -37,3 +37,6 @@ node_modules
 .ENV
 env.sh
 .env
+
+## JS Files
+src/main/js/resources/static/built/*
