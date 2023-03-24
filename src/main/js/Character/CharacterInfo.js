@@ -138,7 +138,7 @@ export default function Personaje() {
       setPersonaje(personajeTemp);
 
       // Creamos un array con las keys que queremos excluir del objeto
-      var keysExcluidas = ["id", "nombre", "descripcion","urlIcon"];
+      var keysExcluidas = ["id", "nombre", "descripcion","urlIcon","numEscenas"];
 
       var datosPersonajeTemp = [
         Object.keys(personajeTemp)

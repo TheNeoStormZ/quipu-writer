@@ -34,6 +34,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.tns.quipu.Historia.Trama.Escena.EscenaService;
 import com.tns.quipu.Personaje.Personaje;
 import com.tns.quipu.Personaje.PersonajeController;
 import com.tns.quipu.Personaje.PersonajeRepository;
@@ -53,6 +54,9 @@ public class PersonajeControllerTest {
 
         @MockBean
         private UsuarioService us;
+
+        @MockBean
+        private EscenaService es;
 
         @MockBean
         private PersonajeService ps;
@@ -75,10 +79,10 @@ public class PersonajeControllerTest {
                 List<Personaje> personajes = Arrays.asList(
                                 new Personaje(user, "1", "Mario", "Pérez", "García", "Madrid", new Date(1638112320000L),
                                                 "Masculino",
-                                                "170 cm", "Barcelona", "Un fontanero aventurero.", "/mario.png"),
+                                                "170 cm", "Barcelona", "Un fontanero aventurero.", "/mario.png", null, null),
                                 new Personaje(user, "2", "Luigi", "López", "Sánchez", "Roma", new Date(1638112320000L),
                                                 "Masculino",
-                                                "180 cm", "Milán", "El hermano de Mario.", "/luigi.png"));
+                                                "180 cm", "Milán", "El hermano de Mario.", "/luigi.png", null, null));
                 when(us.findUserByUsername("user")).thenReturn(user);
                 when(ps.findAllUserCharacters(user)).thenReturn(personajes);
 
@@ -205,10 +209,10 @@ public class PersonajeControllerTest {
                 Usuario usuario = new Usuario();
                 usuario.setUsername("user");
                 Personaje personaje = new Personaje(usuario, "1", "Mario", "Fontanero", null, null, null, null, null,
-                                null, null, null);
+                                null, null, null, null, null);
 
                 Personaje personaje2 = new Personaje(usuario, "1", "MarioEdit", "Font", "Bro", null, null, null, "100",
-                                null, null, null);
+                                null, null, null,null, null);
                 Principal principal = () -> "user";
 
                 // Definir el comportamiento de los objetos simulados
