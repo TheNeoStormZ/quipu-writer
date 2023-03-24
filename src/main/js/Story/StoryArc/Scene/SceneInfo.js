@@ -1,7 +1,6 @@
 const React = require("react");
 const ReactDOM = require("react-dom/client");
 import CloseIcon from "@mui/icons-material/Close";
-import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { Alert, Collapse } from "@mui/material";
@@ -15,12 +14,11 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
 import { Link as LinkRouter, useNavigate } from "react-router-dom";
 
-import SubdirectoryArrowRightIcon from "@mui/icons-material/SubdirectoryArrowRight";
 import FilterHdrIcon from "@mui/icons-material/FilterHdr";
+import SubdirectoryArrowRightIcon from "@mui/icons-material/SubdirectoryArrowRight";
 
 import Container from "@mui/material/Container";
 
-import InsertInvitationIcon from "@mui/icons-material/InsertInvitation";
 
 import Grid from "@mui/material/Grid";
 
@@ -31,7 +29,7 @@ import {
   DialogActions,
   DialogContent,
   DialogContentText,
-  DialogTitle,
+  DialogTitle
 } from "@mui/material";
 
 import {
@@ -39,7 +37,7 @@ import {
   CardActionArea,
   CardActions,
   CardContent,
-  CardHeader,
+  CardHeader
 } from "@mui/material";
 
 import Navigation from "../../../Navigation";

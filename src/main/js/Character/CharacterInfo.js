@@ -20,7 +20,7 @@ import {
   DialogActions,
   DialogContent,
   DialogContentText,
-  DialogTitle,
+  DialogTitle
 } from "@mui/material";
 
 import Navigation from "../Navigation";

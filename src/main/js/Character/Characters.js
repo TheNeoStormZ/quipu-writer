@@ -1,12 +1,13 @@
 const React = require("react");
 const ReactDOM = require("react-dom/client");
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import SearchIcon from "@mui/icons-material/Search";
 import {
   Card,
   CardActionArea,
   CardActions,
   CardContent,
-  CardHeader,
+  CardHeader
 } from "@mui/material";
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
@@ -21,7 +22,6 @@ import Stack from "@mui/material/Stack";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { useNavigate } from "react-router-dom";
 
 import axios from "axios";

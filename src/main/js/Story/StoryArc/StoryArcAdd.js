@@ -1,7 +1,7 @@
 const React = require("react");
 const ReactDOM = require("react-dom/client");
+import MapIcon from "@mui/icons-material/Map";
 import SaveIcon from "@mui/icons-material/Save";
-import Autocomplete from "@mui/material/Autocomplete";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -9,7 +9,6 @@ import Link from "@mui/material/Link";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import MapIcon from "@mui/icons-material/Map";
 import Navigation from "../../Navigation";
 
 import { useNavigate } from "react-router-dom";

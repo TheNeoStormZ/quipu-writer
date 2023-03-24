@@ -1,7 +1,6 @@
 const React = require("react");
 const ReactDOM = require("react-dom/client");
 import SaveAsIcon from "@mui/icons-material/SaveAs";
-import Autocomplete from "@mui/material/Autocomplete";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
