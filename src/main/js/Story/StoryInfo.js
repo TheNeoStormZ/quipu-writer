@@ -25,6 +25,8 @@ import Grid from "@mui/material/Grid";
 import Badge from "@mui/material/Badge";
 import FilterHdrIcon from "@mui/icons-material/FilterHdr";
 
+import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
+
 import {
   Dialog,
   DialogActions,
@@ -63,6 +65,10 @@ const theme = createTheme();
 var nombreDatosHistoria = ["Nombre de la historia", "Generos narrativos"];
 
 function convertirFecha(fechaOriginal) {
+  // Si fechaOriginal es undefined, se devuelve tal cual
+  if (fechaOriginal === undefined) return "Sin fecha";
+
+  // Si fechaOriginal no es undefined, se continúa con la conversión
   // Crear objeto Date a partir de la fecha original
   let fecha = new Date(fechaOriginal);
 
@@ -154,6 +160,19 @@ export default function Historia() {
     setTimeout(navigate("/historia/trama/info"), 20);
   }
 
+  function ordenarTramasPorFecha(tramas) {
+    // Si escenas no es un array o está vacío, se devuelve tal cual
+    if (!Array.isArray(tramas) || tramas.length === 0) return tramas;
+    // Si escenas es un array válido y no está vacío, se ordena por fecha
+    return tramas.sort(function (a, b) {
+      // Si alguna de las fechas es nula o undefined, se pone al final
+      if (a.fechaGlobal == null || a.fechaGlobal == undefined) return 1;
+      if (b.fechaGlobal == null || b.fechaGlobal == undefined) return -1;
+      // Si ambas fechas son válidas, se comparan sus valores numéricos
+      return new Date(a.fecha).getTime() - new Date(b.fecha).getTime();
+    });
+  }
+
   React.useEffect(() => {
     if (storyStr) {
       storyTemp = removeEmpty(JSON.parse(storyStr));
@@ -167,7 +186,8 @@ export default function Historia() {
       ]; // operador condicional y método join
 
       setDatosHistoria(datosHistoriaTemp);
-      setArcs(storyTemp.tramas);
+
+      setArcs(ordenarTramasPorFecha(storyTemp.tramas));
     } else {
       console.log("FATAL ERROR");
       navigate("/");
@@ -411,6 +431,14 @@ export default function Historia() {
                         color="primary"
                       >
                         <FilterHdrIcon color="action" />
+                      </Badge>
+
+                      <Badge
+                        badgeContent={trama.numPersonajes}
+                        color="primary"
+                        sx = {{pl: 2,}}
+                      >
+                        <PeopleAltIcon color="action" />
                       </Badge>
                     </CardActions>
                   </Card>

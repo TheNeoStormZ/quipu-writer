@@ -19,6 +19,9 @@ import SubdirectoryArrowRightIcon from "@mui/icons-material/SubdirectoryArrowRig
 import FilterHdrIcon from "@mui/icons-material/FilterHdr";
 
 import Container from "@mui/material/Container";
+
+import InsertInvitationIcon from "@mui/icons-material/InsertInvitation";
+
 import Grid from "@mui/material/Grid";
 
 import ReactPlayer from "react-player";
@@ -65,6 +68,10 @@ var nombreDatosEscena = [
 ];
 
 function convertirFecha(fechaOriginal) {
+  // Si fechaOriginal es undefined, se devuelve tal cual
+  if (fechaOriginal === undefined) return "Sin fecha";
+
+  // Si fechaOriginal no es undefined, se continúa con la conversión
   // Crear objeto Date a partir de la fecha original
   let fecha = new Date(fechaOriginal);
 
@@ -162,6 +169,31 @@ export default function Escena() {
     var personajeGuardado = JSON.stringify(personajesInvolucrados[index]);
     localStorage.setItem("personaje", personajeGuardado);
     setTimeout(navigate("/personaje/info"), 20);
+  }
+
+  function calcularEdadPersonaje(personaje) {
+    // Obtener la fecha de nacimiento del personaje
+    let fechaNacimiento = personaje.fechaNacimiento; // Suponemos que es un atributo de la clase Personaje
+
+    // Crear dos objetos Date a partir de las fechas
+    let fechaEscenaDate = new Date(escena.fecha); // Suponemos que fecha es una cadena válida para crear una fecha
+    let fechaNacimientoDate = new Date(fechaNacimiento); // Suponemos que fechaNacimiento es una cadena válida para crear una fecha
+
+    // Calcular la diferencia en años entre las dos fechas
+    let edad =
+      fechaEscenaDate.getFullYear() - fechaNacimientoDate.getFullYear();
+
+    // Ajustar el resultado según el mes y el día de las fechas
+    let mes = fechaEscenaDate.getMonth() - fechaNacimientoDate.getMonth();
+    if (
+      mes < 0 ||
+      (mes === 0 && fechaEscenaDate.getDate() < fechaNacimientoDate.getDate())
+    ) {
+      edad--;
+    }
+
+    // Devolver la edad calculada
+    return edad;
   }
 
   React.useEffect(() => {
@@ -481,8 +513,11 @@ export default function Escena() {
                             </CardContent>
                           </CardActionArea>
                           <CardActions>
-                            <Button size="small">View</Button>
-                            <Button size="small">Edit</Button>
+                            <Typography gutterBottom>
+                              {calcularEdadPersonaje(personaje) < 0 &&
+                                `Quedan ${Math.abs(calcularEdadPersonaje(personaje))} años para que nazca.`}
+                              {calcularEdadPersonaje(personaje) >= 0 && `Edad: ${calcularEdadPersonaje(personaje)}`}
+                            </Typography>
                           </CardActions>
                         </Card>
                       </Grid>

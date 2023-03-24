@@ -2,6 +2,7 @@ package com.tns.quipu.Historia;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -49,12 +50,11 @@ public class HistoriaController {
 
     private final PersonajeService ps;
 
-
     @Autowired
     private UsuarioService us;
 
     @Autowired
-    public HistoriaController(HistoriaService hs, TramaService ts,EscenaService es, PersonajeService ps) {
+    public HistoriaController(HistoriaService hs, TramaService ts, EscenaService es, PersonajeService ps) {
         this.hs = hs;
         this.ts = ts;
         this.es = es;
@@ -64,10 +64,11 @@ public class HistoriaController {
     @GetMapping(value = "/api/historias")
     public List<Historia> listHistorias(Principal principal) {
         Usuario loggedUser = us.findUserByUsername(principal.getName());
-        List<Historia> personajes = hs.findAllUserStories(loggedUser);
-        return personajes;
+        List<Historia> historias = hs.findAllUserStories(loggedUser);
+        return historias;
 
     }
+
 
     @GetMapping(value = "/api/historias/generos")
     public Set<String> listGeneros(Principal principal) {
@@ -101,14 +102,12 @@ public class HistoriaController {
     public ResponseEntity<String> updateHistoria(@RequestBody Historia historia, Principal principal,
             BindingResult result) {
 
-
         Historia og = hs.findById(historia.getId());
 
         if (!(og.getCreador().getUsername().equals(principal.getName()))) {
             return new ResponseEntity<>("Not the owner", HttpStatus.FORBIDDEN);
         }
 
-        
         Usuario loggedUser = us.findUserByUsername(principal.getName());
 
         historia.setCreador(loggedUser);
@@ -146,84 +145,69 @@ public class HistoriaController {
     @PostMapping(value = "/api/historias/import")
     public ResponseEntity<String> importarHistoria(@RequestBody @Valid Historia historia, Principal principal) {
 
-        Historia historiaFound= null;
+        Historia historiaFound = null;
 
         try {
             historiaFound = hs.findById(historia.getId());
 
-        }  catch (Exception e) {
-            
+        } catch (Exception e) {
+
         }
 
         String message = "Empty message";
 
         if (historiaFound == null) {
             message = "Historia exportada correctamente";
-        } 
-        else {
+        } else {
             message = "Hstoria actualizada correctamente";
         }
 
-
-
-        
         Usuario loggedUser = us.findUserByUsername(principal.getName());
 
         historia.setCreador(loggedUser);
-        
 
         List<Trama> tramasBackup = historia.getTramas();
 
         historia.purgeDepedencies();
 
-        for (Trama x : tramasBackup) {
+        tramasBackup.parallelStream().forEach(x -> {
             x.setCreador(loggedUser);
             x.setId(null);
-
-            for (Escena e : x.getEscenas()){
+            x.getEscenas().parallelStream().forEach(e -> {
                 e.setCreador(loggedUser);
                 e.setId(null);
-
-                List<Personaje> oldPersonajesInvolucrados =  e.getPersonajesInvolucrados();
+                List<Personaje> oldPersonajesInvolucrados = e.getPersonajesInvolucrados();
                 e.purgeDepedencies();
-
-                for (Personaje p : oldPersonajesInvolucrados) {
-                    if (p.getId()!=null){
+                oldPersonajesInvolucrados.parallelStream().forEach(p -> {
+                    if (p.getId() != null) {
                         Personaje pFound = ps.findById(p.getId());
-                        if (pFound==null) {
-        
+                        if (pFound == null) {
                             p.setCreador(loggedUser);
                             ps.savePersonaje(p);
                             e.añadirPersonaje(p);
-                        }
-                        else if (pFound.getCreador()==null) {
+                        } else if (pFound.getCreador() == null) {
                             pFound.setCreador(loggedUser);
                             ps.savePersonaje(pFound);
                             e.añadirPersonaje(pFound);
+                        } else if (pFound.getCreador().getUsername().equals(principal.getName())) {
+                            e.añadirPersonaje(pFound);
                         }
-                        else if (pFound.getCreador().getUsername().equals(principal.getName())) {
-                                e.añadirPersonaje(pFound);
-                        } 
                     }
-                }
-
+                });
                 es.saveEscena(e);
                 x.añadirEscena(e);
-
-            }
-            
+            });
             ts.saveTrama(x);
             historia.añadirTrama(x);
-          }
-          
+        });
 
-          hs.saveHistoria(historia);
+        hs.saveHistoria(historia);
 
         return new ResponseEntity<>(message, HttpStatus.CREATED);
 
     }
- 
-    @GetMapping(value = "/api/historias/{id}/export",produces = MediaType.APPLICATION_JSON_VALUE)
+
+    @GetMapping(value = "/api/historias/{id}/export", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> exportarHistoria(@PathVariable String id, Principal principal) {
         Historia historia = hs.findById(id);
 
@@ -249,17 +233,15 @@ public class HistoriaController {
 
             JsonArray tramasJson = jsonObject.get("tramas").getAsJsonArray();
 
-
             for (JsonElement trama : tramasJson) {
                 trama.getAsJsonObject().remove("creador");
-                 JsonArray escenas = trama.getAsJsonObject().get("escenas").getAsJsonArray();
-                 for (JsonElement escena : escenas) {
+                JsonArray escenas = trama.getAsJsonObject().get("escenas").getAsJsonArray();
+                for (JsonElement escena : escenas) {
                     escena.getAsJsonObject().remove("creador");
-                 }
+                }
             }
 
             elementoJson = gson.toJson(jsonElement);
-
 
             // Se devuelve una respuesta con el elemento exportado
             return ResponseEntity.ok(elementoJson);
@@ -269,5 +251,6 @@ public class HistoriaController {
         }
 
     }
+
 
 }

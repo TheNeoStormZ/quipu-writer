@@ -5,6 +5,7 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
@@ -23,6 +24,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tns.quipu.Historia.Trama.Escena.Escena;
+import com.tns.quipu.Historia.Trama.Escena.EscenaService;
 import com.tns.quipu.Usuario.Usuario;
 import com.tns.quipu.Usuario.UsuarioService;
 
@@ -35,6 +38,9 @@ public class PersonajeController {
     private UsuarioService us;
 
     @Autowired
+    private EscenaService es;
+
+    @Autowired
     public PersonajeController(PersonajeService ps) {
         this.ps = ps;
     }
@@ -43,6 +49,7 @@ public class PersonajeController {
     public List<Personaje> listPersonajes(Principal principal) {
         Usuario loggedUser = us.findUserByUsername(principal.getName());
         List<Personaje> personajes = ps.findAllUserCharacters(loggedUser);
+        personajes.stream().forEachOrdered(x -> x.setNumEscenas(es.findByPersonaje(x).size()));
         return personajes;
 
     }

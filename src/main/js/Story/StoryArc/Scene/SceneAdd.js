@@ -117,7 +117,7 @@ export default function Creation() {
         setPersonajes(response.data);
       })
       .catch((error) => console.log(error));
-  });
+  },[]);
 
   return (
     <ThemeProvider theme={theme}>

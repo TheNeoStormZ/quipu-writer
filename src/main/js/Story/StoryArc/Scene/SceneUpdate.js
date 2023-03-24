@@ -146,7 +146,7 @@ export default function Update() {
         setPersonajes(response.data);
       })
       .catch((error) => console.log(error));
-  });
+  },[]);
 
   function handleTextChange(e) {
     setEscena({ ...escena, [e.target.name]: e.target.value });

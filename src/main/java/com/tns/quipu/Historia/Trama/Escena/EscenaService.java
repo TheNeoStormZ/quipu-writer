@@ -14,6 +14,7 @@ import com.tns.quipu.Historia.Historia;
 import com.tns.quipu.Historia.HistoriaRepository;
 import com.tns.quipu.Historia.Trama.Trama;
 import com.tns.quipu.Historia.Trama.TramaRepository;
+import com.tns.quipu.Personaje.Personaje;
 import com.tns.quipu.Usuario.Usuario;
 
 @Service
@@ -43,6 +44,11 @@ public class EscenaService {
     @Transactional()
     public Escena findById(String id) {
         return er.findById(id).orElse(null);
+    }
+
+    @Transactional()
+    public List<Escena> findByPersonaje(Personaje p) {
+        return er.findBypersonajesInvolucradosContains(p);
     }
 
     

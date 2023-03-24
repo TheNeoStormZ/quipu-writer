@@ -73,8 +73,13 @@ public class Historia {
         return tramas.stream().map(x -> x.getEscenas()).filter(Objects::nonNull).flatMap(List::stream).collect(Collectors.toList());
     }
 
+
     public Set<Personaje> obtenerPersonajes(){
-        return this.obtenerEscenas().stream().map(x -> x.getPersonajesInvolucrados()).filter(Objects::nonNull).flatMap(List::stream).collect(Collectors.toSet());
+        return this.getTramas().stream().map(x -> x.obtenerPersonajes()).filter(Objects::nonNull).flatMap(Set::stream).collect(Collectors.toSet());
+    }
+
+    public Integer getNumPersonajes(){
+        return this.obtenerPersonajes().size();
     }
 
 }

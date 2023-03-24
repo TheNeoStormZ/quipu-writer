@@ -15,6 +15,7 @@ public interface HistoriaRepository extends MongoRepository<Historia, String>{
 
     public Historia findByTramasContains (Trama trama);
 
+
  
     
 }

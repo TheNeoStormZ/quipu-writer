@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotBlank;
 
@@ -12,6 +14,7 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.tns.quipu.Historia.Trama.Escena.Escena;
+import com.tns.quipu.Personaje.Personaje;
 import com.tns.quipu.Usuario.Usuario;
 
 import lombok.AllArgsConstructor;
@@ -41,6 +44,8 @@ public class Trama {
 
     @DBRef
     public List<Escena> escenas = new ArrayList<>();
+
+
 
     @Override
     public boolean equals(Object obj) {
@@ -75,6 +80,18 @@ public class Trama {
 
     public void purgeDependencies() {
         escenas = new ArrayList<>();
+    }
+
+    public Date getFechaGlobal() {
+        return escenas.stream().map(x -> x.getFecha()).filter(Objects::nonNull).min(Date::compareTo).orElse(null);
+    }
+    
+    public Set<Personaje> obtenerPersonajes() {
+        return escenas.stream().map(x -> x.getPersonajesInvolucrados()).flatMap(List::stream).filter(Objects::nonNull).collect(Collectors.toSet());
+    }
+
+    public Integer getNumPersonajes() {
+        return this.obtenerPersonajes().size();
     }
 
 }

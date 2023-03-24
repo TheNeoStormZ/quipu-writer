@@ -21,7 +21,11 @@ import Grid from "@mui/material/Grid";
 import SubdirectoryArrowRightIcon from "@mui/icons-material/SubdirectoryArrowRight";
 import MapIcon from "@mui/icons-material/Map";
 
+import Badge from "@mui/material/Badge";
+
 import FilterHdrIcon from '@mui/icons-material/FilterHdr';
+
+import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 
 import {
   Dialog,
@@ -59,9 +63,13 @@ function Copyright() {
 
 const theme = createTheme();
 
-var nombreDatosTrama = ["Nombre de la trama"];
+var nombreDatosTrama = ["Nombre de la trama", "Fecha"];
 
 function convertirFecha(fechaOriginal) {
+  // Si fechaOriginal es undefined, se devuelve tal cual
+  if (fechaOriginal === undefined) return "Sin fecha";
+
+  // Si fechaOriginal no es undefined, se continúa con la conversión
   // Crear objeto Date a partir de la fecha original
   let fecha = new Date(fechaOriginal);
 
@@ -150,14 +158,29 @@ export default function Trama() {
     }
   }, []);
 
+  
+
+  function ordenarEscenasPorFecha(escenas) {
+    // Si escenas no es un array o está vacío, se devuelve tal cual
+    if (!Array.isArray(escenas) || escenas.length === 0) return escenas;
+    // Si escenas es un array válido y no está vacío, se ordena por fecha
+    return escenas.sort(function(a, b) {
+      // Si alguna de las fechas es nula o undefined, se pone al final
+      if (a.fecha == null || a.fecha == undefined) return 1;
+      if (b.fecha == null || b.fecha == undefined) return -1;
+      // Si ambas fechas son válidas, se comparan sus valores numéricos
+      return new Date(a.fecha).getTime() - new Date(b.fecha).getTime();
+    });
+  }
+
   React.useEffect(() => {
     if (tramaStr) {
       arcTemp = removeEmpty(JSON.parse(tramaStr));
       setTrama(arcTemp);
-      setScenes(arcTemp.escenas);
+      setScenes(ordenarEscenasPorFecha(arcTemp.escenas));
 
-      var { nombreTrama } = arcTemp; // desestructuración de objetos
-      var datosTramaTemp = [nombreTrama];
+      var { nombreTrama, fechaGlobal } = arcTemp; // desestructuración de objetos
+      var datosTramaTemp = [nombreTrama, convertirFecha(fechaGlobal)];
 
       setDatosTrama(datosTramaTemp);
     } else {
@@ -398,10 +421,11 @@ export default function Trama() {
                         <Typography>{escena.descripcion}</Typography>
                       </CardContent>
                     </CardActionArea>
-                    <CardActions>
-                      <Button size="small">View</Button>
-                      <Button size="small">Edit</Button>
-                    </CardActions>
+                    <CardActions sx={{ width: '100%', justifyContent: 'flex-end', pr:3, mt:"auto"}}>
+                    <Badge badgeContent={escena.personajesInvolucrados.length} color="primary">
+                      <PeopleAltIcon color="action" />
+                    </Badge>
+                  </CardActions>
                   </Card>
                 </Grid>
               ))}

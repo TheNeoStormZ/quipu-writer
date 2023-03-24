@@ -27,6 +27,7 @@ import Badge from "@mui/material/Badge";
 
 import BookIcon from "@mui/icons-material/Book";
 import MapIcon from "@mui/icons-material/Map";
+import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 
 import axios from "axios";
 
@@ -198,9 +199,26 @@ export default function Historias() {
                       <Typography>{historia.descripcion}</Typography>
                     </CardContent>
                   </CardActionArea>
-                  <CardActions sx={{ width: '100%', justifyContent: 'flex-end', pr:3, mt:"auto"}}>
-                    <Badge badgeContent={historia.tramas.length} color="primary">
+                  <CardActions
+                    sx={{
+                      width: "100%",
+                      justifyContent: "flex-end",
+                      pr: 3,
+                      mt: "auto",
+                    }}
+                  >
+                    <Badge
+                      badgeContent={historia.tramas.length}
+                      color="primary"
+                    >
                       <MapIcon color="action" />
+                    </Badge>
+                    <Badge
+                      badgeContent={historia.numPersonajes}
+                      color="primary"
+                      sx={{ pl: 2 }}
+                    >
+                      <PeopleAltIcon color="action" />
                     </Badge>
                   </CardActions>
                 </Card>
