@@ -99,7 +99,6 @@ public class UsuarioController {
 
         if (login){
             String token = jwtService.createToken(userDetails);
-            System.out.println(token);
             JwtResponse jToken = new JwtResponse(token);
             return new ResponseEntity<>(jToken, HttpStatus.ACCEPTED);
 

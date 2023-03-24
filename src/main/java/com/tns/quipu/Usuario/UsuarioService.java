@@ -46,9 +46,7 @@ public class UsuarioService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
-        System.out.println("usernameService: "  + userName);
         Usuario user = ur.findByUsernameOrEmail(userName,userName).orElse(null);
-        System.out.println("usuario_debug:" + user);
 
         Set<UsuarioRol> authorities = user
                 .getAuthorities()
@@ -60,7 +58,6 @@ public class UsuarioService implements UserDetailsService {
                 user.getPassword(),
                 authorities);
 
-                System.out.println("Service_end: " + usuario.toString());
                 return usuario;
     }
 

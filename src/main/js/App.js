@@ -1,11 +1,6 @@
 const React = require("react");
 const ReactDOM = require("react-dom/client");
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import CharactersAdd from "./CharacterAdd";
-import CharacterInfo from "./CharacterInfo";
-import Characters from "./Characters";
-import CharacterUpdate from "./CharacterUpdate";
-
 
 import StoryAdd from "./Story/StoryAdd";
 import StoryInfo from "./Story/StoryInfo";
@@ -19,9 +14,13 @@ import SceneAdd from "./Story/StoryArc/Scene/SceneAdd";
 import SceneInfo from "./Story/StoryArc/Scene/SceneInfo";
 import SceneUpdate from "./Story/StoryArc/Scene/SceneUpdate";
 
+import CharactersAdd from "./Character/CharacterAdd";
+import CharacterInfo from "./Character/CharacterInfo";
+import Characters from "./Character/Characters";
+import CharacterUpdate from "./Character/CharacterUpdate";
 import Index from "./index";
-import Login from "./Login";
-import Register from "./Register";
+import Login from "./Auth/Login";
+import Register from "./Auth/Register";
 
 
 export default function App() {
