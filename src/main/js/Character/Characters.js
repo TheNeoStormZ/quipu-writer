@@ -26,7 +26,7 @@ import { useNavigate } from "react-router-dom";
 
 import axios from "axios";
 
-import Navigation from "./Navigation";
+import Navigation from "../Navigation";
 
 function Copyright() {
   return (
