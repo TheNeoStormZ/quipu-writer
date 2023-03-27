@@ -15,6 +15,7 @@ import com.tns.quipu.Historia.HistoriaRepository;
 import com.tns.quipu.Historia.HistoriaService;
 import com.tns.quipu.Historia.Trama.Escena.Escena;
 import com.tns.quipu.Historia.Trama.Escena.EscenaService;
+import com.tns.quipu.Personaje.Personaje;
 import com.tns.quipu.Usuario.Usuario;
 
 @Service
@@ -78,6 +79,11 @@ public class TramaService {
     @Transactional()
     public Trama findByEscena(Escena escena) {
         return tr.findByEscenasContains(escena);
+    }
+
+    @Transactional()
+    public Set<Trama> findByPersonaje(Personaje p) {
+        return  es.findByPersonaje(p).stream().map(x -> findByEscena(x)).collect(Collectors.toSet());
     }
 
 

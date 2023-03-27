@@ -21,13 +21,14 @@ import Stack from "@mui/material/Stack";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link as LinkRouter } from "react-router-dom";
 
 import Badge from "@mui/material/Badge";
 
 import BookIcon from "@mui/icons-material/Book";
 import MapIcon from "@mui/icons-material/Map";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
+import LibraryAddIcon from '@mui/icons-material/LibraryAdd';
 
 import axios from "axios";
 
@@ -52,6 +53,8 @@ export default function Historias() {
   const [historias, setHistorias] = React.useState([]);
   const [historiasFiltradas, setHistoriasFiltradas] = React.useState([]);
   const [searchQuery, setSearchQuery] = React.useState("");
+
+  const [showButton, setShowButton] = React.useState(null);
 
   const handleSearchChange = (event) => {
     const query = event.target.value;
@@ -96,6 +99,7 @@ export default function Historias() {
       .then((response) => {
         setHistorias(response.data);
         setHistoriasFiltradas(response.data);
+        setShowButton(true);
       })
       .catch((error) => {
         console.error(error);
@@ -115,6 +119,7 @@ export default function Historias() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Navigation />
+      
       <main>
         {/* Hero unit */}
         <Box
@@ -177,7 +182,27 @@ export default function Historias() {
             />
           </Container>
         </Box>
-        <Container sx={{ py: 8 }} maxWidth="md">
+        <Container sx={{ py: 1 }} maxWidth="md">
+        {(!historiasFiltradas || historiasFiltradas.length === 0) && showButton && (
+            <Grid container spacing={4} justifyContent="center">
+              <Button
+                type="submit"
+                variant="contained"
+                startIcon={<LibraryAddIcon />}
+              >  <LinkRouter style={{color: '#FFF', textDecoration: 'none'}} to="/historias/new">¡Crea tu historia!</LinkRouter>
+              </Button>
+            </Grid>
+          )}
+          {historiasFiltradas && historiasFiltradas.length !== 0 && showButton && (
+             <Grid container spacing={4} justifyContent="center" sx={{ pb: 4 }}>
+              <Button
+                type="submit"
+                variant="contained"
+                startIcon={<LibraryAddIcon />}
+              >  <LinkRouter style={{color: '#FFF', textDecoration: 'none'}} to="/historias/new">Crea una historia nueva</LinkRouter>
+              </Button>
+              </Grid>
+          )}
           {/* End hero unit */}
           <Grid container spacing={4}>
             {historiasFiltradas.map((historia, index) => (

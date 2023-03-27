@@ -1,12 +1,13 @@
 package com.tns.quipu.Personaje;
 
 import java.util.Date;
-
+import java.util.List;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.tns.quipu.Historia.Historia;
 import com.tns.quipu.Usuario.Usuario;
 
 import lombok.AllArgsConstructor;
@@ -55,7 +56,7 @@ public class Personaje {
 
     private Integer numEscenas;
 
-    private Integer numHistorias;
+    private List<Historia> historiasApariciones;
 
 
 }

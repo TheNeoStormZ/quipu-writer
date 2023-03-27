@@ -15,12 +15,32 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
 import { Link as LinkRouter, useNavigate } from "react-router-dom";
 
+import BookIcon from "@mui/icons-material/Book";
+
+
+import Container from "@mui/material/Container";
+import Grid from "@mui/material/Grid";
+
+import Badge from "@mui/material/Badge";
+
+import MapIcon from "@mui/icons-material/Map";
+
+import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
+
 import {
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle
+} from "@mui/material";
+
+import {
+  Card,
+  CardActionArea,
+  CardActions,
+  CardContent,
+  CardHeader
 } from "@mui/material";
 
 import Navigation from "../Navigation";
@@ -77,9 +97,17 @@ export default function Personaje() {
 
   const [openDelete, setOpenDelete] = React.useState(false);
 
+  const [historiasApariciones, setHistoriasApariciones] = React.useState([]);
+
   const handleClickOpenDelete = () => {
     setOpenDelete(true);
   };
+
+  function handleClick(index) {
+    var historiaGuardado = JSON.stringify(historiasApariciones[index]);
+    localStorage.setItem("historia", historiaGuardado);
+    setTimeout(navigate("/historia/info"), 20);
+  }
 
   const handleProccesDelete = () => {
     console.log(personaje);
@@ -132,13 +160,22 @@ export default function Personaje() {
     );
   }
 
+
   React.useEffect(() => {
     if (personajeStr) {
       personajeTemp = removeEmpty(JSON.parse(personajeStr));
       setPersonaje(personajeTemp);
+      setHistoriasApariciones(personajeTemp.historiasApariciones);
 
       // Creamos un array con las keys que queremos excluir del objeto
-      var keysExcluidas = ["id", "nombre", "descripcion","urlIcon","numEscenas"];
+      var keysExcluidas = [
+        "id",
+        "nombre",
+        "descripcion",
+        "urlIcon",
+        "numEscenas",
+        "historiasApariciones",
+      ];
 
       var datosPersonajeTemp = [
         Object.keys(personajeTemp)
@@ -360,8 +397,72 @@ export default function Personaje() {
                 </Typography>
               </div>
             </Box>
+            {historiasApariciones &&
+                Array.isArray(historiasApariciones) && (
+                  <Typography
+                    component="h3"
+                    variant="h5"
+                    align="left"
+                    color="text.primary"
+                    sx={{ mt: 2 }}
+                    gutterBottom
+                  >
+                    Aparece en:
+                  </Typography>
+                )}
           </div>
         </Box>
+        <Container sx={{ py: 2 }} maxWidth="md">
+          {/* End hero unit */}
+          <Grid container spacing={4}>
+            {Array.isArray(historiasApariciones) &&
+              !historiasApariciones.some((e) => e === null) &&
+              historiasApariciones.map((historia, index) => (
+                <Grid item key={historia.id} xs={12} sm={6} md={4}>
+                  <Card
+                    sx={{
+                      height: "100%",
+                      display: "flex",
+                      flexDirection: "column",
+                    }}
+                  >
+                    <CardActionArea onClick={() => handleClick(index)}>
+                    <CardHeader avatar={<BookIcon />} />
+
+                      <CardContent sx={{ flexGrow: 1 }}>
+                        <Typography gutterBottom variant="h5" component="h2">
+                          {historia.nombreHistoria}
+                        </Typography>
+                        <Typography>{historia.descripcion}</Typography>
+                      </CardContent>
+                    </CardActionArea>
+                    <CardActions
+                      sx={{
+                        width: "100%",
+                        justifyContent: "flex-end",
+                        pr: 3,
+                        mt: "auto",
+                      }}
+                    >
+                      <Badge
+                        badgeContent={historia.tramas.length}
+                        color="primary"
+                      >
+                        <MapIcon color="action" />
+                      </Badge>
+                      <Badge
+                        badgeContent={historia.numPersonajes}
+                        color="primary"
+                        sx={{ pl: 2 }}
+                      >
+                        <PeopleAltIcon color="action" />
+                      </Badge>
+                    </CardActions>
+                  </Card>
+                </Grid>
+              ))}
+          </Grid>
+        </Container>
       </main>
       {/* Footer */}
       <Box sx={{ bgcolor: "background.paper", p: 6 }} component="footer">

@@ -96,7 +96,6 @@ public class UsuarioController {
         UserDetails userDetails = userDetailsService.loadUserByUsername(usuarioFound.getUsername());
         
         boolean login = ssi.login(usuarioFound.getUsername(), usuario.getPassword());
-
         if (login){
             String token = jwtService.createToken(userDetails);
             JwtResponse jToken = new JwtResponse(token);

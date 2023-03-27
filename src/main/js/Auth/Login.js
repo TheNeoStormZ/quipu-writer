@@ -47,9 +47,7 @@ export default function SignIn() {
         })
         .then((response) => {
           if (response.data.token) {
-            //localStorage.setItem("user", JSON.stringify(response.data));
-            console.log(response.data.token)
-            document.cookie = "token=" + response.data.token;
+            document.cookie = "token=Bearer-" + response.data.token;
             window.location.href = "/";
           }
           return response.data;
