@@ -16,8 +16,7 @@ import Toolbar from "@mui/material/Toolbar";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 
-
-import { SpeedDial, SpeedDialAction, SpeedDialIcon } from '@mui/material';
+import { SpeedDial, SpeedDialAction, SpeedDialIcon } from "@mui/material";
 
 import { Link as LinkRouter } from "react-router-dom";
 
@@ -132,21 +131,21 @@ function ResponsiveAppBar() {
                   }}
                 />
               ))}
-    <SpeedDial
-      ariaLabel="Acciones de añadir"
-      sx={{ position: 'absolute', bottom: 16, right: 16 }}
-      icon={<SpeedDialIcon />}
-    >
-      {pages.map((page, index) => (
-        <SpeedDialAction
-          key={page}
-          component={LinkRouter}
-          to={urls_add[index] + '/new'}
-          icon={iconosNav[index]}
-          tooltipTitle={`Crear ${page}`}
-        />
-      ))}
-    </SpeedDial>
+              <SpeedDial
+                ariaLabel="Acciones de añadir"
+                sx={{ position: "absolute", bottom: 16, right: 16 }}
+                icon={<SpeedDialIcon />}
+              >
+                {pages.map((page, index) => (
+                  <SpeedDialAction
+                    key={page}
+                    component={LinkRouter}
+                    to={urls_add[index] + "/new"}
+                    icon={iconosNav[index]}
+                    tooltipTitle={`Crear ${page}`}
+                  />
+                ))}
+              </SpeedDial>
             </BottomNavigation>
           </Box>
 
@@ -206,7 +205,6 @@ function ResponsiveAppBar() {
               }}
               open={Boolean(anchorElAdd)}
               onClose={handleCloseAddMenu}
-
             >
               {pages.map((page, index) => (
                 <MenuItem

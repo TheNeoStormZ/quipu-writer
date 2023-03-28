@@ -10,6 +10,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import Navigation from "../../Navigation";
+import Footer from "../../Footer";
 
 import { useNavigate } from "react-router-dom";
 
@@ -17,18 +18,7 @@ import SubdirectoryArrowRightIcon from "@mui/icons-material/SubdirectoryArrowRig
 
 import axios from "axios";
 
-function Copyright() {
-  return (
-    <Typography variant="body2" color="text.secondary" align="center">
-      {"Copyright © "}
-      <Link color="inherit" href="https://mui.com/">
-        Quipu
-      </Link>{" "}
-      {new Date().getFullYear()}
-      {"."}
-    </Typography>
-  );
-}
+
 
 const theme = createTheme();
 
@@ -155,20 +145,7 @@ export default function Creation() {
         </Box>
       </main>
       {/* Footer */}
-      <Box sx={{ bgcolor: "background.paper", p: 6 }} component="footer">
-        <Typography variant="h6" align="center" gutterBottom>
-          Acerca de
-        </Typography>
-        <Typography
-          variant="subtitle1"
-          align="center"
-          color="text.secondary"
-          component="p"
-        >
-          Quipu, un proyecto para los que sueñan a lo grande
-        </Typography>
-        <Copyright />
-      </Box>
+      <Footer/>
       {/* End footer */}
     </ThemeProvider>
   );

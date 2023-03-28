@@ -10,39 +10,62 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import Navigation from "../Navigation";
+import Footer from "../Footer";
 
 import BookIcon from "@mui/icons-material/Book";
 
+import { useNavigate } from "react-router-dom";
+
+
+import FormGroup from "@mui/material/FormGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "@mui/material/Checkbox";
+
 import axios from "axios";
 
-function Copyright() {
-  return (
-    <Typography variant="body2" color="text.secondary" align="center">
-      {"Copyright © "}
-      <Link color="inherit" href="https://mui.com/">
-        Quipu
-      </Link>{" "}
-      {new Date().getFullYear()}
-      {"."}
-    </Typography>
-  );
-}
+
 
 const theme = createTheme();
 
 export default function Creation() {
+
+  const navigate = useNavigate();
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-
     try {
-      await axios
-        .post("/api/historias/new", {
-          nombreHistoria: data.get("nombreHistoria"),
-          descripcion: data.get("descripcion"),
-          generos: selectedGenres,
-        })
-        .then((window.location.href = "/"));
+      if (fastCreationMode) {
+        await axios
+          .post("/api/historias/new/fast", {
+            nombreHistoria: data.get("nombreHistoria"),
+            descripcion: data.get("descripcion"),
+            generos: selectedGenres,
+          })
+          .then((response) => {
+            // Obtener el objeto JSON que se recibe de respuesta
+            var historia = response.data;
+
+            console.log(historia);
+
+            var trama = historia["tramas"][0];
+
+            // Guardar el objeto JSON en el localStorage como historia
+            localStorage.setItem("historia", JSON.stringify(historia));
+            localStorage.setItem("trama", JSON.stringify((trama)));
+
+            // Redirigir a la página de creación de trama
+            navigate("/historia/trama/escenas/add");
+          });
+      } else {
+        await axios
+          .post("/api/historias/new", {
+            nombreHistoria: data.get("nombreHistoria"),
+            descripcion: data.get("descripcion"),
+            generos: selectedGenres,
+          })
+          .then(window.location.href = "/");
+      }
     } catch (err) {
       console.log(err);
       message = err.response.data;
@@ -58,6 +81,7 @@ export default function Creation() {
 
   const [genres, setGenres] = React.useState([]);
   const [selectedGenres, setSelectedGenres] = React.useState([]);
+  const [fastCreationMode, setFastCreationMode] = React.useState(null);
 
   React.useEffect(() => {
     axios
@@ -98,6 +122,19 @@ export default function Creation() {
           <div>
             <BookIcon sx={{ width: 56, height: 56 }} />
           </div>
+          <FormGroup>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  id="fastCreation"
+                  name="fastCreation"
+                  checked={fastCreationMode} // value es un estado booleano que representa el valor binario del checkbox
+                  onChange={(e) => setFastCreationMode(e.target.checked)} // actualiza el valor al cambiar el checkbox
+                />
+              }
+              label="Creación rapida"
+            />
+          </FormGroup>
           <TextField
             margin="normal"
             required
@@ -146,20 +183,7 @@ export default function Creation() {
         </Box>
       </main>
       {/* Footer */}
-      <Box sx={{ bgcolor: "background.paper", p: 6 }} component="footer">
-        <Typography variant="h6" align="center" gutterBottom>
-          Acerca de
-        </Typography>
-        <Typography
-          variant="subtitle1"
-          align="center"
-          color="text.secondary"
-          component="p"
-        >
-          Quipu, un proyecto para los que sueñan a lo grande
-        </Typography>
-        <Copyright />
-      </Box>
+      <Footer/>
       {/* End footer */}
     </ThemeProvider>
   );

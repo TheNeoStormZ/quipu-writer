@@ -7,7 +7,7 @@ import {
   CardActionArea,
   CardActions,
   CardContent,
-  CardHeader,
+  CardHeader
 } from "@mui/material";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -16,36 +16,26 @@ import CssBaseline from "@mui/material/CssBaseline";
 import Grid from "@mui/material/Grid";
 import IconButton from "@mui/material/IconButton";
 import InputAdornment from "@mui/material/InputAdornment";
-import Link from "@mui/material/Link";
 import Stack from "@mui/material/Stack";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import { useNavigate, Link as LinkRouter } from "react-router-dom";
+import { Link as LinkRouter, useNavigate } from "react-router-dom";
 
 import Badge from "@mui/material/Badge";
 
 import BookIcon from "@mui/icons-material/Book";
+import LibraryAddIcon from '@mui/icons-material/LibraryAdd';
 import MapIcon from "@mui/icons-material/Map";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
-import LibraryAddIcon from '@mui/icons-material/LibraryAdd';
 
 import axios from "axios";
 
 import Navigation from "./Navigation";
 
-function Copyright() {
-  return (
-    <Typography variant="body2" color="text.secondary" align="center">
-      {"Copyright © "}
-      <Link color="inherit" href="https://mui.com/">
-        Quipu
-      </Link>{" "}
-      {new Date().getFullYear()}
-      {"."}
-    </Typography>
-  );
-}
+import Footer from "./Footer";
+
+
 
 const theme = createTheme();
 
@@ -253,20 +243,7 @@ export default function Historias() {
         </Container>
       </main>
       {/* Footer */}
-      <Box sx={{ bgcolor: "background.paper", p: 6 }} component="footer">
-        <Typography variant="h6" align="center" gutterBottom>
-          Acerca de
-        </Typography>
-        <Typography
-          variant="subtitle1"
-          align="center"
-          color="text.secondary"
-          component="p"
-        >
-          Quipu, un proyecto para los que sueñan a lo grande
-        </Typography>
-        <Copyright />
-      </Box>
+      <Footer/>
       {/* End footer */}
     </ThemeProvider>
   );

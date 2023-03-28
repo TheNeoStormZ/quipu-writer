@@ -14,19 +14,9 @@ import Navigation from "../Navigation";
 import BookIcon from "@mui/icons-material/Book";
 
 import axios from "axios";
+import Footer from "../Footer";
 
-function Copyright() {
-  return (
-    <Typography variant="body2" color="text.secondary" align="center">
-      {"Copyright © "}
-      <Link color="inherit" href="https://mui.com/">
-        Quipu
-      </Link>{" "}
-      {new Date().getFullYear()}
-      {"."}
-    </Typography>
-  );
-}
+
 
 const theme = createTheme();
 
@@ -185,20 +175,7 @@ export default function Update() {
         </Box>
       </main>
       {/* Footer */}
-      <Box sx={{ bgcolor: "background.paper", p: 6 }} component="footer">
-        <Typography variant="h6" align="center" gutterBottom>
-          Acerca de
-        </Typography>
-        <Typography
-          variant="subtitle1"
-          align="center"
-          color="text.secondary"
-          component="p"
-        >
-          Quipu, un proyecto para los que sueñan a lo grande
-        </Typography>
-        <Copyright />
-      </Box>
+      <Footer/>
       {/* End footer */}
     </ThemeProvider>
   );
