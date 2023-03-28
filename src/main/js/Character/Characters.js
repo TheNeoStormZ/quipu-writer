@@ -1,5 +1,6 @@
 const React = require("react");
 const ReactDOM = require("react-dom/client");
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import SearchIcon from "@mui/icons-material/Search";
 import {
   Card,
@@ -21,25 +22,19 @@ import Stack from "@mui/material/Stack";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link as LinkRouter} from "react-router-dom";
+import FilterHdrIcon from "@mui/icons-material/FilterHdr";
+
+import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
 
 import axios from "axios";
+import Badge from "@mui/material/Badge";
+
+
 
 import Navigation from "../Navigation";
+import Footer from "../Footer";
 
-function Copyright() {
-  return (
-    <Typography variant="body2" color="text.secondary" align="center">
-      {"Copyright © "}
-      <Link color="inherit" href="https://mui.com/">
-        Quipu
-      </Link>{" "}
-      {new Date().getFullYear()}
-      {"."}
-    </Typography>
-  );
-}
 
 const theme = createTheme();
 
@@ -47,6 +42,8 @@ export default function Personajes() {
   const [personajes, setPersonajes] = React.useState([]);
   const [personajesFiltrados, setPersonajesFiltrados] = React.useState([]);
   const [searchQuery, setSearchQuery] = React.useState("");
+
+  const [showButton, setShowButton] = React.useState(null);
 
   const handleSearchChange = (event) => {
     const query = event.target.value;
@@ -71,9 +68,8 @@ export default function Personajes() {
 
   const fileInput = React.useRef(null);
 
-
   const handleSend = (fileContent) => {
-    console.log(fileContent)
+    console.log(fileContent);
     axios
       .post("/api/personajes/import", fileContent, {
         headers: {
@@ -81,10 +77,17 @@ export default function Personajes() {
         },
       })
       .then((response) => {
-        location.reload()
+        location.reload();
       })
       .catch((error) => console.error(error));
   };
+
+  React.useEffect(() => {
+    const storedValue = localStorage.getItem("bottomNavigationValue");
+    if (storedValue !== 1  || storedValue === undefined) {
+      localStorage.setItem("bottomNavigationValue", 1);
+    }
+  }, []); 
 
   React.useEffect(() => {
     axios
@@ -92,6 +95,7 @@ export default function Personajes() {
       .then((response) => {
         setPersonajes(response.data);
         setPersonajesFiltrados(response.data);
+        setShowButton(true);
       })
       .catch((error) => {
         console.error(error);
@@ -108,7 +112,6 @@ export default function Personajes() {
   }
 
   return (
-
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Navigation />
@@ -138,7 +141,10 @@ export default function Personajes() {
                 ref={fileInput}
                 style={{ display: "none" }}
               />
-              <IconButton aria-label="import" onClick={() => fileInput.current.click()}>
+              <IconButton
+                aria-label="import"
+                onClick={() => fileInput.current.click()}
+              >
                 <CloudUploadIcon />
               </IconButton>
             </Typography>
@@ -171,8 +177,28 @@ export default function Personajes() {
             />
           </Container>
         </Box>
-        <Container sx={{ py: 8 }} maxWidth="md">
+        <Container sx={{ py: 1 }} maxWidth="md">
           {/* End hero unit */}
+          {(!personajesFiltrados || personajesFiltrados.length === 0) && showButton && (
+            <Grid container spacing={4} justifyContent="center">
+              <Button
+                type="submit"
+                variant="contained"
+                startIcon={<PersonAddAlt1Icon />}
+              >  <LinkRouter style={{color: '#FFF', textDecoration: 'none'}} to="/personajes/new">¡Crea tu personaje!</LinkRouter>
+              </Button>
+            </Grid>
+          )}
+          {personajesFiltrados && personajesFiltrados.length !== 0 && showButton && (
+            <Grid container spacing={4} justifyContent="center"sx={{ pb: 4 }}>
+              <Button
+                type="submit"
+                variant="contained"
+                startIcon={<PersonAddAlt1Icon />}
+              >  <LinkRouter style={{color: '#FFF', textDecoration: 'none'}} to="/personajes/new">Crea un personaje</LinkRouter>
+              </Button>
+            </Grid>
+          )}
           <Grid container spacing={4}>
             {personajesFiltrados.map((personaje, index) => (
               <Grid item key={personaje.id} xs={12} sm={6} md={4}>
@@ -195,9 +221,17 @@ export default function Personajes() {
                       <Typography>{personaje.descripcion}</Typography>
                     </CardContent>
                   </CardActionArea>
-                  <CardActions>
-                    <Button size="small">View</Button>
-                    <Button size="small">Edit</Button>
+                  <CardActions
+                    sx={{
+                      width: "100%",
+                      justifyContent: "flex-end",
+                      pr: 3,
+                      mt: "auto",
+                    }}
+                  >
+                    <Badge badgeContent={personaje.numEscenas} color="primary">
+                      <FilterHdrIcon color="action" />
+                    </Badge>
                   </CardActions>
                 </Card>
               </Grid>
@@ -206,20 +240,7 @@ export default function Personajes() {
         </Container>
       </main>
       {/* Footer */}
-      <Box sx={{ bgcolor: "background.paper", p: 6 }} component="footer">
-        <Typography variant="h6" align="center" gutterBottom>
-          Acerca de
-        </Typography>
-        <Typography
-          variant="subtitle1"
-          align="center"
-          color="text.secondary"
-          component="p"
-        >
-          Quipu, un proyecto para los que sueñan a lo grande
-        </Typography>
-        <Copyright />
-      </Box>
+      <Footer/>
       {/* End footer */}
     </ThemeProvider>
   );

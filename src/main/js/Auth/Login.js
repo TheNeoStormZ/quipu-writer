@@ -14,24 +14,7 @@ import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 
 import axios from "axios";
-
-function Copyright(props) {
-  return (
-    <Typography
-      variant="body2"
-      color="text.secondary"
-      align="center"
-      {...props}
-    >
-      {"Copyright © "}
-      <Link color="inherit" href="https://mui.com/">
-        Quipu
-      </Link>{" "}
-      {new Date().getFullYear()}
-      {"."}
-    </Typography>
-  );
-}
+import Copyright from "../Copyright";
 
 const theme = createTheme();
 
@@ -47,9 +30,7 @@ export default function SignIn() {
         })
         .then((response) => {
           if (response.data.token) {
-            //localStorage.setItem("user", JSON.stringify(response.data));
-            console.log(response.data.token)
-            document.cookie = "token=" + response.data.token;
+            document.cookie = "token=Bearer-" + response.data.token;
             window.location.href = "/";
           }
           return response.data;

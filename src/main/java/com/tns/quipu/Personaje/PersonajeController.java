@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tns.quipu.Historia.HistoriaService;
 import com.tns.quipu.Historia.Trama.Escena.Escena;
 import com.tns.quipu.Historia.Trama.Escena.EscenaService;
 import com.tns.quipu.Usuario.Usuario;
@@ -41,6 +42,9 @@ public class PersonajeController {
     private EscenaService es;
 
     @Autowired
+    private HistoriaService hs;
+
+    @Autowired
     public PersonajeController(PersonajeService ps) {
         this.ps = ps;
     }
@@ -49,7 +53,10 @@ public class PersonajeController {
     public List<Personaje> listPersonajes(Principal principal) {
         Usuario loggedUser = us.findUserByUsername(principal.getName());
         List<Personaje> personajes = ps.findAllUserCharacters(loggedUser);
-        personajes.stream().forEachOrdered(x -> x.setNumEscenas(es.findByPersonaje(x).size()));
+        personajes.stream().forEachOrdered(x -> {
+            x.setNumEscenas(es.findByPersonaje(x).size());
+            x.setHistoriasApariciones(hs.findByPersonaje(x));
+        });
         return personajes;
 
     }

@@ -1,5 +1,6 @@
 package com.tns.quipu.Historia;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.tns.quipu.Historia.Trama.Trama;
 import com.tns.quipu.Historia.Trama.TramaService;
+import com.tns.quipu.Personaje.Personaje;
 import com.tns.quipu.Usuario.Usuario;
 
 @Service
@@ -77,6 +79,12 @@ public class HistoriaService {
     @Transactional()
     public Historia findByTrama(Trama trama) {
         return hr.findByTramasContains(trama);
+    }
+
+    @Transactional()
+    public List<Historia> findByPersonaje(Personaje p) {
+        Set<Historia> historiasInvolucradas = ts.findByPersonaje(p).stream().map(x -> findByTrama(x)).collect(Collectors.toSet());
+        return new ArrayList<>(historiasInvolucradas);
     }
 
 

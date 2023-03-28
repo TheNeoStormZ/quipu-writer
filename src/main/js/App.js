@@ -25,11 +25,6 @@ import Register from "./Auth/Register";
 
 export default function App() {
 
-  const token = localStorage.getItem("token");
-  if (token) {
-      setAuthToken(token);
-  }
-
   return (
     <BrowserRouter>
             <Routes >

@@ -18,19 +18,8 @@ import Typography from "@mui/material/Typography";
 import Navigation from "../Navigation";
 
 import axios from "axios";
+import Footer from "../Footer";
 
-function Copyright() {
-  return (
-    <Typography variant="body2" color="text.secondary" align="center">
-      {"Copyright © "}
-      <Link color="inherit" href="https://mui.com/">
-        Quipu
-      </Link>{" "}
-      {new Date().getFullYear()}
-      {"."}
-    </Typography>
-  );
-}
 
 const theme = createTheme();
 
@@ -99,7 +88,7 @@ export default function Creation() {
         {showAlert ? <AlertCustom /> : null}
         <Box
           sx={{
-            "& .MuiTextField-root": { m:1, width: { xs: '98%', sm: '25ch' }  },
+            "& .MuiTextField-root": { mb:1, mt:1, ml:1, width: { xs: '98%', sm: '25ch' }  },
             marginTop: 3,
             display: "flex",
             flexDirection: "column",
@@ -146,8 +135,7 @@ export default function Creation() {
                   label="Apellido 1"
                   name="primerApellido"
                 />
-              </div>
-              <div>
+
                 <TextField
                   id="outlined-required"
                   label="Apellido 2"
@@ -282,20 +270,7 @@ export default function Creation() {
         </Box>
       </main>
       {/* Footer */}
-      <Box sx={{ bgcolor: "background.paper", p: 6 }} component="footer">
-        <Typography variant="h6" align="center" gutterBottom>
-          Acerca de
-        </Typography>
-        <Typography
-          variant="subtitle1"
-          align="center"
-          color="text.secondary"
-          component="p"
-        >
-          Quipu, un proyecto para los que sueñan a lo grande
-        </Typography>
-        <Copyright />
-      </Box>
+      <Footer/>
       {/* End footer */}
     </ThemeProvider>
   );

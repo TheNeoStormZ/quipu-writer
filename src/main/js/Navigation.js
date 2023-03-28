@@ -1,25 +1,30 @@
 const React = require("react");
 const ReactDOM = require("react-dom/client");
-import CollectionsBookmarkIcon from '@mui/icons-material/CollectionsBookmark';
+import CollectionsBookmarkIcon from "@mui/icons-material/CollectionsBookmark";
 import LibraryAddIcon from "@mui/icons-material/LibraryAdd";
 import LocalLibraryIcon from "@mui/icons-material/LocalLibrary";
-import MenuIcon from "@mui/icons-material/Menu";
-import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
+import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import AppBar from "@mui/material/AppBar";
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
 import IconButton from "@mui/material/IconButton";
-import Link from "@mui/material/Link";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Toolbar from "@mui/material/Toolbar";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 
-const pages = ["Historias", "Personajes"];
-const iconosNav =[<CollectionsBookmarkIcon/>,<PeopleAltIcon/>]
+import { SpeedDial, SpeedDialAction, SpeedDialIcon } from "@mui/material";
+
+import { Link as LinkRouter } from "react-router-dom";
+
+import BottomNavigation from "@mui/material/BottomNavigation";
+import BottomNavigationAction from "@mui/material/BottomNavigationAction";
+
+const pages = ["historia", "personaje"];
+const iconosNav = [<CollectionsBookmarkIcon />, <PeopleAltIcon />];
 const urls = ["/", "/personajes"];
 const urls_add = ["/historias", "/personajes"];
 const settings = ["Cuenta", "Cerrar sesión"];
@@ -58,11 +63,26 @@ function ResponsiveAppBar() {
     location.reload();
   };
 
+  const [value, setValue] = React.useState();
+
+  React.useEffect(() => {
+    const storedValue = localStorage.getItem("bottomNavigationValue");
+    if (storedValue) {
+      setValue(Number(storedValue));
+    }
+  }, []);
+
+  React.useEffect(() => {
+    localStorage.setItem("bottomNavigationValue", value);
+  }, [value]);
+
   return (
-    <AppBar position="static">
+    <AppBar position="sticky">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <LocalLibraryIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} />
+          <LocalLibraryIcon
+            sx={{ display: { xs: "none", md: "flex" }, mr: 1 }}
+          />
           <Typography
             variant="h6"
             noWrap
@@ -82,52 +102,62 @@ function ResponsiveAppBar() {
           </Typography>
 
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
-            <IconButton
-              size="large"
-              aria-label="account of current user"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              onClick={handleOpenNavMenu}
-              color="inherit"
-            >
-              <MenuIcon />
-            </IconButton>
-            <Menu
-              id="menu-appbar"
-              anchorEl={anchorElNav}
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "left",
+            <BottomNavigation
+              value={value}
+              onChange={(event, newValue) => {
+                setValue(newValue);
               }}
-              keepMounted
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "left",
-              }}
-              open={Boolean(anchorElNav)}
-              onClose={handleCloseNavMenu}
+              showLabels
               sx={{
-                display: { xs: "block", md: "none" },
+                position: "fixed",
+                bottom: 0,
+                left: 0,
+                right: 0,
+                justifyContent: "center",
+                boxShadow: "0 -1px 4px rgba(0,0,0,0.12)",
+                backgroundColor: "#9eaae7",
               }}
             >
               {pages.map((page, index) => (
-                <MenuItem
+                <BottomNavigationAction
                   key={page}
-                  onClick={handleCloseNavMenu}
-                  component={Link}
-                  href={urls[index]}
-                >
-                  <Typography textAlign="center">{page}</Typography>
-                </MenuItem>
+                  label={`Mis ${page}s`}
+                  icon={iconosNav[index]}
+                  component={LinkRouter}
+                  to={urls[index]}
+                  onClick={() => {
+                    setValue(index);
+                    localStorage.setItem("bottomNavigationValue", index);
+                  }}
+                />
               ))}
-            </Menu>
+              <SpeedDial
+                ariaLabel="Acciones de añadir"
+                sx={{ position: "absolute", bottom: 16, right: 16 }}
+                icon={<SpeedDialIcon />}
+              >
+                {pages.map((page, index) => (
+                  <SpeedDialAction
+                    key={page}
+                    component={LinkRouter}
+                    to={urls_add[index] + "/new"}
+                    icon={iconosNav[index]}
+                    tooltipTitle={`Crear ${page}`}
+                  />
+                ))}
+              </SpeedDial>
+            </BottomNavigation>
           </Box>
-          <LocalLibraryIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} />
+
+          <LocalLibraryIcon
+            sx={{ display: { xs: "flex", md: "none" }, mr: 1 }}
+          />
+
           <Typography
             variant="h5"
             noWrap
-            component="a"
-            href=""
+            component={LinkRouter}
+            to={"/"}
             sx={{
               mr: 2,
               display: { xs: "flex", md: "none" },
@@ -147,14 +177,14 @@ function ResponsiveAppBar() {
                 key={page}
                 onClick={handleCloseNavMenu}
                 sx={{ my: 2, color: "white", display: "block" }}
-                component={Link}
-                href={urls[index]}
+                component={LinkRouter}
+                to={urls[index]}
               >
-                {iconosNav[index]} {page}
+                {iconosNav[index]} Mis {page}s
               </Button>
             ))}
           </Box>
-          <Box sx={{ flexGrow: 0 }}>
+          <Box sx={{ flexGrow: 0, display: { xs: "none", md: "flex" } }}>
             <Tooltip title="Añadir elementos">
               <IconButton onClick={handleOpenAddMenu} sx={{ p: 0 }}>
                 <LibraryAddIcon sx={{ display: "flex", mr: 2 }} />
@@ -177,8 +207,12 @@ function ResponsiveAppBar() {
               onClose={handleCloseAddMenu}
             >
               {pages.map((page, index) => (
-                <MenuItem key={page} component={Link} href={urls_add[index]+'/new'}>
-                  <Typography textAlign="center">{page}</Typography>
+                <MenuItem
+                  key={page}
+                  component={LinkRouter}
+                  to={urls_add[index] + "/new"}
+                >
+                  <Typography textAlign="center">Crear {page}</Typography>
                 </MenuItem>
               ))}
             </Menu>

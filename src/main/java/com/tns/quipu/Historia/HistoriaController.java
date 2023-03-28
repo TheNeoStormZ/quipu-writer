@@ -98,6 +98,25 @@ public class HistoriaController {
 
     }
 
+    @PostMapping(value = "/api/historias/new/fast")
+    public ResponseEntity<Historia> newHistoriaFast(@Valid @RequestBody Historia historia, Principal principal,
+            BindingResult result) { 
+                ResponseEntity<String> resutCreation = this.newHistoria(historia, principal, result);
+                 if (resutCreation.getStatusCode().is2xxSuccessful()){
+                    Usuario loggedUser = us.findUserByUsername(principal.getName());
+                    Historia og = hs.findById(historia.getId());
+
+                    Trama t = new Trama(loggedUser, null, "Introducción", "El inicio de la historia", new ArrayList<>());
+                    ts.saveTrama(t);
+                    og.añadirTrama(t);
+                    hs.saveHistoria(og);
+
+                    return new ResponseEntity<>(og, HttpStatus.CREATED);
+                 }
+
+                 return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+            }
+    
     @PutMapping(value = "/api/historias/update")
     public ResponseEntity<String> updateHistoria(@RequestBody Historia historia, Principal principal,
             BindingResult result) {
