@@ -14,6 +14,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import com.tns.quipu.Personaje.Personaje;
 import com.tns.quipu.Usuario.Usuario;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,6 +36,7 @@ public class Escena {
     public String id;
 
     @NotBlank
+    @NotNull
     public String nombreEscena;
 
     public String descripcion;

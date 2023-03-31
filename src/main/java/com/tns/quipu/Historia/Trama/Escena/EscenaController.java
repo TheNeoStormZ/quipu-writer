@@ -51,19 +51,8 @@ public class EscenaController {
         this.ts = ts;
     }
 
-    @GetMapping(value = "/api/historia/trama/{id}/escenas")
-    public ResponseEntity<List<Escena>> getEscenas(@PathVariable String id, Principal principal) {
-        System.out.println("ID HIST:" + id);
-        Historia historia = hs.findById(id);
-        if (!(historia.getCreador().getUsername().equals(principal.getName()))) {
-            return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
-        }
 
-        List<Escena> escenas = historia.obtenerEscenas();
-        return new ResponseEntity<>(escenas, HttpStatus.OK);
-    }
-
-    @GetMapping(value = "/api/historia/escena/{id}")
+    @GetMapping(value = "/api/historia/trama/escena/{id}")
     public ResponseEntity<Escena> getEscena(@PathVariable String id, Principal principal) {
 
         Escena escena = es.findById(id);
@@ -102,8 +91,6 @@ public class EscenaController {
 
         Historia og = hs.findByTrama(t_og);
 
-        System.out.println(og);
-
         return new ResponseEntity<>(og, HttpStatus.CREATED);
 
     }
@@ -116,11 +103,9 @@ public class EscenaController {
 
         Trama tr_og = ts.findByEscena(escena_og);
 
-        String hid = hs.findByTrama(tr_og).getId();
+        Historia og = hs.findByTrama(tr_og);
 
         Usuario loggedUser = us.findUserByUsername(principal.getName());
-
-        Historia og = hs.findById(hid);
 
         if (!(og.getCreador().getUsername().equals(principal.getName()))) {
             return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
@@ -140,7 +125,7 @@ public class EscenaController {
 
         es.saveEscena(escena);
 
-        og = hs.findById(hid);
+        og = hs.findById(og.getId());
 
         return new ResponseEntity<>(og, HttpStatus.CREATED);
 
@@ -157,11 +142,9 @@ public class EscenaController {
             return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
         }
 
-        String ogId = ts.findByEscena(escena).getId();
+        Trama og = ts.findByEscena(escena);
 
         es.deleteEscena(escena);
-
-        Trama og = ts.findById(ogId);
 
         Historia hog = hs.findByTrama(og);
 
