@@ -108,11 +108,10 @@ public class TramaController {
 
         Trama trama_og = ts.findById(trama.getId());
         
-        String hid = hs.findByTrama(trama_og).getId();
+        Historia og = hs.findByTrama(trama_og);
+        String hid = og.getId();
         
         Usuario loggedUser = us.findUserByUsername(principal.getName());
-
-        Historia og = hs.findById(hid);
 
         if (!(og.getCreador().getUsername().equals(principal.getName()))) {
             return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
@@ -156,7 +155,6 @@ public class TramaController {
 
         Historia og = hs.findById(ogId);
 
-        System.out.println(og.getTramas().toString());
 
         return new ResponseEntity<>(og, HttpStatus.ACCEPTED);
 

@@ -19,6 +19,7 @@ import com.tns.quipu.Historia.Trama.Escena.Escena;
 import com.tns.quipu.Personaje.Personaje;
 import com.tns.quipu.Usuario.Usuario;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -40,6 +41,7 @@ public class Historia {
     public String id;
 
     @NotBlank
+    @NotNull
     public String nombreHistoria;
 
     public List<String> generos;

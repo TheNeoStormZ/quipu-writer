@@ -34,6 +34,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.tns.quipu.Historia.HistoriaService;
 import com.tns.quipu.Historia.Trama.Escena.EscenaService;
 import com.tns.quipu.Personaje.Personaje;
 import com.tns.quipu.Personaje.PersonajeController;
@@ -60,6 +61,9 @@ public class PersonajeControllerTest {
 
         @MockBean
         private PersonajeService ps;
+
+        @MockBean
+        private HistoriaService hs;
 
         @MockBean
         private PersonajeRepository pr;

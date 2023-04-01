@@ -75,7 +75,6 @@ public class HistoriaController {
         Usuario loggedUser = us.findUserByUsername(principal.getName());
         Set<String> generos = hs.findAllGenres(loggedUser);
         return generos;
-
     }
 
     @PostMapping(value = "/api/historias/new")
