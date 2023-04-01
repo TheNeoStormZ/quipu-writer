@@ -1,13 +1,14 @@
 const React = require("react");
 const ReactDOM = require("react-dom/client");
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import FilterHdrIcon from "@mui/icons-material/FilterHdr";
 import SearchIcon from "@mui/icons-material/Search";
 import {
   Card,
   CardActionArea,
   CardActions,
   CardContent,
-  CardHeader,
+  CardHeader
 } from "@mui/material";
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
@@ -17,30 +18,28 @@ import CssBaseline from "@mui/material/CssBaseline";
 import Grid from "@mui/material/Grid";
 import IconButton from "@mui/material/IconButton";
 import InputAdornment from "@mui/material/InputAdornment";
-import Link from "@mui/material/Link";
 import Stack from "@mui/material/Stack";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import { useNavigate, Link as LinkRouter} from "react-router-dom";
-import FilterHdrIcon from "@mui/icons-material/FilterHdr";
+import { Link as LinkRouter, useNavigate } from "react-router-dom";
 
 import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
 
-import axios from "axios";
 import Badge from "@mui/material/Badge";
+import axios from "axios";
 
-
-
-import Navigation from "../Navigation";
 import Footer from "../Footer";
-
+import Navigation from "../Navigation";
 
 const theme = createTheme();
 
 export default function Personajes() {
   const [personajes, setPersonajes] = React.useState([]);
-  const [personajesFiltrados, setPersonajesFiltrados] = React.useState([]);
+  //const [personajesFiltrados, setPersonajesFiltrados] = React.useState([]);
+  const [personajesPorSecciones, setPersonajesPorSecciones] = React.useState(
+    {}
+  );
   const [searchQuery, setSearchQuery] = React.useState("");
 
   const [showButton, setShowButton] = React.useState(null);
@@ -52,7 +51,7 @@ export default function Personajes() {
     const filtered = personajes.filter((personaje) =>
       personaje.nombre.toLowerCase().includes(query.toLowerCase())
     );
-    setPersonajesFiltrados(filtered);
+    generarSeccionesPersonajes(filtered);
   };
 
   const handleImportInit = (event) => {
@@ -60,7 +59,6 @@ export default function Personajes() {
     const reader = new FileReader();
     reader.onload = (event) => {
       const fileContent = JSON.parse(event.target.result);
-      console.log(fileContent);
       handleSend(fileContent);
     };
     reader.readAsText(file);
@@ -69,7 +67,6 @@ export default function Personajes() {
   const fileInput = React.useRef(null);
 
   const handleSend = (fileContent) => {
-    console.log(fileContent);
     axios
       .post("/api/personajes/import", fileContent, {
         headers: {
@@ -84,17 +81,18 @@ export default function Personajes() {
 
   React.useEffect(() => {
     const storedValue = localStorage.getItem("bottomNavigationValue");
-    if (storedValue !== 1  || storedValue === undefined) {
+    if (storedValue !== 1 || storedValue === undefined) {
       localStorage.setItem("bottomNavigationValue", 1);
     }
-  }, []); 
+  }, []);
 
   React.useEffect(() => {
     axios
       .get("/api/personajes")
       .then((response) => {
         setPersonajes(response.data);
-        setPersonajesFiltrados(response.data);
+        //setPersonajesFiltrados(response.data);
+        generarSeccionesPersonajes(response.data);
         setShowButton(true);
       })
       .catch((error) => {
@@ -105,10 +103,42 @@ export default function Personajes() {
 
   const navigate = useNavigate();
 
-  function handleClick(index) {
-    var personajeGuardado = JSON.stringify(personajes[index]);
+  function handleClick(personaje) {
+    var personajeGuardado = JSON.stringify(personaje);
     localStorage.setItem("personaje", personajeGuardado);
     setTimeout(navigate("/personaje/info"), 20);
+  }
+
+  function generarSeccionesPersonajes(historiasFiltradas) {
+    // Este es el objeto vacío que almacena las secciones
+    let secciones = {};
+
+    // Este es el map() que recorre el array de historiasFiltradas
+    historiasFiltradas.map((personaje) => {
+      // Compruebo si el personaje tiene alguna historia
+      if (personaje.historiasApariciones.length === 0) {
+        // Si no tiene ninguna, lo añado a la sección "Sin clasificar"
+        if (!secciones["Sin clasificar"]) {
+          // Si la sección "Sin clasificar" no existe, la creo y le asigno un array vacío
+          secciones["Sin clasificar"] = [];
+        }
+        // Añado el personaje al array de la sección "Sin clasificar"
+        secciones["Sin clasificar"].push(personaje);
+      } else {
+        // Si tiene alguna historia, recorro el array de historiasApariciones
+        personaje.historiasApariciones.map((historia) => {
+          // Compruebo si existe una sección con el mismo nombre que la historia
+          if (!secciones[historia.nombreHistoria]) {
+            // Si no existe, la creo y le asigno un array vacío
+            secciones[historia.nombreHistoria] = [];
+          }
+          // Añado el personaje al array de la sección correspondiente
+          secciones[historia.nombreHistoria].push(personaje);
+        });
+      }
+    });
+
+    setPersonajesPorSecciones(secciones);
   }
 
   return (
@@ -179,68 +209,104 @@ export default function Personajes() {
         </Box>
         <Container sx={{ py: 1 }} maxWidth="md">
           {/* End hero unit */}
-          {(!personajesFiltrados || personajesFiltrados.length === 0) && showButton && (
-            <Grid container spacing={4} justifyContent="center">
-              <Button
-                type="submit"
-                variant="contained"
-                startIcon={<PersonAddAlt1Icon />}
-              >  <LinkRouter style={{color: '#FFF', textDecoration: 'none'}} to="/personajes/new">¡Crea tu personaje!</LinkRouter>
-              </Button>
-            </Grid>
-          )}
-          {personajesFiltrados && personajesFiltrados.length !== 0 && showButton && (
-            <Grid container spacing={4} justifyContent="center"sx={{ pb: 4 }}>
-              <Button
-                type="submit"
-                variant="contained"
-                startIcon={<PersonAddAlt1Icon />}
-              >  <LinkRouter style={{color: '#FFF', textDecoration: 'none'}} to="/personajes/new">Crea un personaje</LinkRouter>
-              </Button>
-            </Grid>
-          )}
-          <Grid container spacing={4}>
-            {personajesFiltrados.map((personaje, index) => (
-              <Grid item key={personaje.id} xs={12} sm={6} md={4}>
-                <Card
-                  sx={{
-                    height: "100%",
-                    display: "flex",
-                    flexDirection: "column",
-                  }}
+          {(!personajes || personajes.length === 0) &&
+            showButton && (
+              <Grid container spacing={4} justifyContent="center">
+                <Button
+                  type="submit"
+                  variant="contained"
+                  startIcon={<PersonAddAlt1Icon />}
                 >
-                  <CardActionArea onClick={() => handleClick(index)}>
-                    <CardHeader
-                      avatar={<Avatar alt="Apple" src={personaje.urlIcon} />}
-                    />
-
-                    <CardContent sx={{ flexGrow: 1 }}>
-                      <Typography gutterBottom variant="h5" component="h2">
-                        {personaje.nombre}
-                      </Typography>
-                      <Typography>{personaje.descripcion}</Typography>
-                    </CardContent>
-                  </CardActionArea>
-                  <CardActions
-                    sx={{
-                      width: "100%",
-                      justifyContent: "flex-end",
-                      pr: 3,
-                      mt: "auto",
-                    }}
+                  {" "}
+                  <LinkRouter
+                    style={{ color: "#FFF", textDecoration: "none" }}
+                    to="/personajes/new"
                   >
-                    <Badge badgeContent={personaje.numEscenas} color="primary">
-                      <FilterHdrIcon color="action" />
-                    </Badge>
-                  </CardActions>
-                </Card>
+                    ¡Crea tu personaje!
+                  </LinkRouter>
+                </Button>
               </Grid>
+            )}
+          {personajes &&
+            personajes.length !== 0 &&
+            showButton && (
+              <Grid
+                container
+                spacing={4}
+                justifyContent="center"
+                sx={{ pb: 4 }}
+              >
+                <Button
+                  type="submit"
+                  variant="contained"
+                  startIcon={<PersonAddAlt1Icon />}
+                >
+                  {" "}
+                  <LinkRouter
+                    style={{ color: "#FFF", textDecoration: "none" }}
+                    to="/personajes/new"
+                  >
+                    Crea un personaje
+                  </LinkRouter>
+                </Button>
+              </Grid>
+            )}
+          <Grid container>
+            {Object.keys(personajesPorSecciones).map((seccion) => (
+                <><Typography variant="h5" color="text.primary" paragraph>
+                {seccion}
+              </Typography><Grid container spacing={4} sx={{pb:2}}>
+                  {personajesPorSecciones[seccion].map((personaje) => (
+                    <Grid item key={personaje.id} xs={12} sm={6} md={4}>
+                      <Card
+                        sx={{
+                          height: "100%",
+                          display: "flex",
+                          flexDirection: "column",
+                        }}
+                      >
+                        <CardActionArea
+                          onClick={() => handleClick(personaje)}
+                        >
+                          <CardHeader
+                            avatar={<Avatar alt="Apple" src={personaje.urlIcon} />} />
+
+                          <CardContent sx={{ flexGrow: 1 }}>
+                            <Typography
+                              gutterBottom
+                              variant="h5"
+                              component="h2"
+                            >
+                              {personaje.nombre}
+                            </Typography>
+                            <Typography>{personaje.descripcion}</Typography>
+                          </CardContent>
+                        </CardActionArea>
+                        <CardActions
+                          sx={{
+                            width: "100%",
+                            justifyContent: "flex-end",
+                            pr: 3,
+                            mt: "auto",
+                          }}
+                        >
+                          <Badge
+                            badgeContent={personaje.numEscenas}
+                            color="primary"
+                          >
+                            <FilterHdrIcon color="action" />
+                          </Badge>
+                        </CardActions>
+                      </Card>
+                    </Grid>
+                  ))}
+                </Grid></>
             ))}
           </Grid>
         </Container>
       </main>
       {/* Footer */}
-      <Footer/>
+      <Footer />
       {/* End footer */}
     </ThemeProvider>
   );

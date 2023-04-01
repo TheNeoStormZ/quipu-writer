@@ -17,7 +17,6 @@ import { Link as LinkRouter, useNavigate } from "react-router-dom";
 
 import BookIcon from "@mui/icons-material/Book";
 
-
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 
@@ -32,7 +31,7 @@ import {
   DialogActions,
   DialogContent,
   DialogContentText,
-  DialogTitle
+  DialogTitle,
 } from "@mui/material";
 
 import {
@@ -40,7 +39,7 @@ import {
   CardActionArea,
   CardActions,
   CardContent,
-  CardHeader
+  CardHeader,
 } from "@mui/material";
 
 import Navigation from "../Navigation";
@@ -48,19 +47,8 @@ import Navigation from "../Navigation";
 import axios from "axios";
 import Footer from "../Footer";
 
-
-
 const theme = createTheme();
 
-var nombreDatos = [
-  "Apellido 1",
-  "Apellido 2",
-  "Residencia",
-  "Fecha de nacimiento",
-  "Genero",
-  "Altura",
-  "Lugar de nacimiento",
-];
 
 function convertirFecha(fechaOriginal) {
   // Crear objeto Date a partir de la fecha original
@@ -78,8 +66,6 @@ function convertirFecha(fechaOriginal) {
 }
 
 export default function Personaje() {
-
-  
   const personajeStr = localStorage.getItem("personaje");
   const [datosPersonaje, setDatosPersonaje] = React.useState([]);
   const [personaje, setPersonaje] = React.useState([]);
@@ -152,6 +138,55 @@ export default function Personaje() {
     );
   }
 
+  function orderKeys(personaje) {
+    // Crear un array con los nombres de las propiedades en el orden deseado
+    let orden = [
+      "Primer Apellido",
+      "Segundo Apellido",
+      "Género",
+      "Residencia",
+      "Altura",
+      "Fecha de Nacimiento",
+      "Lugar de Nacimiento",
+    ];
+
+    // Crear un nuevo objeto vacío
+    let nuevo = {};
+
+    // Recorrer el array y asignar las propiedades del objeto datos al nuevo objeto usando el índice del array
+    for (const element of orden) {
+      let propiedad = element;
+      switch (propiedad) {
+        case "Altura":
+          nuevo[propiedad] = personaje["altura"];
+          break;
+        case "Fecha de Nacimiento":
+          nuevo[propiedad] = personaje["fechaNacimiento"];
+          break;
+        case "Género":
+          nuevo[propiedad] = personaje["genero"];
+          break;
+        case "Lugar de Nacimiento":
+          nuevo[propiedad] = personaje["lugarNacimiento"];
+          break;
+        case "Primer Apellido":
+          nuevo[propiedad] = personaje["primerApellido"];
+          break;
+        case "Residencia":
+          nuevo[propiedad] = personaje["residencia"];
+          break;
+        case "Segundo Apellido":
+          nuevo[propiedad] = personaje["segundoApellido"];
+          break;
+      }
+    }
+
+    // Devolver el nuevo objeto
+    return Object.entries(nuevo).filter(([clave, valor]) => {
+      // Devolver true si el valor no es nulo ni vacío
+      return valor != null && valor != "";
+    });
+  }
 
   React.useEffect(() => {
     if (personajeStr) {
@@ -161,6 +196,7 @@ export default function Personaje() {
 
       // Creamos un array con las keys que queremos excluir del objeto
       var keysExcluidas = [
+        "creador",
         "id",
         "nombre",
         "descripcion",
@@ -182,27 +218,9 @@ export default function Personaje() {
             return obj;
           }, {}),
       ];
-
-      datosPersonajeTemp = Object.values(datosPersonajeTemp[0]);
-      datosPersonajeTemp.shift();
-
+      datosPersonajeTemp = orderKeys(datosPersonajeTemp[0]);
       setDatosPersonaje(datosPersonajeTemp);
 
-      // Iterar sobre las claves del objeto
-      Object.keys(personajeTemp).forEach((key) => {
-        // Si la propiedad es undefined
-        if (personajeTemp[key] === undefined) {
-          // Buscar el índice del elemento en el array que coincide con la clave
-          var indice = nombreDatos.indexOf(
-            key.charAt(0).toUpperCase() + key.slice(1)
-          );
-          // Si se encuentra el índice
-          if (indice !== -1) {
-            // Eliminar el elemento en ese índice
-            nombreDatos.splice(indice, 1);
-          }
-        }
-      });
     } else {
       console.log("FATAL ERROR");
       navigate("/personajes");
@@ -338,7 +356,7 @@ export default function Personaje() {
                   </IconButton>
                 </Typography>
               </div>
-              {datosPersonaje.map((personajeDato, index) => (
+              {datosPersonaje.map(([nombreDato, personajeDato], index) => (
                 <div
                   style={{ display: "flex", alignItems: "left" }}
                   key={index}
@@ -351,7 +369,7 @@ export default function Personaje() {
                     sx={{ mt: 2, ml: 2 }}
                     gutterBottom
                   >
-                    {nombreDatos[index]}
+                    {nombreDato}
                   </Typography>
 
                   <Typography
@@ -389,19 +407,18 @@ export default function Personaje() {
                 </Typography>
               </div>
             </Box>
-            {historiasApariciones &&
-                Array.isArray(historiasApariciones) && (
-                  <Typography
-                    component="h3"
-                    variant="h5"
-                    align="left"
-                    color="text.primary"
-                    sx={{ mt: 2 }}
-                    gutterBottom
-                  >
-                    Aparece en:
-                  </Typography>
-                )}
+            {historiasApariciones && Array.isArray(historiasApariciones) && (
+              <Typography
+                component="h3"
+                variant="h5"
+                align="left"
+                color="text.primary"
+                sx={{ mt: 2 }}
+                gutterBottom
+              >
+                Aparece en:
+              </Typography>
+            )}
           </div>
         </Box>
         <Container sx={{ py: 2 }} maxWidth="md">
@@ -419,7 +436,7 @@ export default function Personaje() {
                     }}
                   >
                     <CardActionArea onClick={() => handleClick(index)}>
-                    <CardHeader avatar={<BookIcon />} />
+                      <CardHeader avatar={<BookIcon />} />
 
                       <CardContent sx={{ flexGrow: 1 }}>
                         <Typography gutterBottom variant="h5" component="h2">
@@ -457,7 +474,7 @@ export default function Personaje() {
         </Container>
       </main>
       {/* Footer */}
-      <Footer/>
+      <Footer />
       {/* End footer */}
     </ThemeProvider>
   );
