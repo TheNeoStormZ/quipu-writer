@@ -2,7 +2,6 @@ package com.tns.quipu.Usuario;
 
 import java.security.Principal;
 import java.util.HashSet;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
@@ -55,7 +54,10 @@ public class UsuarioController {
 
         if (result.hasErrors()) {
             FieldError error = result.getFieldError();
-            String message = error.getField() +": " +error.getDefaultMessage();
+            String message = "Error desconocido";
+            if (error != null){
+                message = error.getField() + ": " + error.getDefaultMessage();
+            }
             return new ResponseEntity<>(message, HttpStatus.FORBIDDEN);
         }
 
@@ -75,7 +77,6 @@ public class UsuarioController {
             }
             
         } catch (Exception e) {
-            System.out.println(e);
             return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.FORBIDDEN);
         }
         return new ResponseEntity<>("OK", HttpStatus.CREATED);
@@ -103,9 +104,9 @@ public class UsuarioController {
 
         }
         
-        return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+        return new ResponseEntity<>(new JwtResponse(null), HttpStatus.FORBIDDEN);
     } catch (NullPointerException e)  {
-        return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+        return new ResponseEntity<>(new JwtResponse(null), HttpStatus.FORBIDDEN);
     }
 
     }

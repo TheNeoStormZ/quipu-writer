@@ -1,8 +1,6 @@
 package com.tns.quipu.Historia.Trama;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -12,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.tns.quipu.Historia.Historia;
 import com.tns.quipu.Historia.HistoriaRepository;
-import com.tns.quipu.Historia.HistoriaService;
 import com.tns.quipu.Historia.Trama.Escena.Escena;
 import com.tns.quipu.Historia.Trama.Escena.EscenaService;
 import com.tns.quipu.Personaje.Personaje;
@@ -70,10 +67,12 @@ public class TramaService {
     @Transactional()
     public void updateTrama(Trama trama) {
         Trama t = tr.findById(trama.getId()).orElse(null);
-        t.setCreador(t.getCreador());
-        t.setDescripcion(t.getDescripcion());
+        if (t !=null) {
+            t.setCreador(t.getCreador());
+            t.setDescripcion(t.getDescripcion());
+            tr.save(trama);
+        }
 
-        tr.save(trama);
     }
 
     @Transactional()
