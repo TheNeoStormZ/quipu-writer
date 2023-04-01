@@ -37,18 +37,18 @@ public class Escena {
 
     @NotBlank
     @NotNull
-    public String nombreEscena;
+    private String nombreEscena;
 
-    public String descripcion;
+    private String descripcion;
 
-    public String ubicacion;
+    private String ubicacion;
 
-    public Date fecha;
+    private Date fecha;
 
-    public String musica;
+    private String musica;
 
     @DBRef
-    public List<Personaje> personajesInvolucrados = new ArrayList<>();
+    private List<Personaje> personajesInvolucrados = new ArrayList<>();
 
 
 

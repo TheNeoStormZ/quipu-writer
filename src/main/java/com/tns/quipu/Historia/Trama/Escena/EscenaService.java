@@ -1,17 +1,11 @@
 package com.tns.quipu.Historia.Trama.Escena;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.tns.quipu.Historia.Historia;
-import com.tns.quipu.Historia.HistoriaRepository;
 import com.tns.quipu.Historia.Trama.Trama;
 import com.tns.quipu.Historia.Trama.TramaRepository;
 import com.tns.quipu.Personaje.Personaje;

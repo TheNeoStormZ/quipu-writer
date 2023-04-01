@@ -5,7 +5,6 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
@@ -25,7 +24,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tns.quipu.Historia.HistoriaService;
-import com.tns.quipu.Historia.Trama.Escena.Escena;
 import com.tns.quipu.Historia.Trama.Escena.EscenaService;
 import com.tns.quipu.Usuario.Usuario;
 import com.tns.quipu.Usuario.UsuarioService;
@@ -79,7 +77,10 @@ public class PersonajeController {
 
         if (result.hasErrors()) {
             FieldError error = result.getFieldError();
-            String message = error.getField() + ": " + error.getDefaultMessage();
+            String message = "Error desconocido";
+            if (error != null){
+                message = error.getField() + ": " + error.getDefaultMessage();
+            }
             return new ResponseEntity<>(message, HttpStatus.FORBIDDEN);
         }
 
@@ -93,8 +94,6 @@ public class PersonajeController {
     public ResponseEntity<String> updatePersonaje(@RequestBody Personaje personaje, Principal principal,
             BindingResult result) {
 
-        System.out.println("Personaje: " + personaje.toString());
-        System.out.println("Personaje id: " + personaje.getId());
 
         Personaje og = ps.findById(personaje.getId());
 
@@ -109,7 +108,10 @@ public class PersonajeController {
 
         if (result.hasErrors()) {
             FieldError error = result.getFieldError();
-            String message = error.getField() + ": " + error.getDefaultMessage();
+            String message = "Error desconocido";
+            if (error != null){
+                message = error.getField() + ": " + error.getDefaultMessage();
+            }
             return new ResponseEntity<>(message, HttpStatus.FORBIDDEN);
         }
 
@@ -122,7 +124,6 @@ public class PersonajeController {
     @DeleteMapping(value = "/api/personajes/delete")
     public ResponseEntity<String> eliminarPersonaje(@RequestBody Map<String, String> mapId, Principal principal) {
         String id = mapId.get("id");
-        System.out.println("ID: " + id);
         Personaje personaje = ps.findById(id);
         if (!(personaje.getCreador().getUsername().equals(principal.getName()))) {
             return new ResponseEntity<>("Not the owner", HttpStatus.FORBIDDEN);
@@ -141,7 +142,7 @@ public class PersonajeController {
             personajeFound = ps.findById(personaje.getId());
 
         }  catch (Exception e) {
-            
+            System.out.println(e.getMessage());
         }
 
         String message = "Empty message";

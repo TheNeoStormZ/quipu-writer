@@ -1,7 +1,6 @@
 package com.tns.quipu.Historia;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -10,7 +9,6 @@ import java.util.stream.Collectors;
 import javax.validation.constraints.NotBlank;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -35,21 +33,21 @@ import lombok.ToString;
 public class Historia {
 
     @DBRef
-    public Usuario creador;
+    private Usuario creador;
 
     @Id
-    public String id;
+    private String id;
 
     @NotBlank
     @NotNull
-    public String nombreHistoria;
+    private String nombreHistoria;
 
-    public List<String> generos;
+    private List<String> generos;
 
     @DBRef
-    public List<Trama> tramas = new ArrayList<>();
+    private List<Trama> tramas = new ArrayList<>();
 
-    public String descripcion;
+    private String descripcion;
 
     public void añadirTrama(Trama t) {
         if (!(tramas.contains(t))) {

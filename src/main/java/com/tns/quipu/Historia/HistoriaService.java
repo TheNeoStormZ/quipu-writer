@@ -1,7 +1,6 @@
 package com.tns.quipu.Historia;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -70,10 +69,12 @@ public class HistoriaService {
     @Transactional()
     public void updateHistoria(Historia historia) {
         Historia h = hr.findById(historia.getId()).orElse(null);
-        h.setCreador(h.getCreador());
-        h.setDescripcion(h.getDescripcion());
-
-        hr.save(historia);
+        if (h != null) {
+            h.setCreador(h.getCreador());
+            h.setDescripcion(h.getDescripcion());
+    
+            hr.save(historia);
+        }
     }
 
     @Transactional()

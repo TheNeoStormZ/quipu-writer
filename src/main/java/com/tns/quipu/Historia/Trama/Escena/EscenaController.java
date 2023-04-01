@@ -1,19 +1,14 @@
 package com.tns.quipu.Historia.Trama.Escena;
 
-import java.io.IOException;
 import java.security.Principal;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,10 +17,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tns.quipu.Historia.Historia;
 import com.tns.quipu.Historia.HistoriaService;
 import com.tns.quipu.Historia.Trama.Trama;
@@ -57,7 +48,7 @@ public class EscenaController {
 
         Escena escena = es.findById(id);
         if (!(escena.getCreador().getUsername().equals(principal.getName()))) {
-            return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(new Escena(), HttpStatus.FORBIDDEN);
         }
         return new ResponseEntity<>(es.findById(id), HttpStatus.OK);
     }
@@ -72,15 +63,13 @@ public class EscenaController {
         Trama t_og = ts.findById(tid);
 
         if (!(t_og.getCreador().getUsername().equals(principal.getName()))) {
-            return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(new Historia(), HttpStatus.FORBIDDEN);
         }
 
         escena.setCreador(loggedUser);
 
         if (result.hasErrors()) {
-            FieldError error = result.getFieldError();
-            String message = error.getField() + ": " + error.getDefaultMessage();
-            return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(new Historia(), HttpStatus.FORBIDDEN);
         }
 
         es.saveEscena(escena);
@@ -108,19 +97,17 @@ public class EscenaController {
         Usuario loggedUser = us.findUserByUsername(principal.getName());
 
         if (!(og.getCreador().getUsername().equals(principal.getName()))) {
-            return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(new Historia(), HttpStatus.FORBIDDEN);
         }
 
         if (!(escena_og.getCreador().getUsername().equals(principal.getName()))) {
-            return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(new Historia(), HttpStatus.FORBIDDEN);
         }
 
         escena.setCreador(loggedUser);
 
         if (result.hasErrors()) {
-            FieldError error = result.getFieldError();
-            String message = error.getField() + ": " + error.getDefaultMessage();
-            return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(new Historia(), HttpStatus.FORBIDDEN);
         }
 
         es.saveEscena(escena);
@@ -139,7 +126,7 @@ public class EscenaController {
         Escena escena = es.findById(id);
 
         if (!(escena.getCreador().getUsername().equals(principal.getName()))) {
-            return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(new Historia(), HttpStatus.FORBIDDEN);
         }
 
         Trama og = ts.findByEscena(escena);

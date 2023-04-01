@@ -23,21 +23,18 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tns.quipu.Historia.Trama.Trama;
 import com.tns.quipu.Historia.Trama.TramaService;
-import com.tns.quipu.Historia.Trama.Escena.Escena;
 import com.tns.quipu.Historia.Trama.Escena.EscenaService;
 import com.tns.quipu.Personaje.Personaje;
 import com.tns.quipu.Personaje.PersonajeService;
 import com.tns.quipu.Usuario.Usuario;
 import com.tns.quipu.Usuario.UsuarioService;
-
-import net.minidev.json.JSONObject;
 
 @RestController
 public class HistoriaController {
@@ -64,8 +61,7 @@ public class HistoriaController {
     @GetMapping(value = "/api/historias")
     public List<Historia> listHistorias(Principal principal) {
         Usuario loggedUser = us.findUserByUsername(principal.getName());
-        List<Historia> historias = hs.findAllUserStories(loggedUser);
-        return historias;
+        return hs.findAllUserStories(loggedUser);
 
     }
 
@@ -73,8 +69,7 @@ public class HistoriaController {
     @GetMapping(value = "/api/historias/generos")
     public Set<String> listGeneros(Principal principal) {
         Usuario loggedUser = us.findUserByUsername(principal.getName());
-        Set<String> generos = hs.findAllGenres(loggedUser);
-        return generos;
+        return hs.findAllGenres(loggedUser);
     }
 
     @PostMapping(value = "/api/historias/new")
@@ -87,7 +82,10 @@ public class HistoriaController {
 
         if (result.hasErrors()) {
             FieldError error = result.getFieldError();
-            String message = error.getField() + ": " + error.getDefaultMessage();
+            String message = "Error desconocido";
+            if (error != null){
+                message = error.getField() + ": " + error.getDefaultMessage();
+            }
             return new ResponseEntity<>(message, HttpStatus.FORBIDDEN);
         }
 
@@ -113,7 +111,7 @@ public class HistoriaController {
                     return new ResponseEntity<>(og, HttpStatus.CREATED);
                  }
 
-                 return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+                 return new ResponseEntity<>(new Historia(), HttpStatus.FORBIDDEN);
             }
     
     @PutMapping(value = "/api/historias/update")
@@ -132,7 +130,10 @@ public class HistoriaController {
 
         if (result.hasErrors()) {
             FieldError error = result.getFieldError();
-            String message = error.getField() + ": " + error.getDefaultMessage();
+            String message = "Error desconocido";
+            if (error != null){
+                message = error.getField() + ": " + error.getDefaultMessage();
+            }
             return new ResponseEntity<>(message, HttpStatus.FORBIDDEN);
         }
 
@@ -169,7 +170,7 @@ public class HistoriaController {
             historiaFound = hs.findById(historia.getId());
 
         } catch (Exception e) {
-
+            System.out.println(e.getMessage());
         }
 
         String message = "Empty message";
@@ -247,15 +248,17 @@ public class HistoriaController {
 
             JsonObject jsonObject = jsonElement.getAsJsonObject();
 
-            jsonObject.remove("creador");
+            String propiedadAEliminar = "creador";
+
+            jsonObject.remove(propiedadAEliminar);
 
             JsonArray tramasJson = jsonObject.get("tramas").getAsJsonArray();
 
             for (JsonElement trama : tramasJson) {
-                trama.getAsJsonObject().remove("creador");
+                trama.getAsJsonObject().remove(propiedadAEliminar);
                 JsonArray escenas = trama.getAsJsonObject().get("escenas").getAsJsonArray();
                 for (JsonElement escena : escenas) {
-                    escena.getAsJsonObject().remove("creador");
+                    escena.getAsJsonObject().remove(propiedadAEliminar);
                 }
             }
 

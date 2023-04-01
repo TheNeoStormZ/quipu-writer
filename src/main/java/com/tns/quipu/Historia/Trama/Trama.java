@@ -33,19 +33,19 @@ import lombok.ToString;
 public class Trama {
 
     @DBRef
-    public Usuario creador;
+    private Usuario creador;
 
     @Id
-    public String id;
+    private String id;
 
     @NotBlank
     @NotNull
-    public String nombreTrama;
+    private String nombreTrama;
 
-    public String descripcion;
+    private String descripcion;
 
     @DBRef
-    public List<Escena> escenas = new ArrayList<>();
+    private List<Escena> escenas = new ArrayList<>();
 
 
 
