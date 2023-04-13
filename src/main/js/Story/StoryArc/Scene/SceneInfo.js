@@ -466,6 +466,7 @@ export default function Escena() {
                     className="modal-content"
                     style={{
                       width: "80%",
+                      maxHeight: "80%",
                       backgroundColor: "white",
                       padding: "20px",
                       overflowY: "scroll",

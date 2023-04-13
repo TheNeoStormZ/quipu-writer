@@ -48,7 +48,11 @@ function DataTable(props) {
     for (var i = 0; i < claves.length; i++) {
       var clave = claves[i];
       var valor = personaje[clave].value;
+      if(clave=="descripcion") {
+        personaje_clean[clave] = valor.split(".")[0];
+      } else {
       personaje_clean[clave] = valor;
+    }
     }
 
     // Mostrar el nuevo objeto simple

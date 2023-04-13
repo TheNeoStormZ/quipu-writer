@@ -11,6 +11,7 @@ function Modal(props) {
     // Añadir algunos estilos al contenedor del modal
     modalContainer.style.position = 'fixed';
     modalContainer.style.top = '0';
+    modalContainer.style.zIndex="1000",
     modalContainer.style.left = '0';
     modalContainer.style.width = '100vw';
     modalContainer.style.height = '100vh';

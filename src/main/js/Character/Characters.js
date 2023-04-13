@@ -294,10 +294,10 @@ export default function Personajes() {
                   className="modal-content"
                   style={{
                     width: "80%",
+                    maxHeight: "80%",
                     backgroundColor: "white",
                     padding: "20px",
                     overflowY: "scroll",
-
                   }}
                 >
                   <Typography
@@ -343,7 +343,13 @@ export default function Personajes() {
                   />
 
                   {showDBResults && (
-                    <div>
+                    <div
+                      style={{
+                        backgroundColor: "white",
+                        overflowY: "scroll",
+                        boxSizing: "border-box",
+                      }}
+                    >
                       <DataTable data={dBResults} />
                     </div>
                   )}

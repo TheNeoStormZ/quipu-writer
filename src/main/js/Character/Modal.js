@@ -10,15 +10,17 @@ function Modal(props) {
   
     // Añadir algunos estilos al contenedor del modal
     modalContainer.style.position = 'fixed';
-    modalContainer.style.zIndex="1000",
     modalContainer.style.top = '0';
+    modalContainer.style.zIndex="1000",
     modalContainer.style.left = '0';
+    modalContainer.style.boxSizing = "border-box";
     modalContainer.style.width = '100vw';
     modalContainer.style.height = '100vh';
     modalContainer.style.backgroundColor = 'rgba(0,0,0,0.5)';
     modalContainer.style.display = 'flex';
     modalContainer.style.alignItems = 'center';
     modalContainer.style.justifyContent = 'center';
+    modalContainer.style.overflowY = "auto";
   
     // Usar el hook useEffect para añadir y eliminar el contenedor del modal al div raíz
     React.useEffect(() => {
