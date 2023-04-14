@@ -59,7 +59,7 @@ var nombreDatosTrama = ["Nombre de la trama", "Fecha"];
 
 function convertirFecha(fechaOriginal) {
   // Si fechaOriginal es undefined, se devuelve tal cual
-  if (fechaOriginal === undefined) return "Sin fecha";
+  if (fechaOriginal === undefined || fechaOriginal == null) return "Sin fecha";
 
   // Si fechaOriginal no es undefined, se continúa con la conversión
   // Crear objeto Date a partir de la fecha original

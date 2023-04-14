@@ -58,7 +58,7 @@ var nombreDatosHistoria = ["Nombre de la historia", "Generos narrativos"];
 
 function convertirFecha(fechaOriginal) {
   // Si fechaOriginal es undefined, se devuelve tal cual
-  if (fechaOriginal === undefined) return "Sin fecha";
+  if (fechaOriginal === undefined || fechaOriginal == null) return "Sin fecha";
 
   // Si fechaOriginal no es undefined, se continúa con la conversión
   // Crear objeto Date a partir de la fecha original
@@ -107,13 +107,16 @@ export default function Historia() {
 
     let lista = escenas.reduce((acumulador, escena) => {
       // Añadir la fecha y el nombre de la escena al acumulador junto con otros datos relevantes
-      acumulador.push({
-        title: convertirFecha(escena.fecha),
-        orderTime: escena.fecha,
-        cardTitle: escena.nombreEscena,
-        cardSubtitle: escena.ubicacion ? escena.ubicacion : "",
-        cardDetailedText: [escena.descripcion || ""],
-      });
+      // Solo si escena.fecha no es null o undefined
+      if (escena.fecha != null) {
+        acumulador.push({
+          title: convertirFecha(escena.fecha),
+          orderTime: escena.fecha,
+          cardTitle: escena.nombreEscena,
+          cardSubtitle: escena.ubicacion ? escena.ubicacion : "",
+          cardDetailedText: [escena.descripcion || ""],
+        });
+      }
       // Añadir las fechas y los nombres de los personajes involucrados al acumulador
       for (let personaje of escena.personajesInvolucrados) {
         // Comprobar si los apellidos del personaje existen y no están vacíos
