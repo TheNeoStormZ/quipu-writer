@@ -142,14 +142,21 @@ export default function Personajes() {
     setShowDBSearch(false);
   };
 
-  function generarSeccionesPersonajes(historiasFiltradas) {
+  function generarSeccionesPersonajes(personajes) {
     // Este es el objeto vacío que almacena las secciones
     let secciones = {};
 
-    // Este es el map() que recorre el array de historiasFiltradas
-    historiasFiltradas.map((personaje) => {
+    // Este es el map() que recorre el array de personajes
+    personajes.map((personaje) => {
+      
+      var historiasApariciones = personaje.historiasApariciones.filter(
+        function (val) {
+          return val != null;
+        }
+      );
+
       // Compruebo si el personaje tiene alguna historia
-      if (personaje.historiasApariciones.length === 0) {
+      if (historiasApariciones.length === 0) {
         // Si no tiene ninguna, lo añado a la sección "Sin clasificar"
         if (!secciones["Sin clasificar"]) {
           // Si la sección "Sin clasificar" no existe, la creo y le asigno un array vacío
@@ -159,14 +166,16 @@ export default function Personajes() {
         secciones["Sin clasificar"].push(personaje);
       } else {
         // Si tiene alguna historia, recorro el array de historiasApariciones
-        personaje.historiasApariciones.map((historia) => {
-          // Compruebo si existe una sección con el mismo nombre que la historia
-          if (!secciones[historia.nombreHistoria]) {
-            // Si no existe, la creo y le asigno un array vacío
-            secciones[historia.nombreHistoria] = [];
+        historiasApariciones.map((historia) => {
+          if (historia != null) {
+            // Compruebo si existe una sección con el mismo nombre que la historia
+            if (!secciones[historia.nombreHistoria]) {
+              // Si no existe, la creo y le asigno un array vacío
+              secciones[historia.nombreHistoria] = [];
+            }
+            // Añado el personaje al array de la sección correspondiente
+            secciones[historia.nombreHistoria].push(personaje);
           }
-          // Añado el personaje al array de la sección correspondiente
-          secciones[historia.nombreHistoria].push(personaje);
         });
       }
     });
