@@ -49,10 +49,9 @@ import Footer from "../Footer";
 
 const theme = createTheme();
 
-
 function convertirFecha(fechaOriginal) {
   // Crear objeto Date a partir de la fecha original
-  if (fechaOriginal == null){
+  if (fechaOriginal == null) {
     return undefined;
   }
   let fecha = new Date(fechaOriginal);
@@ -195,7 +194,12 @@ export default function Personaje() {
     if (personajeStr) {
       personajeTemp = removeEmpty(JSON.parse(personajeStr));
       setPersonaje(personajeTemp);
-      setHistoriasApariciones(personajeTemp.historiasApariciones);
+      var historiasApariciones = personajeTemp.historiasApariciones.filter(
+        function (val) {
+          return val != null;
+        }
+      );
+      setHistoriasApariciones(historiasApariciones);
 
       // Creamos un array con las keys que queremos excluir del objeto
       var keysExcluidas = [
@@ -223,7 +227,6 @@ export default function Personaje() {
       ];
       datosPersonajeTemp = orderKeys(datosPersonajeTemp[0]);
       setDatosPersonaje(datosPersonajeTemp);
-
     } else {
       console.log("FATAL ERROR");
       navigate("/personajes");
@@ -428,7 +431,7 @@ export default function Personaje() {
           {/* End hero unit */}
           <Grid container spacing={4}>
             {Array.isArray(historiasApariciones) &&
-              !historiasApariciones.some((e) => e === null) &&
+              !historiasApariciones.some((e) => e == null) &&
               historiasApariciones.map((historia, index) => (
                 <Grid item key={historia.id} xs={12} sm={6} md={4}>
                   <Card
