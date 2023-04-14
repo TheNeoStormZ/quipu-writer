@@ -25,7 +25,7 @@ import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { Link as LinkRouter, useNavigate } from "react-router-dom";
 import CloseIcon from "@mui/icons-material/Close";
-import DataTable from "./NewWindow";
+import DataTable from "./CharacterTable";
 
 import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
 
@@ -35,14 +35,13 @@ import Badge from "@mui/material/Badge";
 import axios from "axios";
 
 import Footer from "../Footer";
-import Modal from "./Modal";
+import Modal from "../Utils/Modal";
 import Navigation from "../Navigation";
 
 const theme = createTheme();
 
 export default function Personajes() {
   const [personajes, setPersonajes] = React.useState([]);
-  //const [personajesFiltrados, setPersonajesFiltrados] = React.useState([]);
   const [personajesPorSecciones, setPersonajesPorSecciones] = React.useState(
     {}
   );
@@ -244,7 +243,7 @@ export default function Personajes() {
         <Container sx={{ py: 1 }} maxWidth="md">
           <Grid
             container
-            spacing={4}
+            spacing={1}
             justifyContent="center"
             sx={{ pb: 4, ml: 0 }}
           >

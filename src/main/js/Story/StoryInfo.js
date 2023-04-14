@@ -26,7 +26,7 @@ import Badge from "@mui/material/Badge";
 
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 
-import Modal from "./Modal";
+import Modal from "../Utils/Modal";
 import { Chrono } from "react-chrono";
 
 import TimelineIcon from "@mui/icons-material/Timeline";
@@ -139,8 +139,6 @@ export default function Historia() {
 
     // Ordenar la lista por fecha usando el método Array.prototype.sort()
     lista.sort((a, b) => new Date(a.orderTime) - new Date(b.orderTime));
-
-    console.log(lista);
 
     setTimeline(lista);
 

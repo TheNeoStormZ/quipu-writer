@@ -25,6 +25,8 @@ import FilterHdrIcon from '@mui/icons-material/FilterHdr';
 
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 
+import TimelineIcon from "@mui/icons-material/Timeline";
+
 import {
   Dialog,
   DialogActions,
@@ -45,6 +47,9 @@ import Navigation from "../../Navigation";
 
 import axios from "axios";
 import Footer from "../../Footer";
+
+import Modal from "../../Utils/Modal";
+import { Chrono } from "react-chrono";
 
 
 
@@ -125,6 +130,56 @@ export default function Trama() {
 
   const handleCloseDelete = () => {
     setOpenDelete(false);
+  };
+
+  const [showTimeline, setShowTimeline] = React.useState(false);
+
+  const [timeline, setTimeline] = React.useState([]);
+
+  const handleTimeline = () => {
+    var escenas = trama.escenas;
+    let lista = escenas.reduce((acumulador, escena) => {
+      // Añadir la fecha y el nombre de la escena al acumulador junto con otros datos relevantes
+      acumulador.push({
+        title: convertirFecha(escena.fecha),
+        orderTime: escena.fecha,
+        cardTitle: escena.nombreEscena,
+        cardSubtitle: escena.ubicacion ? escena.ubicacion : "",
+        cardDetailedText: [escena.descripcion || ""],
+      });
+      // Añadir las fechas y los nombres de los personajes involucrados al acumulador
+      for (let personaje of escena.personajesInvolucrados) {
+        // Comprobar si los apellidos del personaje existen y no están vacíos
+        let primerApellido = personaje.primerApellido || "";
+        let segundoApellido = personaje.segundoApellido || "";
+        // Formar el nombre completo del personaje con los apellidos si los hay
+        let nombreCompleto =
+          personaje.nombre +
+          (primerApellido ? " " + primerApellido : "") +
+          (segundoApellido ? " " + segundoApellido : "");
+        // Añadir la fecha y el nombre completo del personaje al acumulador junto con otros datos relevantes
+        acumulador.push({
+          title: convertirFecha(personaje.fechaNacimiento),
+          orderTime: personaje.fechaNacimiento,
+          cardTitle: "Nacimiento de " + nombreCompleto,
+          cardSubtitle: personaje.genero ? personaje.genero : "",
+          cardDetailedText: personaje.descripcion,
+        });
+      }
+      // Devolver el acumulador actualizado
+      return acumulador;
+    }, []); // Inicializar el acumulador como un array vacío
+
+    // Ordenar la lista por fecha usando el método Array.prototype.sort()
+    lista.sort((a, b) => new Date(a.orderTime) - new Date(b.orderTime));
+
+    setTimeline(lista);
+
+    setShowTimeline(true);
+  };
+
+  const closeModal = () => {
+    setShowTimeline(false);
   };
 
 
@@ -310,6 +365,58 @@ export default function Trama() {
                   </IconButton>
                 </Typography>
               </div>
+              {showTimeline && (
+                <Modal>
+                  <div
+                    className="modal-content"
+                    style={{
+                      width: "80%",
+                      backgroundColor: "white",
+                      marginTop: "20vh",
+                      marginBottom: "10vh",
+                      overflowY: "scroll",
+                      boxSizing: "border-box",
+                    }}
+                  >
+                    <div>
+                      <Typography
+                        component="h3"
+                        variant="h5"
+                        align="left"
+                        color="text.primary"
+                        sx={{ mt: 2, ml: 2 }}
+                        gutterBottom
+                      >
+                        Linea de tiempo
+                      </Typography>
+                      <Button
+                        variant="contained"
+                        color="error"
+                        onClick={closeModal}
+                        sx={{ ml: 2 }}
+                        startIcon={<CloseIcon />}
+                      >
+                        Cerrar
+                      </Button>
+                    </div>
+
+                    <Chrono
+                      items={timeline}
+                      mode="VERTICAL_ALTERNATING"
+                      scrollable
+                      enableOutline
+                      theme={{
+                        primary: "#191970",
+                        secondary: "grey",
+                        cardBgColor: "white",
+                        titleColor: "#CC5500",
+                        titleColorActive: "white",
+                        outline: "blue",
+                      }}
+                    />
+                  </div>
+                </Modal>
+              )}
               {datosTrama.map((tramaDato, index) => (
                 <div
                   style={{ display: "flex", alignItems: "left" }}
@@ -381,6 +488,15 @@ export default function Trama() {
             >
               Añadir Escena
             </Button>
+            <Button
+                  type="submit"
+                  variant="contained"
+                  startIcon={<TimelineIcon />}
+                  onClick={handleTimeline}
+                  sx={{ mt: 2, ml: 2 }}
+                >
+                  Linea de tiempo
+                </Button>
           </div>
         </Box>
 

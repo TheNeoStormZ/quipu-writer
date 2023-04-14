@@ -22,9 +22,9 @@ import Container from "@mui/material/Container";
 
 import Grid from "@mui/material/Grid";
 
-import DataTable from "./NewWindow";
+import DataTable from "./ContextTable";
 
-import Modal from "./Modal";
+import Modal from "../../../Utils/Modal";
 
 import ReactPlayer from "react-player";
 
