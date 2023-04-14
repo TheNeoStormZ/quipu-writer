@@ -467,6 +467,8 @@ export default function Escena() {
                     style={{
                       width: "80%",
                       maxHeight: "80%",
+                      marginTop: "10vh",
+                      marginBottom: "10vh",
                       backgroundColor: "white",
                       padding: "20px",
                       overflowY: "scroll",

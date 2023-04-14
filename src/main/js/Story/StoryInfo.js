@@ -399,7 +399,7 @@ export default function Historia() {
                     style={{
                       width: "80%",
                       backgroundColor: "white",
-                      marginTop: "50vh",
+                      marginTop: "115vh",
                       marginBottom: "10vh",
                       overflowY: "scroll",
                       boxSizing: "border-box",

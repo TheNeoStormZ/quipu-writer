@@ -372,7 +372,7 @@ export default function Trama() {
                     style={{
                       width: "80%",
                       backgroundColor: "white",
-                      marginTop: "20vh",
+                      marginTop: "50vh",
                       marginBottom: "10vh",
                       overflowY: "scroll",
                       boxSizing: "border-box",
