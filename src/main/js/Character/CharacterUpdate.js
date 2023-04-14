@@ -24,7 +24,13 @@ import Footer from "../Footer";
 const theme = createTheme();
 
 function convertirFecha(fechaOriginal) {
+  if (fechaOriginal == null){
+    return undefined;
+  }
   // Crear objeto Date a partir de la fecha original
+  if (fechaOriginal == null){
+    return undefined;
+  }
   let fecha = new Date(fechaOriginal);
 
   // Obtener componentes de la fecha
@@ -89,6 +95,7 @@ export default function Update() {
     if (personajeStr) {
       personajeTemp = JSON.parse(personajeStr);
       setPersonaje(personajeTemp);
+      console.log(personajeTemp);
     } else {
       console.log("FATAL ERROR");
       navigate("/personajes");

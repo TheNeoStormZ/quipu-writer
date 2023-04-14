@@ -52,6 +52,9 @@ const theme = createTheme();
 
 function convertirFecha(fechaOriginal) {
   // Crear objeto Date a partir de la fecha original
+  if (fechaOriginal == null){
+    return undefined;
+  }
   let fecha = new Date(fechaOriginal);
 
   // Obtener componentes de la fecha

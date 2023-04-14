@@ -24,14 +24,19 @@ import Grid from "@mui/material/Grid";
 import FilterHdrIcon from "@mui/icons-material/FilterHdr";
 import Badge from "@mui/material/Badge";
 
-import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
+import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
+
+import Modal from "../Utils/Modal";
+import { Chrono } from "react-chrono";
+
+import TimelineIcon from "@mui/icons-material/Timeline";
 
 import {
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
-  DialogTitle
+  DialogTitle,
 } from "@mui/material";
 
 import {
@@ -39,7 +44,7 @@ import {
   CardActionArea,
   CardActions,
   CardContent,
-  CardHeader
+  CardHeader,
 } from "@mui/material";
 
 import Navigation from "../Navigation";
@@ -47,15 +52,13 @@ import Navigation from "../Navigation";
 import axios from "axios";
 import Footer from "../Footer";
 
-
-
 const theme = createTheme();
 
 var nombreDatosHistoria = ["Nombre de la historia", "Generos narrativos"];
 
 function convertirFecha(fechaOriginal) {
   // Si fechaOriginal es undefined, se devuelve tal cual
-  if (fechaOriginal === undefined) return "Sin fecha";
+  if (fechaOriginal === undefined || fechaOriginal == null) return "Sin fecha";
 
   // Si fechaOriginal no es undefined, se continúa con la conversión
   // Crear objeto Date a partir de la fecha original
@@ -84,10 +87,66 @@ export default function Historia() {
 
   const [arcs, setArcs] = React.useState([]);
 
+  const [showTimeline, setShowTimeline] = React.useState(false);
+
+  const [timeline, setTimeline] = React.useState([]);
+
   const handleClickOpenDelete = () => {
     setOpenDelete(true);
   };
 
+  const closeModal = () => {
+    setShowTimeline(false);
+  };
+
+  const handleTimeline = () => {
+    var escenas = historia.tramas.flatMap((trama) =>
+      trama.escenas.flatMap((escena) => escena)
+    );
+    console.log(escenas);
+
+    let lista = escenas.reduce((acumulador, escena) => {
+      // Añadir la fecha y el nombre de la escena al acumulador junto con otros datos relevantes
+      // Solo si escena.fecha no es null o undefined
+      if (escena.fecha != null) {
+        acumulador.push({
+          title: convertirFecha(escena.fecha),
+          orderTime: escena.fecha,
+          cardTitle: escena.nombreEscena,
+          cardSubtitle: escena.ubicacion ? escena.ubicacion : "",
+          cardDetailedText: [escena.descripcion || ""],
+        });
+      }
+      // Añadir las fechas y los nombres de los personajes involucrados al acumulador
+      for (let personaje of escena.personajesInvolucrados) {
+        // Comprobar si los apellidos del personaje existen y no están vacíos
+        let primerApellido = personaje.primerApellido || "";
+        let segundoApellido = personaje.segundoApellido || "";
+        // Formar el nombre completo del personaje con los apellidos si los hay
+        let nombreCompleto =
+          personaje.nombre +
+          (primerApellido ? " " + primerApellido : "") +
+          (segundoApellido ? " " + segundoApellido : "");
+        // Añadir la fecha y el nombre completo del personaje al acumulador junto con otros datos relevantes
+        acumulador.push({
+          title: convertirFecha(personaje.fechaNacimiento),
+          orderTime: personaje.fechaNacimiento,
+          cardTitle: "Nacimiento de " + nombreCompleto,
+          cardSubtitle: personaje.genero ? personaje.genero : "",
+          cardDetailedText: personaje.descripcion,
+        });
+      }
+      // Devolver el acumulador actualizado
+      return acumulador;
+    }, []); // Inicializar el acumulador como un array vacío
+
+    // Ordenar la lista por fecha usando el método Array.prototype.sort()
+    lista.sort((a, b) => new Date(a.orderTime) - new Date(b.orderTime));
+
+    setTimeline(lista);
+
+    setShowTimeline(true);
+  };
   const handleProccesDelete = () => {
     console.log(historia);
     axios
@@ -336,6 +395,58 @@ export default function Historia() {
                   </Typography>
                 </div>
               ))}
+              {showTimeline && (
+                <Modal>
+                  <div
+                    className="modal-content"
+                    style={{
+                      width: "80%",
+                      backgroundColor: "white",
+                      marginTop: "115vh",
+                      marginBottom: "10vh",
+                      overflowY: "scroll",
+                      boxSizing: "border-box",
+                    }}
+                  >
+                    <div>
+                      <Typography
+                        component="h3"
+                        variant="h5"
+                        align="left"
+                        color="text.primary"
+                        sx={{ mt: 2, ml: 2 }}
+                        gutterBottom
+                      >
+                        Linea de tiempo
+                      </Typography>
+                      <Button
+                        variant="contained"
+                        color="error"
+                        onClick={closeModal}
+                        sx={{ ml: 2 }}
+                        startIcon={<CloseIcon />}
+                      >
+                        Cerrar
+                      </Button>
+                    </div>
+
+                    <Chrono
+                      items={timeline}
+                      mode="VERTICAL_ALTERNATING"
+                      scrollable
+                      enableOutline
+                      theme={{
+                        primary: "#191970",
+                        secondary: "grey",
+                        cardBgColor: "white",
+                        titleColor: "#CC5500",
+                        titleColorActive: "white",
+                        outline: "blue",
+                      }}
+                    />
+                  </div>
+                </Modal>
+              )}
               {historia.descripcion && (
                 <div>
                   <Typography
@@ -378,6 +489,15 @@ export default function Historia() {
                   onClick={handleNewArc}
                 >
                   Añadir Trama
+                </Button>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  startIcon={<TimelineIcon />}
+                  onClick={handleTimeline}
+                  sx={{ mt: 2, ml: 2 }}
+                >
+                  Linea de tiempo
                 </Button>
               </div>
             </Box>
@@ -425,7 +545,7 @@ export default function Historia() {
                       <Badge
                         badgeContent={trama.numPersonajes}
                         color="primary"
-                        sx = {{pl: 2,}}
+                        sx={{ pl: 2 }}
                       >
                         <PeopleAltIcon color="action" />
                       </Badge>
@@ -437,7 +557,7 @@ export default function Historia() {
         </Container>
       </main>
       {/* Footer */}
-      <Footer/>
+      <Footer />
       {/* End footer */}
     </ThemeProvider>
   );

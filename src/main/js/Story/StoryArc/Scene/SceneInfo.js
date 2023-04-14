@@ -1,5 +1,5 @@
 const React = require("react");
-const ReactDOM = require("react-dom/client");
+const ReactDOM = require("react-dom");
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -13,14 +13,18 @@ import Link from "@mui/material/Link";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
 import { Link as LinkRouter, useNavigate } from "react-router-dom";
+import ContentPasteSearchIcon from "@mui/icons-material/ContentPasteSearch";
 
 import FilterHdrIcon from "@mui/icons-material/FilterHdr";
 import SubdirectoryArrowRightIcon from "@mui/icons-material/SubdirectoryArrowRight";
 
 import Container from "@mui/material/Container";
 
-
 import Grid from "@mui/material/Grid";
+
+import DataTable from "./ContextTable";
+
+import Modal from "../../../Utils/Modal";
 
 import ReactPlayer from "react-player";
 
@@ -29,7 +33,7 @@ import {
   DialogActions,
   DialogContent,
   DialogContentText,
-  DialogTitle
+  DialogTitle,
 } from "@mui/material";
 
 import {
@@ -37,14 +41,13 @@ import {
   CardActionArea,
   CardActions,
   CardContent,
-  CardHeader
+  CardHeader,
 } from "@mui/material";
 
 import Navigation from "../../../Navigation";
 
 import axios from "axios";
 import Footer from "../../../Footer";
-
 
 const theme = createTheme();
 
@@ -87,12 +90,19 @@ export default function Escena() {
   const [historia, setHistoria] = React.useState([]);
   const [trama, setTrama] = React.useState([]);
 
+  const [DBContext, setDBContext] = React.useState([]);
+  const [showContext, setShowContext] = React.useState(false);
+
   const [personajesInvolucrados, setPersonajesInvolucrados] = React.useState(
     []
   );
 
   const handleClickOpenDelete = () => {
     setOpenDelete(true);
+  };
+
+  const closeModal = () => {
+    setShowContext(false);
   };
 
   React.useEffect(() => {
@@ -182,11 +192,42 @@ export default function Escena() {
     // Devolver la edad calculada
     return edad;
   }
+  function hadleContextFromDBPedia() {
+    var fecha = new Date(escena.fecha);
+    let dia = fecha.getDate().toString().padStart(2, "0");
+    let mes = (fecha.getMonth() + 1).toString().padStart(2, "0");
+    let anio = fecha.getFullYear().toString();
+
+    axios
+      .get(
+        "https://dbpedia.org/sparql/?default-graph-uri=http%3A%2F%2Fdbpedia.org&query=PREFIX+dbpedia-owl%3A+%3Chttp%3A%2F%2Fdbpedia.org%2Fontology%2F%3E%0D%0APREFIX+rdfs%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23%3E%0D%0APREFIX+prov%3A+%3Chttp%3A%2F%2Fwww.w3.org%2Fns%2Fprov%23%3E%0D%0ASELECT+DISTINCT+%3Fevent+%3Fdate+%3Ftitle+%3Fsource%0D%0AWHERE+%7B%0D%0A++%3Fevent+rdf%3Atype+dbpedia-owl%3AEvent+.%0D%0A++%3Fevent+dbpedia-owl%3Adate+%3Fdate+.%0D%0A++%3Fevent+rdfs%3Alabel+%3Ftitle+.%0D%0A++FILTER+%28xsd%3Adate%28%3Fdate%29+%3E%3D+xsd%3Adate%28%22" +
+          anio +
+          "-01-01%22%29+%26%26+xsd%3Adate%28%3Fdate%29+%3C%3D+xsd%3Adate%28%22" +
+          anio +
+          "-" +
+          mes +
+          "-" +
+          dia +
+          "%22%29%29%0D%0A++FILTER+%28langMatches%28lang%28%3Ftitle%29%2C+%22es%22%29%29%0D%0A++OPTIONAL+%7B%3Fevent+prov%3AwasDerivedFrom+%3Fsource%7D.%0D%0A%7D%0D%0AORDER+BY+DESC%28%3Fdate%29&format=application%2Fsparql-results%2Bjson&timeout=30000&signal_void=on&signal_unconnected=on"
+      )
+      .then((response) => {
+        const div = document.getElementById("main-data");
+        console.log(response.data.results.bindings);
+        setDBContext(response.data.results.bindings);
+        setShowContext(true);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
 
   React.useEffect(() => {
     if (escenaStr) {
       sceneTemp = removeEmpty(JSON.parse(escenaStr));
       setEscena(sceneTemp);
+
+      if (sceneTemp.fecha) {
+      }
 
       //Guardamos en una lista independiente los personajes de la escena para poder listarlos correctamente
       setPersonajesInvolucrados(sceneTemp.personajesInvolucrados);
@@ -206,8 +247,7 @@ export default function Escena() {
           .reduce((obj, key) => {
             obj[key] = sceneTemp[key];
             // Si la propiedad es fechaNacimiento y no es undefined, aplicar la función convertirFecha
-            key === "fechaEscena" &&
-              (obj[key] = convertirFecha(sceneTemp[key]));
+            key === "fecha" && (obj[key] = convertirFecha(sceneTemp[key]));
             return obj;
           }, {}),
       ];
@@ -325,7 +365,7 @@ export default function Escena() {
           noValidate
           autoComplete="off"
         >
-          <div>
+          <div id="main-data">
             <Box>
               <div style={{ display: "flex", alignItems: "left" }}>
                 <FilterHdrIcon sx={{ width: 98, height: 98 }} />
@@ -408,30 +448,74 @@ export default function Escena() {
                 </div>
               )}
 
-              {escena.descripcion && (
-                <div>
-                  <Typography
-                    component="h3"
-                    variant="h5"
-                    align="left"
-                    color="text.primary"
-                    sx={{ mt: 2, ml: 2 }}
-                    gutterBottom
-                  >
-                    Descripción
-                  </Typography>
-                  <Typography
-                    component="h3"
-                    variant="h5"
-                    align="left"
-                    color="text.secondary"
-                    sx={{ mt: 2, ml: 2 }}
-                    gutterBottom
-                  >
-                    {escena.descripcion}
-                  </Typography>
-                </div>
+              {escena.fecha && (
+                <Button
+                  type="submit"
+                  variant="contained"
+                  startIcon={<ContentPasteSearchIcon />}
+                  onClick={hadleContextFromDBPedia}
+                  sx={{ mt: 2, ml: 2 }}
+                >
+                  Obtener contexto
+                </Button>
               )}
+
+              {showContext && (
+                <Modal>
+                  <div
+                    className="modal-content"
+                    style={{
+                      width: "80%",
+                      maxHeight: "80%",
+                      marginTop: "10vh",
+                      marginBottom: "10vh",
+                      backgroundColor: "white",
+                      padding: "20px",
+                      overflowY: "scroll",
+                    }}
+                  >
+                    <Typography
+                      component="h3"
+                      variant="h5"
+                      align="left"
+                      color="text.primary"
+                      sx={{ mt: 2, ml: 2 }}
+                      gutterBottom
+                    >
+                      Contexto histórico
+                    </Typography>
+                    <Typography
+                      component="h5"
+                      variant="h5"
+                      align="left"
+                      color="text.primary"
+                      sx={{ mt: 2, ml: 2 }}
+                      gutterBottom
+                    >
+                      Información procedente de:
+                      <Link href={"https://dbpedia.org/"} sx={{ ml: 2 }}>
+                        <img
+                          src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/DBpediaLogo.svg/263px-DBpediaLogo.svg.png"
+                          alt="DBPedia"
+                          width="120"
+                          height="63"
+                        />
+                      </Link>
+                    </Typography>
+                    <DataTable data={DBContext} />
+                    <Button
+                      variant="contained"
+                      color="error"
+                      onClick={closeModal}
+                      sx={{ mt: 2 }}
+                      startIcon={<CloseIcon />}
+                    >
+                      Cerrar
+                    </Button>
+                  </div>
+                </Modal>
+              )}
+
               {escena.musica && ReactPlayer.canPlay(escena.musica) && (
                 <div>
                   <Typography
@@ -502,8 +586,11 @@ export default function Escena() {
                           <CardActions>
                             <Typography gutterBottom>
                               {calcularEdadPersonaje(personaje) < 0 &&
-                                `Quedan ${Math.abs(calcularEdadPersonaje(personaje))} años para que nazca.`}
-                              {calcularEdadPersonaje(personaje) >= 0 && `Edad: ${calcularEdadPersonaje(personaje)}`}
+                                `Quedan ${Math.abs(
+                                  calcularEdadPersonaje(personaje)
+                                )} años para que nazca.`}
+                              {calcularEdadPersonaje(personaje) >= 0 &&
+                                `Edad: ${calcularEdadPersonaje(personaje)}`}
                             </Typography>
                           </CardActions>
                         </Card>
@@ -516,7 +603,7 @@ export default function Escena() {
         </Box>
       </main>
       {/* Footer */}
-      <Footer/>
+      <Footer />
       {/* End footer */}
     </ThemeProvider>
   );

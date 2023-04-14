@@ -95,13 +95,16 @@ public class PersonajeController {
             BindingResult result) {
 
 
+    if (personaje.getId() != null){
         Personaje og = ps.findById(personaje.getId());
 
-        if (!(og.getCreador().getUsername().equals(principal.getName()))) {
-            return new ResponseEntity<>("Not the owner", HttpStatus.FORBIDDEN);
-        }
 
-        
+            if (!(og.getCreador().getUsername().equals(principal.getName()))) {
+                return new ResponseEntity<>("Not the owner", HttpStatus.FORBIDDEN);
+            }
+
+
+    }
         Usuario loggedUser = us.findUserByUsername(principal.getName());
 
         personaje.setCreador(loggedUser);
