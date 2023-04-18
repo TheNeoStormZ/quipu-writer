@@ -20,17 +20,16 @@ import EventIcon from "@mui/icons-material/Event";
 import MapIcon from "@mui/icons-material/Map";
 import InputAdornment from "@mui/material/InputAdornment";
 
-import MusicNoteIcon from '@mui/icons-material/MusicNote';
+import MusicNoteIcon from "@mui/icons-material/MusicNote";
 
 import axios from "axios";
 import Footer from "../../../Footer";
-
 
 const theme = createTheme();
 
 function convertirFecha(fechaOriginal) {
   // Crear objeto Date a partir de la fecha original
-  if (fechaOriginal == null){
+  if (fechaOriginal == null) {
     return undefined;
   }
   let fecha = new Date(fechaOriginal);
@@ -138,7 +137,7 @@ export default function Update() {
         setPersonajes(response.data);
       })
       .catch((error) => console.log(error));
-  },[]);
+  }, []);
 
   function handleTextChange(e) {
     setEscena({ ...escena, [e.target.name]: e.target.value });
@@ -263,7 +262,7 @@ export default function Update() {
             }}
           />
 
-<Box
+          <Box
             sx={{
               "& .MuiTextField-root": { m: 1, width: "100%" },
             }}
@@ -276,7 +275,7 @@ export default function Update() {
               id="tags-outlined"
               autoSelect
               onChange={(event, value) => setSelectedCharacters(value)}
-              value= {selectedCharacters || []}
+              value={selectedCharacters || []}
               sx={{ minWidth: 200 }}
               renderInput={(params) => (
                 <TextField
@@ -314,7 +313,7 @@ export default function Update() {
         </Box>
       </main>
       {/* Footer */}
-      <Footer/>
+      <Footer />
       {/* End footer */}
     </ThemeProvider>
   );

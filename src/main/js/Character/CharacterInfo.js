@@ -465,7 +465,7 @@ export default function Personaje() {
                     />
                   ))}
                 <IconButton aria-label="relation">
-                  <LinkRouter to="/personaje/relations/add">
+                  <LinkRouter to="/personaje/relaciones/add">
                     {" "}
                     <GroupAddIcon />
                   </LinkRouter>

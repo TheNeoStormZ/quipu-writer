@@ -60,6 +60,11 @@ function DataTable(props) {
     });
   }
 
+  function handleUpdate(relacion) {
+    localStorage.setItem("relacion",JSON.stringify(relacion));
+    navigate("/personaje/relaciones/update");
+  }
+
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(+event.target.value);
     setPage(0);
@@ -93,6 +98,14 @@ function DataTable(props) {
                       .join(", ")}
                   </TableCell>
                   <TableCell>
+                  <Button
+                      type="submit"
+                      variant="contained"
+                      sx={{ ml: 1 }}
+                      onClick={() => handleUpdate(item)}
+                    >
+                     Editar relación
+                    </Button>
                     <Button
                       type="submit"
                       color="error"

@@ -108,6 +108,32 @@ public class RelacionController {
 
     }
 
+    @PutMapping(value = "/api/personajes/relaciones/update")
+    public ResponseEntity<String> actualizarRelaciones(@RequestBody Relacion r,
+            Principal principal) {
+
+        if (r.getId() == null) {
+            return new ResponseEntity<>("FORBIDDEN", HttpStatus.FORBIDDEN);
+        }
+
+        Relacion relacionOg = rs.findById(r.getId());
+
+        if (relacionOg == null) {
+            return new ResponseEntity<>("FORBIDDEN", HttpStatus.FORBIDDEN);
+        }
+
+        else if (!(relacionOg.getCreador().getUsername().equals(principal.getName()))) {
+            return new ResponseEntity<>("FORBIDDEN", HttpStatus.FORBIDDEN);
+        }
+        Usuario loggedUser = us.findUserByUsername(principal.getName());
+        r.setCreador(loggedUser);
+
+        rs.saveRelacion(r);
+
+        return new ResponseEntity<>("OK", HttpStatus.OK);
+
+    }
+
     @DeleteMapping(value = "/api/personajes/relaciones/remove/{rid}/personaje/{pid}")
     public ResponseEntity<String> addRelaciones(@PathVariable String pid, @PathVariable String rid,
             Principal principal) {
