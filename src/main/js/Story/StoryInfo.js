@@ -99,11 +99,45 @@ export default function Historia() {
     setShowTimeline(false);
   };
 
-  const handleTimeline = () => {
+  function obtenerRelaciones(pid) {
+    var url = "/api/personajes/relaciones/" + pid + "/detailed";
+    return axios
+      .get(url)
+      .then((response) => {
+        var datos = response.data;
+        return datos;
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
+
+  const handleTimeline = async () => {
     var escenas = historia.tramas.flatMap((trama) =>
       trama.escenas.flatMap((escena) => escena)
     );
-    console.log(escenas);
+
+    var personajesInvolucrados = new Set(
+      escenas.flatMap((escena) => escena.personajesInvolucrados)
+    );
+
+    var promesasRelaciones = Array.from(personajesInvolucrados).map(
+      (personaje) => obtenerRelaciones(personaje.id)
+    );
+
+    try {
+      var resultados = (await Promise.all(promesasRelaciones)).flat();
+      var reSinDuplicados = [];
+      let ids = new Set();
+      resultados.forEach((obj) => {
+        if (!ids.has(obj.id)) {
+          ids.add(obj.id);
+          reSinDuplicados.push(obj);
+        }
+      });
+    } catch (error) {
+      console.error(error);
+    }
 
     let lista = escenas.reduce((acumulador, escena) => {
       // Añadir la fecha y el nombre de la escena al acumulador junto con otros datos relevantes
@@ -128,19 +162,69 @@ export default function Historia() {
           (primerApellido ? " " + primerApellido : "") +
           (segundoApellido ? " " + segundoApellido : "");
         // Añadir la fecha y el nombre completo del personaje al acumulador junto con otros datos relevantes
-        acumulador.push({
-          title: convertirFecha(personaje.fechaNacimiento),
-          orderTime: personaje.fechaNacimiento,
-          cardTitle: "Nacimiento de " + nombreCompleto,
-          cardSubtitle: personaje.genero ? personaje.genero : "",
-          cardDetailedText: personaje.descripcion,
-        });
+        if (personaje.fechaNacimiento != null) {
+          acumulador.push({
+            title: convertirFecha(personaje.fechaNacimiento),
+            orderTime: personaje.fechaNacimiento,
+            cardTitle: "Nacimiento de " + nombreCompleto,
+            cardSubtitle: personaje.genero ? personaje.genero : "",
+            cardDetailedText: personaje.descripcion,
+          });
+        }
       }
       // Devolver el acumulador actualizado
       return acumulador;
     }, []); // Inicializar el acumulador como un array vacío
 
     // Ordenar la lista por fecha usando el método Array.prototype.sort()
+    lista.sort((a, b) => new Date(a.orderTime) - new Date(b.orderTime));
+
+    //Añadimos los datos de las relaciones con los limites establecidos por la información anterior
+
+    for (let dato of reSinDuplicados) {
+      // Comprobar si la fecha del dato no es inferior al primer elemento ni superior al último
+      if (
+        dato.fecha >= lista[0].orderTime &&
+        dato.fecha <= lista[lista.length - 1].orderTime
+      ) {
+        // Añadir el dato a la lista
+        lista.push({
+          title: convertirFecha(dato.fecha),
+          orderTime: dato.fecha,
+          cardTitle:
+            "Los personajes " +
+            dato.personajesInvolucrados
+              .map((personaje) => personaje.nombre)
+              .reduce((prev, curr, index, array) => {
+                if (index === 0) {
+                  return curr;
+                } else if (index === array.length - 1) {
+                  return prev + " y " + curr;
+                } else {
+                  return prev + ", " + curr;
+                }
+              }, "") +
+            " están en una nueva relación",
+          cardSubtitle: "Nueva relación",
+          cardDetailedText:
+            "Los personajes " +
+            dato.personajesInvolucrados
+              .map((personaje) => personaje.nombre)
+              .reduce((prev, curr, index, array) => {
+                if (index === 0) {
+                  return curr;
+                } else if (index === array.length - 1) {
+                  return prev + " y " + curr;
+                } else {
+                  return prev + ", " + curr;
+                }
+              }, "") +
+            " han entrado en una relación con la descripción: \n" +
+            dato.descripcion,
+        });
+      }
+    }
+
     lista.sort((a, b) => new Date(a.orderTime) - new Date(b.orderTime));
 
     setTimeline(lista);
