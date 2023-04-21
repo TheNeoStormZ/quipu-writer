@@ -32,6 +32,9 @@ import GroupRemoveIcon from "@mui/icons-material/GroupRemove";
 import Modal from "../Utils/Modal";
 import DataTable from "./Relationships/RelationshipTable";
 
+import GroupWorkIcon from "@mui/icons-material/GroupWork";
+
+
 import {
   Dialog,
   DialogActions,
@@ -97,20 +100,39 @@ export default function Personaje() {
 
   const [showListRel, setShowListRel] = React.useState(false);
 
-  const closeModal = () => {
+  const closeModalRelations = () => {
     setShowListRel(false);
   };
-  const openModal = () => {
+  const openModalRelations = () => {
     axios
-    .get("/api/personajes/relaciones/" + personaje.id + "/detailed")
-    .then((response) => {
-      setDataRelations(response.data);
-      console.log(response.data);
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+      .get("/api/personajes/relaciones/" + personaje.id + "/detailed")
+      .then((response) => {
+        setDataRelations(response.data);
+      })
+
+      .catch((error) => {
+        console.log(error);
+      });
     setShowListRel(true);
+  };
+  const [showGraph, setShowGraph] = React.useState(false);
+
+  const openModalGraph = () => {
+    axios
+      .get("/api/personajes/relaciones/" + personaje.id + "/detailed")
+      .then((response) => {
+        setDataRelations(response.data);
+        console.log(response.data);
+        setShowGraph(true);
+      })
+
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const closeModalGraph = () => {
+    setShowGraph(false);
   };
 
   function handleClick(index) {
@@ -386,7 +408,7 @@ export default function Personaje() {
               <Button
                 variant="contained"
                 color="error"
-                onClick={closeModal}
+                onClick={closeModalRelations}
                 sx={{ mt: 2 }}
                 startIcon={<CloseIcon />}
               >
@@ -395,6 +417,7 @@ export default function Personaje() {
             </div>
           </Modal>
         )}
+
         <Box
           sx={{
             "& .MuiTextField-root": { m: 1, width: "25ch" },
@@ -472,9 +495,17 @@ export default function Personaje() {
                 </IconButton>
                 {personajesRelacionados &&
                   personajesRelacionados.length !== 0 && (
-                    <IconButton aria-label="relationDel">
-                      <GroupRemoveIcon onClick={openModal} />
-                    </IconButton>
+                    <>
+                      <IconButton aria-label="relationDel">
+                        <GroupRemoveIcon onClick={openModalRelations} />
+                      </IconButton>
+                      <IconButton aria-label="relationGraph">
+                        <LinkRouter to="/personaje/relaciones/graph">
+                          {" "}
+                          <GroupWorkIcon></GroupWorkIcon>
+                        </LinkRouter>
+                      </IconButton>
+                    </>
                   )}
               </div>
               {datosPersonaje.map(([nombreDato, personajeDato], index) => (
