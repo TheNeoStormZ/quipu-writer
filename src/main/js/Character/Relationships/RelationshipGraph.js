@@ -10,17 +10,19 @@ class RelationshipGraph extends React.Component {
     super(props);
     this.containerRef = React.createRef();
     this.containerDiv = this.containerRef = React.createRef();
-    this.style = {
+    this.state = { matches: window.matchMedia("(min-width: 768px)").matches };
+    this.styleMax = {
       /* Estilo por defecto */ width: "800px",
       height: "600px",
       filter: "drop-shadow(5px 5px 10px rgba(0, 0, 0, 0.5))",
       boxShadow: "5px 5px 10px 2px rgba(0, 0, 0, 0.5)",
-      /* Estilo para pantallas pequeñas */ "@media (max-width: 768px)": {
-        width: "300px",
-        height: "300px",
-        filter: "drop-shadow(5px 5px 10px rgba(0, 0, 0, 0.5))",
-        boxShadow: "5px 5px 10px 2px rgba(0, 0, 0, 0.5)",
-      },
+    };
+    this.styleMin = {
+      /* Estilo para pantallas pequeñas */
+      width: "300px",
+      height: "300px",
+      filter: "drop-shadow(5px 5px 10px rgba(0, 0, 0, 0.5))",
+      boxShadow: "5px 5px 10px 2px rgba(0, 0, 0, 0.5)",
     };
   }
 
@@ -149,8 +151,12 @@ class RelationshipGraph extends React.Component {
   }
 
   render() {
-    // Crea un elemento HTML que sirva como contenedor para el gráfico de cytoscape
-    return <div ref={this.containerRef} style={this.style}></div>;
+    return (
+      <div >
+      {this.state.matches && (<div ref={this.containerRef} style={this.styleMax}></div>)}
+      {!this.state.matches && (<div ref={this.containerRef} style={this.styleMin}></div>)}
+      </div>
+    );
   }
 }
 
