@@ -3,7 +3,20 @@ const ReactDOM = require("react-dom");
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import { Alert, Collapse } from "@mui/material";
+import {
+  Alert,
+  Collapse,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Card,
+  CardActionArea,
+  CardActions,
+  CardContent,
+  CardHeader
+} from "@mui/material";
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -28,22 +41,6 @@ import Modal from "../../../Utils/Modal";
 
 import ReactPlayer from "react-player";
 
-import {
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-} from "@mui/material";
-
-import {
-  Card,
-  CardActionArea,
-  CardActions,
-  CardContent,
-  CardHeader,
-} from "@mui/material";
-
 import Navigation from "../../../Navigation";
 
 import axios from "axios";
@@ -51,7 +48,7 @@ import Footer from "../../../Footer";
 
 const theme = createTheme();
 
-var nombreDatosEscena = [
+let nombreDatosEscena = [
   "Nombre de la escena",
   "Fecha de la escena",
   "Ubicación",
@@ -82,7 +79,7 @@ export default function Escena() {
   const [escena, setEscena] = React.useState([]);
   const [openExportAlert, setOpenExportAlert] = React.useState(false);
   const [openExportFailAlert, setOpenExportFailAlert] = React.useState(false);
-  var sceneTemp = escenaStr;
+  let sceneTemp = escenaStr;
 
   const [openDelete, setOpenDelete] = React.useState(false);
   const storyStr = localStorage.getItem("historia");
@@ -131,12 +128,12 @@ export default function Escena() {
       .then((response) => {
         console.log("Item deleted successfully");
         // Obtener el objeto JSON que se recibe de respuesta
-        var historia_recv = response.data;
+        let historia_recv = response.data;
 
         // Guardar el objeto JSON en el localStorage como trama
         localStorage.setItem("historia", JSON.stringify(historia_recv));
 
-        var trama_temp = historia_recv.tramas.find(
+        let trama_temp = historia_recv.tramas.find(
           (trama_find) => trama_find.id === trama.id
         );
         localStorage.setItem("trama", JSON.stringify(trama_temp));
@@ -163,7 +160,7 @@ export default function Escena() {
   }
 
   function handleClick(index) {
-    var personajeGuardado = JSON.stringify(personajesInvolucrados[index]);
+    let personajeGuardado = JSON.stringify(personajesInvolucrados[index]);
     localStorage.setItem("personaje", personajeGuardado);
     setTimeout(navigate("/personaje/info"), 20);
   }
@@ -193,7 +190,7 @@ export default function Escena() {
     return edad;
   }
   function hadleContextFromDBPedia() {
-    var fecha = new Date(escena.fecha);
+    let fecha = new Date(escena.fecha);
     let dia = fecha.getDate().toString().padStart(2, "0");
     let mes = (fecha.getMonth() + 1).toString().padStart(2, "0");
     let anio = fecha.getFullYear().toString();
@@ -211,7 +208,6 @@ export default function Escena() {
           "%22%29%29%0D%0A++FILTER+%28langMatches%28lang%28%3Ftitle%29%2C+%22es%22%29%29%0D%0A++OPTIONAL+%7B%3Fevent+prov%3AwasDerivedFrom+%3Fsource%7D.%0D%0A%7D%0D%0AORDER+BY+DESC%28%3Fdate%29&format=application%2Fsparql-results%2Bjson&timeout=30000&signal_void=on&signal_unconnected=on"
       )
       .then((response) => {
-        const div = document.getElementById("main-data");
         console.log(response.data.results.bindings);
         setDBContext(response.data.results.bindings);
         setShowContext(true);
@@ -226,14 +222,11 @@ export default function Escena() {
       sceneTemp = removeEmpty(JSON.parse(escenaStr));
       setEscena(sceneTemp);
 
-      if (sceneTemp.fecha) {
-      }
-
       //Guardamos en una lista independiente los personajes de la escena para poder listarlos correctamente
       setPersonajesInvolucrados(sceneTemp.personajesInvolucrados);
 
       // Creamos un array con las keys que queremos excluir del objeto
-      var keysExcluidas = [
+      let keysExcluidas = [
         "id",
         "nombreEscena",
         "descripcion",
@@ -241,7 +234,7 @@ export default function Escena() {
         "personajesInvolucrados",
       ];
 
-      var datosEscenaTemp = [
+      let datosEscenaTemp = [
         Object.keys(sceneTemp)
           .filter((key) => !keysExcluidas.includes(key))
           .reduce((obj, key) => {
@@ -398,7 +391,7 @@ export default function Escena() {
               {datosEscena.map((escenaDato, index) => (
                 <div
                   style={{ display: "flex", alignItems: "left" }}
-                  key={index}
+                  key={escenaDato}
                 >
                   <Typography
                     component="h3"

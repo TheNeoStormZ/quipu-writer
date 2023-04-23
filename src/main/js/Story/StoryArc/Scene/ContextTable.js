@@ -33,7 +33,7 @@ function DataTable(props) {
         </TableHead>
         <TableBody>
           {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((item, index) => (
-            <TableRow key={index}>
+            <TableRow key={item.id}>
               <TableCell> <Link href={item.source.value} component="a" target="_blank">{item.title.value}</Link></TableCell>
               <TableCell>{item.date.value}</TableCell>
             </TableRow>

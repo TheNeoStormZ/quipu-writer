@@ -5,7 +5,6 @@ import Autocomplete from "@mui/material/Autocomplete";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
-import Link from "@mui/material/Link";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
@@ -19,6 +18,20 @@ import Footer from "../Footer";
 
 
 const theme = createTheme();
+
+let alertMessage = "";
+
+const AlertCustom = ({ showAlert }) => {
+  if (!showAlert) {
+    return null;
+  }
+
+  return (
+    <Alert variant="outlined" severity="error" sx={{ m: 2}}>
+      {alertMessage}
+    </Alert>
+  );
+};
 
 function convertirFecha(fechaOriginal) {
   // Crear objeto Date a partir de la fecha original
@@ -50,19 +63,18 @@ export default function Update() {
           descripcion: data.get("descripcion"),
           generos: selectedGenres,
         })
-        .then((window.location.href = "/"));
+        .then(() => {
+          window.location.href = "/";
+        });
     } catch (err) {
       console.log(err);
-      message = err.response.data;
+      let message = err.response.data;
+      alertMessage = message;
       setShowAlert(true);
     }
   };
   const [showAlert, setShowAlert] = React.useState(false);
-  const AlertCustom = () => (
-    <Alert variant="outlined" severity="error" sx={{ m: 2 }}>
-      {message}
-    </Alert>
-  );
+
 
   const [genres, setGenres] = React.useState([]);
   const [selectedGenres, setSelectedGenres] = React.useState([]);
@@ -76,7 +88,7 @@ export default function Update() {
   }, []);
 
   const historiaStr = localStorage.getItem("historia");
-  var historiaTemp = historiaStr;
+  let historiaTemp = historiaStr;
 
   React.useEffect(() => {
     if (historiaStr) {
@@ -108,7 +120,7 @@ export default function Update() {
         >
           Actualizar historia
         </Typography>
-        {showAlert ? <AlertCustom /> : null}
+        <AlertCustom showAlert={showAlert} />
 
         <Box
           component="form"

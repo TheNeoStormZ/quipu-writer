@@ -66,7 +66,7 @@ export default function Personajes() {
   };
 
   const handleSearchDBPedia = (event) => {
-    var query = document.getElementById("dbpedia-search").value;
+    let query = document.getElementById("dbpedia-search").value;
     query = query.split(" ").join("+");
     axios
       .get(
@@ -120,7 +120,6 @@ export default function Personajes() {
       .get("/api/personajes")
       .then((response) => {
         setPersonajes(response.data);
-        //setPersonajesFiltrados(response.data);
         generarSeccionesPersonajes(response.data);
         setShowButton(true);
       })
@@ -133,7 +132,7 @@ export default function Personajes() {
   const navigate = useNavigate();
 
   function handleClick(personaje) {
-    var personajeGuardado = JSON.stringify(personaje);
+    let personajeGuardado = JSON.stringify(personaje);
     localStorage.setItem("personaje", personajeGuardado);
     setTimeout(navigate("/personaje/info"), 20);
   }
@@ -149,7 +148,7 @@ export default function Personajes() {
     // Este es el map() que recorre el array de personajes
     personajes.map((personaje) => {
       
-      var historiasApariciones = personaje.historiasApariciones.filter(
+      let historiasApariciones = personaje.historiasApariciones.filter(
         function (val) {
           return val != null;
         }

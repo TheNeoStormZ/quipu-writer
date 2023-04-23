@@ -100,7 +100,7 @@ export default function Historias() {
   const navigate = useNavigate();
 
   function handleClick(index) {
-    var historiaGuardado = JSON.stringify(historias[index]);
+    let historiaGuardado = JSON.stringify(historias[index]);
     localStorage.setItem("historia", historiaGuardado);
     setTimeout(navigate("/historia/info"), 20);
   }

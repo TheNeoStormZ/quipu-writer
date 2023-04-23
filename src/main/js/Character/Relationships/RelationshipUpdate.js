@@ -1,28 +1,37 @@
 const React = require("react");
 const ReactDOM = require("react-dom/client");
-import ChildFriendlyIcon from "@mui/icons-material/ChildFriendly";
 import EventIcon from "@mui/icons-material/Event";
-import MapIcon from "@mui/icons-material/Map";
-import PersonIcon from "@mui/icons-material/Person";
 import SaveAsIcon from "@mui/icons-material/SaveAs";
 import Autocomplete from "@mui/material/Autocomplete";
-import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import InputAdornment from "@mui/material/InputAdornment";
-import Link from "@mui/material/Link";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import Navigation from "../../Navigation";
 
 import axios from "axios";
-import Footer from "../../Footer";
-import { ConstructionOutlined } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import Footer from "../../Footer";
 
 const theme = createTheme();
+
+let alertMessage = "";
+
+const AlertCustom = ({ showAlert }) => {
+  if (!showAlert) {
+    return null;
+  }
+
+  return (
+    <Alert variant="outlined" severity="error" sx={{ m: 2}}>
+      {alertMessage}
+    </Alert>
+  );
+};
+
 
 
 function convertirFecha(fechaOriginal) {
@@ -63,23 +72,20 @@ export default function Relationship() {
         .then(navigate("/personaje/info"));
     } catch (err) {
       console.log(err);
-      message = err.response.data;
+      let message = err.response.data;
+      alertMessage = message;
       setShowAlert(true);
     }
   };
   const [showAlert, setShowAlert] = React.useState(false);
-  const AlertCustom = () => (
-    <Alert variant="outlined" severity="error" sx={{ m: 2 }}>
-      {message}
-    </Alert>
-  );
+
 
   const [relacion, setRelacion] = React.useState([]);
 
   const [personajesUsuario, setPersonajesUsuarios] = React.useState([]);
 
   const relacionStr = localStorage.getItem("relacion");
-  var relacionTemp = relacionStr;
+  let relacionTemp = relacionStr;
 
   React.useEffect(() => {
     if (relacionStr) {
@@ -122,7 +128,7 @@ export default function Relationship() {
         >
           Actualizar relación
         </Typography>
-        {showAlert ? <AlertCustom /> : null}
+        <AlertCustom showAlert={showAlert} />
         <Box
           sx={{
             "& .MuiTextField-root": { m: 1, width: "25ch" },

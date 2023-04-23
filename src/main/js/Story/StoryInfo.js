@@ -4,12 +4,24 @@ import CloseIcon from "@mui/icons-material/Close";
 import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import { Alert, Collapse } from "@mui/material";
+import {
+  Alert,
+  Collapse,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Card,
+  CardActionArea,
+  CardActions,
+  CardContent,
+  CardHeader
+} from "@mui/material";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import IconButton from "@mui/material/IconButton";
-import Link from "@mui/material/Link";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
 import { Link as LinkRouter, useNavigate } from "react-router-dom";
@@ -26,26 +38,10 @@ import Badge from "@mui/material/Badge";
 
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 
-import Modal from "../Utils/Modal";
 import { Chrono } from "react-chrono";
+import Modal from "../Utils/Modal";
 
 import TimelineIcon from "@mui/icons-material/Timeline";
-
-import {
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-} from "@mui/material";
-
-import {
-  Card,
-  CardActionArea,
-  CardActions,
-  CardContent,
-  CardHeader,
-} from "@mui/material";
 
 import Navigation from "../Navigation";
 
@@ -54,7 +50,7 @@ import Footer from "../Footer";
 
 const theme = createTheme();
 
-var nombreDatosHistoria = ["Nombre de la historia", "Generos narrativos"];
+let nombreDatosHistoria = ["Nombre de la historia", "Generos narrativos"];
 
 function convertirFecha(fechaOriginal) {
   // Si fechaOriginal es undefined, se devuelve tal cual
@@ -81,7 +77,7 @@ export default function Historia() {
   const [historia, setHistoria] = React.useState([]);
   const [openExportAlert, setOpenExportAlert] = React.useState(false);
   const [openExportFailAlert, setOpenExportFailAlert] = React.useState(false);
-  var storyTemp = storyStr;
+  let storyTemp = storyStr;
 
   const [openDelete, setOpenDelete] = React.useState(false);
 
@@ -100,11 +96,11 @@ export default function Historia() {
   };
 
   function obtenerRelaciones(pid) {
-    var url = "/api/personajes/relaciones/" + pid + "/detailed";
+    let url = "/api/personajes/relaciones/" + pid + "/detailed";
     return axios
       .get(url)
       .then((response) => {
-        var datos = response.data;
+        let datos = response.data;
         return datos;
       })
       .catch((error) => {
@@ -113,21 +109,22 @@ export default function Historia() {
   }
 
   const handleTimeline = async () => {
-    var escenas = historia.tramas.flatMap((trama) =>
+    let escenas = historia.tramas.flatMap((trama) =>
       trama.escenas.flatMap((escena) => escena)
     );
 
-    var personajesInvolucrados = new Set(
+    let personajesInvolucrados = new Set(
       escenas.flatMap((escena) => escena.personajesInvolucrados)
     );
 
-    var promesasRelaciones = Array.from(personajesInvolucrados).map(
+    let promesasRelaciones = Array.from(personajesInvolucrados).map(
       (personaje) => obtenerRelaciones(personaje.id)
     );
+    
+    let reSinDuplicados = [];
 
     try {
-      var resultados = (await Promise.all(promesasRelaciones)).flat();
-      var reSinDuplicados = [];
+      let resultados = (await Promise.all(promesasRelaciones)).flat();
       let ids = new Set();
       resultados.forEach((obj) => {
         if (!ids.has(obj.id)) {
@@ -287,7 +284,7 @@ export default function Historia() {
   }
 
   function handleClick(index) {
-    var tramaGuardada = JSON.stringify(arcs[index]);
+    let tramaGuardada = JSON.stringify(arcs[index]);
     localStorage.setItem("trama", tramaGuardada);
     setTimeout(navigate("/historia/trama/info"), 20);
   }
@@ -311,8 +308,8 @@ export default function Historia() {
       setHistoria(storyTemp);
       localStorage.removeItem("trama");
 
-      var { nombreHistoria, generos } = storyTemp; // desestructuración de objetos
-      var datosHistoriaTemp = [
+      let { nombreHistoria, generos } = storyTemp; // desestructuración de objetos
+      let datosHistoriaTemp = [
         nombreHistoria,
         generos !== undefined ? generos.join(", ") : "Sin géneros",
       ]; // operador condicional y método join
@@ -454,7 +451,7 @@ export default function Historia() {
               {datosHistoria.map((personajeDato, index) => (
                 <div
                   style={{ display: "flex", alignItems: "left" }}
-                  key={index}
+                  key={personajeDato}
                 >
                   <Typography
                     component="h3"

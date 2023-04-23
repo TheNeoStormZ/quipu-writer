@@ -1,15 +1,12 @@
 const React = require("react");
 const ReactDOM = require("react-dom");
 
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
 import cytoscape from "cytoscape";
 
 class RelationshipGraph extends React.Component {
   constructor(props) {
     super(props);
     this.containerRef = React.createRef();
-    this.containerDiv = this.containerRef = React.createRef();
     this.state = { matches: window.matchMedia("(min-width: 768px)").matches };
     this.styleMax = {
       /* Estilo por defecto */ width: "800px",
@@ -147,7 +144,6 @@ class RelationshipGraph extends React.Component {
         },
       },
     ]);
-    this.containerDiv = container;
   }
 
   render() {

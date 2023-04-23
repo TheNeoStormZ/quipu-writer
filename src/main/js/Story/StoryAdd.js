@@ -5,7 +5,6 @@ import Autocomplete from "@mui/material/Autocomplete";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
-import Link from "@mui/material/Link";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
@@ -23,7 +22,19 @@ import Checkbox from "@mui/material/Checkbox";
 
 import axios from "axios";
 
+let alertMessage = "";
 
+const AlertCustom = ({ showAlert }) => {
+  if (!showAlert) {
+    return null;
+  }
+
+  return (
+    <Alert variant="outlined" severity="error" sx={{ m: 2}}>
+      {alertMessage}
+    </Alert>
+  );
+};
 
 const theme = createTheme();
 
@@ -44,11 +55,11 @@ export default function Creation() {
           })
           .then((response) => {
             // Obtener el objeto JSON que se recibe de respuesta
-            var historia = response.data;
+            let historia = response.data;
 
             console.log(historia);
 
-            var trama = historia["tramas"][0];
+            let trama = historia["tramas"][0];
 
             // Guardar el objeto JSON en el localStorage como historia
             localStorage.setItem("historia", JSON.stringify(historia));
@@ -64,20 +75,19 @@ export default function Creation() {
             descripcion: data.get("descripcion"),
             generos: selectedGenres,
           })
-          .then(window.location.href = "/");
+          .then(() => {
+            window.location.href = "/";
+          });
       }
     } catch (err) {
       console.log(err);
-      message = err.response.data;
+      let message = err.response.data;
+      alertMessage = message;
       setShowAlert(true);
     }
   };
   const [showAlert, setShowAlert] = React.useState(false);
-  const AlertCustom = () => (
-    <Alert variant="outlined" severity="error" sx={{ m: 2 }}>
-      {message}
-    </Alert>
-  );
+
 
   const [genres, setGenres] = React.useState([]);
   const [selectedGenres, setSelectedGenres] = React.useState([]);
@@ -105,7 +115,7 @@ export default function Creation() {
         >
           Añadir historia
         </Typography>
-        {showAlert ? <AlertCustom /> : null}
+        <AlertCustom showAlert={showAlert} />
 
         <Box
           component="form"

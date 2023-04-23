@@ -3,12 +3,24 @@ const ReactDOM = require("react-dom/client");
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import { Alert, Collapse } from "@mui/material";
+import {
+  Alert,
+  Collapse,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Card,
+  CardActionArea,
+  CardActions,
+  CardContent,
+  CardHeader
+} from "@mui/material";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import IconButton from "@mui/material/IconButton";
-import Link from "@mui/material/Link";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
 import { Link as LinkRouter, useNavigate } from "react-router-dom";
@@ -27,22 +39,6 @@ import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 
 import TimelineIcon from "@mui/icons-material/Timeline";
 
-import {
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-} from "@mui/material";
-
-import {
-  Card,
-  CardActionArea,
-  CardActions,
-  CardContent,
-  CardHeader,
-} from "@mui/material";
-
 import Navigation from "../../Navigation";
 
 import axios from "axios";
@@ -53,7 +49,7 @@ import { Chrono } from "react-chrono";
 
 const theme = createTheme();
 
-var nombreDatosTrama = ["Nombre de la trama", "Fecha"];
+let nombreDatosTrama = ["Nombre de la trama", "Fecha"];
 
 function convertirFecha(fechaOriginal) {
   // Si fechaOriginal es undefined, se devuelve tal cual
@@ -80,7 +76,7 @@ export default function Trama() {
   const [trama, setTrama] = React.useState([]);
   const [openExportAlert, setOpenExportAlert] = React.useState(false);
   const [openExportFailAlert, setOpenExportFailAlert] = React.useState(false);
-  var arcTemp = tramaStr;
+  let arcTemp = tramaStr;
 
   const [openDelete, setOpenDelete] = React.useState(false);
   const storyStr = localStorage.getItem("historia");
@@ -90,7 +86,7 @@ export default function Trama() {
   const navigate = useNavigate();
 
   function handleClick(index) {
-    var escenaGuardada = JSON.stringify(scenes[index]);
+    let escenaGuardada = JSON.stringify(scenes[index]);
     localStorage.setItem("escena", escenaGuardada);
     setTimeout(navigate("/historia/trama/escena/info"), 20);
   }
@@ -114,7 +110,7 @@ export default function Trama() {
       .then((response) => {
         console.log("Item deleted successfully");
         // Obtener el objeto JSON que se recibe de respuesta
-        var historia = response.data;
+        let historia = response.data;
 
         // Guardar el objeto JSON en el localStorage como historia
         localStorage.setItem("historia", JSON.stringify(historia));
@@ -135,32 +131,31 @@ export default function Trama() {
   const [timeline, setTimeline] = React.useState([]);
 
   function obtenerRelaciones(pid) {
-    var url = "/api/personajes/relaciones/" + pid + "/detailed";
+    let url = "/api/personajes/relaciones/" + pid + "/detailed";
     return axios
       .get(url)
       .then((response) => {
-        var datos = response.data;
+        let datos = response.data;
         return datos;
       })
       .catch((error) => {
         console.error(error);
       });
   }
-
+  let reSinDuplicados = [];
   const handleTimeline = async () => {
-    var escenas = trama.escenas;
+    let escenas = trama.escenas;
 
-    var personajesInvolucrados = new Set(
+    let personajesInvolucrados = new Set(
       escenas.flatMap((escena) => escena.personajesInvolucrados)
     );
 
-    var promesasRelaciones = Array.from(personajesInvolucrados).map(
+    let promesasRelaciones = Array.from(personajesInvolucrados).map(
       (personaje) => obtenerRelaciones(personaje.id)
     );
 
     try {
-      var resultados = (await Promise.all(promesasRelaciones)).flat();
-      var reSinDuplicados = [];
+      let resultados = (await Promise.all(promesasRelaciones)).flat();
       let ids = new Set();
       resultados.forEach((obj) => {
         if (!ids.has(obj.id)) {
@@ -307,8 +302,8 @@ export default function Trama() {
       setTrama(arcTemp);
       setScenes(ordenarEscenasPorFecha(arcTemp.escenas));
 
-      var { nombreTrama, fechaGlobal } = arcTemp; // desestructuración de objetos
-      var datosTramaTemp = [nombreTrama, convertirFecha(fechaGlobal)];
+      let { nombreTrama, fechaGlobal } = arcTemp; // desestructuración de objetos
+      let datosTramaTemp = [nombreTrama, convertirFecha(fechaGlobal)];
 
       setDatosTrama(datosTramaTemp);
     } else {
@@ -506,7 +501,7 @@ export default function Trama() {
               {datosTrama.map((tramaDato, index) => (
                 <div
                   style={{ display: "flex", alignItems: "left" }}
-                  key={index}
+                  key={tramaDato}
                 >
                   <Typography
                     component="h3"

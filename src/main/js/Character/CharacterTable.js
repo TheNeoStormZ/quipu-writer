@@ -31,23 +31,20 @@ function DataTable(props) {
     setPage(0);
   };
 
-  const importData = (data) => {
-    setPage(newPage);
-  };
 
   const navigate = useNavigate();
 
   function handleImport(personaje) {
     // Crear un nuevo objeto simple
-    var personaje_clean = {};
+    let personaje_clean = {};
 
     // Obtener las claves del objeto complejo
-    var claves = Object.keys(personaje);
+    let claves = Object.keys(personaje);
 
     // Iterar sobre las claves y asignar los valores al nuevo objeto
-    for (var i = 0; i < claves.length; i++) {
-      var clave = claves[i];
-      var valor = personaje[clave].value;
+    for (const element of claves) {
+      let clave = element;
+      let valor = personaje[clave].value;
       if(clave=="descripcion") {
         personaje_clean[clave] = valor.split(".")[0];
       } else {
@@ -82,7 +79,7 @@ function DataTable(props) {
             {data
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((item, index) => (
-                <TableRow key={index}>
+                <TableRow key={item.id}>
                   <TableCell> {item.nombre?.value}</TableCell>
                   <TableCell>{item.genero?.value}</TableCell>
                   <TableCell>{item.lugarNacimiento?.value}</TableCell>

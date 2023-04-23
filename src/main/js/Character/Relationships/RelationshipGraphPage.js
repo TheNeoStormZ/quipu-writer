@@ -1,26 +1,13 @@
 const React = require("react");
 const ReactDOM = require("react-dom/client");
-import ChildFriendlyIcon from "@mui/icons-material/ChildFriendly";
-import EventIcon from "@mui/icons-material/Event";
-import MapIcon from "@mui/icons-material/Map";
-import PersonIcon from "@mui/icons-material/Person";
-import SaveAsIcon from "@mui/icons-material/SaveAs";
-import Autocomplete from "@mui/material/Autocomplete";
-import Avatar from "@mui/material/Avatar";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
-import InputAdornment from "@mui/material/InputAdornment";
-import Link from "@mui/material/Link";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import Navigation from "../../Navigation";
 
 import axios from "axios";
-import Footer from "../../Footer";
-import { ConstructionOutlined } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import Footer from "../../Footer";
 import RelationshipGraph from "./RelationshipGraph";
 
 const theme = createTheme();
@@ -49,7 +36,7 @@ function convertirFecha(fechaOriginal) {
 export default function RelationshipGraphs() {
   const navigate = useNavigate();
   const personajeStr = localStorage.getItem("personaje");
-  var personajeTemp = personajeStr;
+  let personajeTemp = personajeStr;
 
   const [showGraph, setShowGraph] = React.useState(false);
   const [dataRelations, setDataRelations] = React.useState([]);
