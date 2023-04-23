@@ -10,12 +10,12 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import IconButton from "@mui/material/IconButton";
-import Link from "@mui/material/Link";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
 import { Link as LinkRouter, useNavigate } from "react-router-dom";
 
 import BookIcon from "@mui/icons-material/Book";
+import GroupAddIcon from "@mui/icons-material/GroupAdd";
 
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
@@ -25,6 +25,15 @@ import Badge from "@mui/material/Badge";
 import MapIcon from "@mui/icons-material/Map";
 
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
+
+import Chip from "@mui/material/Chip";
+
+import GroupRemoveIcon from "@mui/icons-material/GroupRemove";
+import Modal from "../Utils/Modal";
+import DataTable from "./Relationships/RelationshipTable";
+
+import GroupWorkIcon from "@mui/icons-material/GroupWork";
+
 
 import {
   Dialog,
@@ -79,8 +88,51 @@ export default function Personaje() {
 
   const [historiasApariciones, setHistoriasApariciones] = React.useState([]);
 
+  const [dataRelations, setDataRelations] = React.useState([]);
+
+  const [personajesRelacionados, setPersonajesRelacionados] = React.useState(
+    []
+  );
+
   const handleClickOpenDelete = () => {
     setOpenDelete(true);
+  };
+
+  const [showListRel, setShowListRel] = React.useState(false);
+
+  const closeModalRelations = () => {
+    setShowListRel(false);
+  };
+  const openModalRelations = () => {
+    axios
+      .get("/api/personajes/relaciones/" + personaje.id + "/detailed")
+      .then((response) => {
+        setDataRelations(response.data);
+      })
+
+      .catch((error) => {
+        console.log(error);
+      });
+    setShowListRel(true);
+  };
+  const [showGraph, setShowGraph] = React.useState(false);
+
+  const openModalGraph = () => {
+    axios
+      .get("/api/personajes/relaciones/" + personaje.id + "/detailed")
+      .then((response) => {
+        setDataRelations(response.data);
+        console.log(response.data);
+        setShowGraph(true);
+      })
+
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const closeModalGraph = () => {
+    setShowGraph(false);
   };
 
   function handleClick(index) {
@@ -129,6 +181,17 @@ export default function Personaje() {
         setOpenExportFailAlert(true);
       });
   };
+
+  function handleRelations(personajeId) {
+    axios
+      .get("/api/personajes/relaciones/" + personajeId)
+      .then((response) => {
+        setPersonajesRelacionados(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
 
   const navigate = useNavigate();
 
@@ -194,12 +257,15 @@ export default function Personaje() {
     if (personajeStr) {
       personajeTemp = removeEmpty(JSON.parse(personajeStr));
       setPersonaje(personajeTemp);
-      var historiasApariciones = personajeTemp.historiasApariciones.filter(
-        function (val) {
-          return val != null;
-        }
-      );
-      setHistoriasApariciones(historiasApariciones);
+      if (personajeTemp.historiasApariciones != null) {
+        var historiasApariciones = personajeTemp.historiasApariciones.filter(
+          function (val) {
+            return val != null;
+          }
+        );
+        setHistoriasApariciones(historiasApariciones);
+      }
+      handleRelations(personajeTemp.id);
 
       // Creamos un array con las keys que queremos excluir del objeto
       var keysExcluidas = [
@@ -314,6 +380,44 @@ export default function Personaje() {
         >
           Información del personaje
         </Typography>
+        {showListRel && (
+          <Modal>
+            <div
+              className="modal-content"
+              style={{
+                width: "80%",
+                maxHeight: "80%",
+                marginTop: "20vh",
+                marginBottom: "10vh",
+                backgroundColor: "white",
+                padding: "20px",
+                overflowY: "scroll",
+              }}
+            >
+              <Typography
+                component="h3"
+                variant="h5"
+                align="left"
+                color="text.primary"
+                sx={{ mt: 2, ml: 2 }}
+                gutterBottom
+              >
+                Relaciones
+              </Typography>
+              <DataTable data={dataRelations} />
+              <Button
+                variant="contained"
+                color="error"
+                onClick={closeModalRelations}
+                sx={{ mt: 2 }}
+                startIcon={<CloseIcon />}
+              >
+                Cerrar
+              </Button>
+            </div>
+          </Modal>
+        )}
+
         <Box
           sx={{
             "& .MuiTextField-root": { m: 1, width: "25ch" },
@@ -343,6 +447,7 @@ export default function Personaje() {
                   gutterBottom
                 >
                   {personaje.nombre}
+
                   <IconButton aria-label="export" onClick={handleExport}>
                     <CloudDownloadIcon />
                   </IconButton>
@@ -361,6 +466,47 @@ export default function Personaje() {
                     <DeleteIcon />
                   </IconButton>
                 </Typography>
+              </div>
+              <div>
+                <Typography
+                  component="h3"
+                  variant="h5"
+                  align="left"
+                  color="text.primary"
+                  sx={{ mt: 2, ml: 2 }}
+                  gutterBottom
+                >
+                  Personajes relacionados
+                </Typography>
+                {personajesRelacionados &&
+                  personajesRelacionados.length !== 0 &&
+                  personajesRelacionados.map((personaje, index) => (
+                    <Chip
+                      avatar={<Avatar alt="avatar" src={personaje.urlIcon} />}
+                      label={personaje.nombre}
+                      variant="outlined"
+                    />
+                  ))}
+                <IconButton aria-label="relation">
+                  <LinkRouter to="/personaje/relaciones/add">
+                    {" "}
+                    <GroupAddIcon />
+                  </LinkRouter>
+                </IconButton>
+                {personajesRelacionados &&
+                  personajesRelacionados.length !== 0 && (
+                    <>
+                      <IconButton aria-label="relationDel">
+                        <GroupRemoveIcon onClick={openModalRelations} />
+                      </IconButton>
+                      <IconButton aria-label="relationGraph">
+                        <LinkRouter to="/personaje/relaciones/graph">
+                          {" "}
+                          <GroupWorkIcon></GroupWorkIcon>
+                        </LinkRouter>
+                      </IconButton>
+                    </>
+                  )}
               </div>
               {datosPersonaje.map(([nombreDato, personajeDato], index) => (
                 <div
@@ -413,18 +559,20 @@ export default function Personaje() {
                 </Typography>
               </div>
             </Box>
-            {historiasApariciones && Array.isArray(historiasApariciones) && (
-              <Typography
-                component="h3"
-                variant="h5"
-                align="left"
-                color="text.primary"
-                sx={{ mt: 2 }}
-                gutterBottom
-              >
-                Aparece en:
-              </Typography>
-            )}
+            {historiasApariciones &&
+              Array.isArray(historiasApariciones) &&
+              historiasApariciones.length !== 0 && (
+                <Typography
+                  component="h3"
+                  variant="h5"
+                  align="left"
+                  color="text.primary"
+                  sx={{ mt: 2 }}
+                  gutterBottom
+                >
+                  Aparece en:
+                </Typography>
+              )}
           </div>
         </Box>
         <Container sx={{ py: 2 }} maxWidth="md">

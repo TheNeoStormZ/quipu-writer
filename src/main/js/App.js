@@ -18,6 +18,10 @@ import CharactersAdd from "./Character/CharacterAdd";
 import CharacterInfo from "./Character/CharacterInfo";
 import Characters from "./Character/Characters";
 import CharacterUpdate from "./Character/CharacterUpdate";
+import RelationshipAdd from "./Character/Relationships/RelationshipAdd";
+import RelationshipUpdate from "./Character/Relationships/RelationshipUpdate";
+import RelationshipGraph from "./Character/Relationships/RelationshipGraphPage";
+
 import Index from "./index";
 import Login from "./Auth/Login";
 import Register from "./Auth/Register";
@@ -36,6 +40,9 @@ export default function App() {
                 <Route path="/personajes/new" element= {<CharactersAdd/>} />
                 <Route path="/personaje/info" element= {<CharacterInfo/>} />
                 <Route path="/personaje/update" element= {<CharacterUpdate/>} />
+                <Route path="/personaje/relaciones/add" element= {<RelationshipAdd/>} />
+                <Route path="/personaje/relaciones/update" element= {<RelationshipUpdate/>} />
+                <Route path="/personaje/relaciones/graph" element= {<RelationshipGraph/>} />
 
               <Route path="/historias/new" element= {<StoryAdd/>} />
               <Route path="/historia/info" element= {<StoryInfo/>} />

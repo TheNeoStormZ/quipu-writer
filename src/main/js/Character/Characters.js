@@ -405,7 +405,7 @@ export default function Personajes() {
                         <CardActionArea onClick={() => handleClick(personaje)}>
                           <CardHeader
                             avatar={
-                              <Avatar alt="Apple" src={personaje.urlIcon} />
+                              <Avatar alt="avatar" src={personaje.urlIcon} />
                             }
                           />
 

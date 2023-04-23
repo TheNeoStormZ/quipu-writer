@@ -1,6 +1,7 @@
 package com.tns.quipu.Personaje;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -33,7 +34,7 @@ public class PersonajeService {
 
     @Transactional(readOnly = true)
     public Set<String> findAllGenders(Usuario user) {
-        Set<String> generos = findAllUserCharacters(user).stream().map(x -> x.getGenero()).collect(Collectors.toSet());
+        Set<String> generos = findAllUserCharacters(user).stream().map(x -> x.getGenero()).filter(Objects::nonNull).collect(Collectors.toSet());
         generos.addAll(List.of("Masculino","Femenino"));
         return generos;
     }

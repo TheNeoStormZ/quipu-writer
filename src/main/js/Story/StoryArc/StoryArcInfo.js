@@ -21,9 +21,9 @@ import SubdirectoryArrowRightIcon from "@mui/icons-material/SubdirectoryArrowRig
 
 import Badge from "@mui/material/Badge";
 
-import FilterHdrIcon from '@mui/icons-material/FilterHdr';
+import FilterHdrIcon from "@mui/icons-material/FilterHdr";
 
-import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
+import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 
 import TimelineIcon from "@mui/icons-material/Timeline";
 
@@ -32,7 +32,7 @@ import {
   DialogActions,
   DialogContent,
   DialogContentText,
-  DialogTitle
+  DialogTitle,
 } from "@mui/material";
 
 import {
@@ -40,7 +40,7 @@ import {
   CardActionArea,
   CardActions,
   CardContent,
-  CardHeader
+  CardHeader,
 } from "@mui/material";
 
 import Navigation from "../../Navigation";
@@ -50,8 +50,6 @@ import Footer from "../../Footer";
 
 import Modal from "../../Utils/Modal";
 import { Chrono } from "react-chrono";
-
-
 
 const theme = createTheme();
 
@@ -100,7 +98,7 @@ export default function Trama() {
   const handleNewScene = async (event) => {
     navigate("/historia/trama/escenas/add");
   };
-  
+
   const handleClickOpenDelete = () => {
     setOpenDelete(true);
   };
@@ -136,17 +134,58 @@ export default function Trama() {
 
   const [timeline, setTimeline] = React.useState([]);
 
-  const handleTimeline = () => {
+  function obtenerRelaciones(pid) {
+    var url = "/api/personajes/relaciones/" + pid + "/detailed";
+    return axios
+      .get(url)
+      .then((response) => {
+        var datos = response.data;
+        return datos;
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
+
+  const handleTimeline = async () => {
     var escenas = trama.escenas;
+
+    var personajesInvolucrados = new Set(
+      escenas.flatMap((escena) => escena.personajesInvolucrados)
+    );
+
+    var promesasRelaciones = Array.from(personajesInvolucrados).map(
+      (personaje) => obtenerRelaciones(personaje.id)
+    );
+
+    try {
+      var resultados = (await Promise.all(promesasRelaciones)).flat();
+      var reSinDuplicados = [];
+      let ids = new Set();
+      resultados.forEach((obj) => {
+        if (!ids.has(obj.id)) {
+          ids.add(obj.id);
+          reSinDuplicados.push(obj);
+        }
+      });
+    } catch (error) {
+      console.error(error);
+    }
+
+    console.log(reSinDuplicados);
+
     let lista = escenas.reduce((acumulador, escena) => {
       // Añadir la fecha y el nombre de la escena al acumulador junto con otros datos relevantes
-      acumulador.push({
-        title: convertirFecha(escena.fecha),
-        orderTime: escena.fecha,
-        cardTitle: escena.nombreEscena,
-        cardSubtitle: escena.ubicacion ? escena.ubicacion : "",
-        cardDetailedText: [escena.descripcion || ""],
-      });
+      // Solo si escena.fecha no es null o undefined
+      if (escena.fecha != null) {
+        acumulador.push({
+          title: convertirFecha(escena.fecha),
+          orderTime: escena.fecha,
+          cardTitle: escena.nombreEscena,
+          cardSubtitle: escena.ubicacion ? escena.ubicacion : "",
+          cardDetailedText: [escena.descripcion || ""],
+        });
+      }
       // Añadir las fechas y los nombres de los personajes involucrados al acumulador
       for (let personaje of escena.personajesInvolucrados) {
         // Comprobar si los apellidos del personaje existen y no están vacíos
@@ -158,19 +197,69 @@ export default function Trama() {
           (primerApellido ? " " + primerApellido : "") +
           (segundoApellido ? " " + segundoApellido : "");
         // Añadir la fecha y el nombre completo del personaje al acumulador junto con otros datos relevantes
-        acumulador.push({
-          title: convertirFecha(personaje.fechaNacimiento),
-          orderTime: personaje.fechaNacimiento,
-          cardTitle: "Nacimiento de " + nombreCompleto,
-          cardSubtitle: personaje.genero ? personaje.genero : "",
-          cardDetailedText: personaje.descripcion,
-        });
+        if (personaje.fechaNacimiento != null) {
+          acumulador.push({
+            title: convertirFecha(personaje.fechaNacimiento),
+            orderTime: personaje.fechaNacimiento,
+            cardTitle: "Nacimiento de " + nombreCompleto,
+            cardSubtitle: personaje.genero ? personaje.genero : "",
+            cardDetailedText: personaje.descripcion,
+          });
+        }
       }
       // Devolver el acumulador actualizado
       return acumulador;
     }, []); // Inicializar el acumulador como un array vacío
 
     // Ordenar la lista por fecha usando el método Array.prototype.sort()
+    lista.sort((a, b) => new Date(a.orderTime) - new Date(b.orderTime));
+
+    //Añadimos los datos de las relaciones con los limites establecidos por la información anterior
+
+    for (let dato of reSinDuplicados) {
+      // Comprobar si la fecha del dato no es inferior al primer elemento ni superior al último
+      if (
+        dato.fecha >= lista[0].orderTime &&
+        dato.fecha <= lista[lista.length - 1].orderTime
+      ) {
+        // Añadir el dato a la lista
+        lista.push({
+          title: convertirFecha(dato.fecha),
+          orderTime: dato.fecha,
+          cardTitle:
+            "Los personajes " +
+            dato.personajesInvolucrados
+              .map((personaje) => personaje.nombre)
+              .reduce((prev, curr, index, array) => {
+                if (index === 0) {
+                  return curr;
+                } else if (index === array.length - 1) {
+                  return prev + " y " + curr;
+                } else {
+                  return prev + ", " + curr;
+                }
+              }, "") +
+            " están en una nueva relación",
+          cardSubtitle: "Nueva relación",
+          cardDetailedText:
+            "Los personajes " +
+            dato.personajesInvolucrados
+              .map((personaje) => personaje.nombre)
+              .reduce((prev, curr, index, array) => {
+                if (index === 0) {
+                  return curr;
+                } else if (index === array.length - 1) {
+                  return prev + " y " + curr;
+                } else {
+                  return prev + ", " + curr;
+                }
+              }, "") +
+            " han entrado en una relación con la descripción: \n" +
+            dato.descripcion,
+        });
+      }
+    }
+
     lista.sort((a, b) => new Date(a.orderTime) - new Date(b.orderTime));
 
     setTimeline(lista);
@@ -181,7 +270,6 @@ export default function Trama() {
   const closeModal = () => {
     setShowTimeline(false);
   };
-
 
   function removeEmpty(obj) {
     return Object.fromEntries(
@@ -200,13 +288,11 @@ export default function Trama() {
     }
   }, []);
 
-  
-
   function ordenarEscenasPorFecha(escenas) {
     // Si escenas no es un array o está vacío, se devuelve tal cual
     if (!Array.isArray(escenas) || escenas.length === 0) return escenas;
     // Si escenas es un array válido y no está vacío, se ordena por fecha
-    return escenas.sort(function(a, b) {
+    return escenas.sort(function (a, b) {
       // Si alguna de las fechas es nula o undefined, se pone al final
       if (a.fecha == null || a.fecha == undefined) return 1;
       if (b.fecha == null || b.fecha == undefined) return -1;
@@ -489,14 +575,14 @@ export default function Trama() {
               Añadir Escena
             </Button>
             <Button
-                  type="submit"
-                  variant="contained"
-                  startIcon={<TimelineIcon />}
-                  onClick={handleTimeline}
-                  sx={{ mt: 2, ml: 2 }}
-                >
-                  Linea de tiempo
-                </Button>
+              type="submit"
+              variant="contained"
+              startIcon={<TimelineIcon />}
+              onClick={handleTimeline}
+              sx={{ mt: 2, ml: 2 }}
+            >
+              Linea de tiempo
+            </Button>
           </div>
         </Box>
 
@@ -524,11 +610,21 @@ export default function Trama() {
                         <Typography>{escena.descripcion}</Typography>
                       </CardContent>
                     </CardActionArea>
-                    <CardActions sx={{ width: '100%', justifyContent: 'flex-end', pr:3, mt:"auto"}}>
-                    <Badge badgeContent={escena.personajesInvolucrados.length} color="primary">
-                      <PeopleAltIcon color="action" />
-                    </Badge>
-                  </CardActions>
+                    <CardActions
+                      sx={{
+                        width: "100%",
+                        justifyContent: "flex-end",
+                        pr: 3,
+                        mt: "auto",
+                      }}
+                    >
+                      <Badge
+                        badgeContent={escena.personajesInvolucrados.length}
+                        color="primary"
+                      >
+                        <PeopleAltIcon color="action" />
+                      </Badge>
+                    </CardActions>
                   </Card>
                 </Grid>
               ))}
@@ -536,7 +632,7 @@ export default function Trama() {
         </Container>
       </main>
       {/* Footer */}
-      <Footer/>
+      <Footer />
       {/* End footer */}
     </ThemeProvider>
   );

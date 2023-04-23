@@ -59,6 +59,18 @@ public class PersonajeController {
 
     }
 
+    @GetMapping(value = "/api/personajes/{pid}")
+    public List<Personaje> listPersonajesExcept(@PathVariable String pid, Principal principal) {
+        Usuario loggedUser = us.findUserByUsername(principal.getName());
+        List<Personaje> personajes = ps.findAllUserCharacters(loggedUser);
+        personajes.remove(ps.findById(pid));
+        personajes.stream().forEachOrdered(x -> {
+            x.setNumEscenas(es.findByPersonaje(x).size());
+            x.setHistoriasApariciones(hs.findByPersonaje(x));
+        });
+        return personajes;
+    }
+
     @GetMapping(value = "/api/personajes/generos")
     public Set<String> listGeneros(Principal principal) {
         Usuario loggedUser = us.findUserByUsername(principal.getName());
