@@ -11,7 +11,6 @@ import {
   TableRow,
   TablePagination,
 } from "@mui/material";
-import Link from "@mui/material/Link";
 import Button from "@mui/material/Button";
 
 import axios from "axios";
@@ -89,7 +88,7 @@ function DataTable(props) {
             {data
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((item, index) => (
-                <TableRow key={index}>
+                <TableRow key={item.id}>
                   <TableCell> {item.descripcion}</TableCell>
                   <TableCell>{convertirFecha(item.fecha)}</TableCell>
                   <TableCell>

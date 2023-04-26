@@ -11,7 +11,6 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import InputAdornment from "@mui/material/InputAdornment";
-import Link from "@mui/material/Link";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
@@ -22,6 +21,20 @@ import Footer from "../Footer";
 
 
 const theme = createTheme();
+
+let alertMessage = "";
+
+const AlertCustom = ({ showAlert }) => {
+  if (!showAlert) {
+    return null;
+  }
+
+  return (
+    <Alert variant="outlined" severity="error" sx={{ m: 2}}>
+      {alertMessage}
+    </Alert>
+  );
+};
 
 function convertirFecha(fechaOriginal) {
   if (fechaOriginal == null){
@@ -63,19 +76,18 @@ export default function Update() {
           genero: data.get("genero"),
           urlIcon: data.get("urlIcon"),
         })
-        .then((window.location.href = "/personajes"));
+        .then(() => {
+          window.location.href = "/personajes";
+        });
     } catch (err) {
       console.log(err);
-      message = err.response.data;
+      let message = err.response.data;
+      alertMessage = message;
       setShowAlert(true);
     }
   };
   const [showAlert, setShowAlert] = React.useState(false);
-  const AlertCustom = () => (
-    <Alert variant="outlined" severity="error" sx={{ m: 2 }}>
-      {message}
-    </Alert>
-  );
+
 
   const [genders, setGenders] = React.useState([]);
   const [personaje, setPersonaje] = React.useState([]);
@@ -88,7 +100,7 @@ export default function Update() {
   }, []);
 
   const personajeStr = localStorage.getItem("personaje");
-  var personajeTemp = personajeStr;
+  let personajeTemp = personajeStr;
   const [avatarUrl, setAvatarUrl] = React.useState("");
 
   React.useEffect(() => {
@@ -128,7 +140,7 @@ export default function Update() {
         >
           Actualizar personaje
         </Typography>
-        {showAlert ? <AlertCustom /> : null}
+        <AlertCustom showAlert={showAlert} />
         <Box
           sx={{
             "& .MuiTextField-root": { m: 1, width: "25ch" },

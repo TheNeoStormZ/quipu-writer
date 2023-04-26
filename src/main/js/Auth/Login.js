@@ -18,6 +18,18 @@ import Copyright from "../Copyright";
 
 const theme = createTheme();
 
+const AlertCustom = ({ showAlert }) => {
+  if (!showAlert) {
+    return null;
+  }
+
+  return (
+    <Alert variant="outlined" severity="error" sx={{ m: 2}}>
+      Los datos son incorrectos
+    </Alert>
+  );
+};
+
 export default function SignIn() {
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -40,12 +52,7 @@ export default function SignIn() {
     }
   };
 
-  const [showAlert, setShowAlert] = React.useState(false)
-  const AlertCustom = () => (
-    <Alert variant="outlined" severity="error"sx={{ m: 2}}>
-    Los datos son incorrectos
-    </Alert>
-  )
+  const [showAlert, setShowAlert] = React.useState(false);
 
   return (
     <ThemeProvider theme={theme}>
@@ -65,7 +72,7 @@ export default function SignIn() {
           <Typography component="h1" variant="h5">
             Iniciar sesión
           </Typography>
-          { showAlert ? <AlertCustom /> : null }
+          <AlertCustom showAlert={showAlert} />
           <Box
             component="form"
             onSubmit={handleSubmit}

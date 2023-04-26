@@ -5,7 +5,6 @@ import SaveIcon from "@mui/icons-material/Save";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
-import Link from "@mui/material/Link";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
@@ -21,6 +20,20 @@ import axios from "axios";
 
 
 const theme = createTheme();
+
+let alertMessage = "";
+
+const AlertCustom = ({ showAlert }) => {
+  if (!showAlert) {
+    return null;
+  }
+
+  return (
+    <Alert variant="outlined" severity="error" sx={{ m: 2}}>
+      {alertMessage}
+    </Alert>
+  );
+};
 
 
 export default function Creation() {
@@ -38,7 +51,7 @@ export default function Creation() {
         })
         .then((response) => {
           // Obtener el objeto JSON que se recibe de respuesta
-          var historia = response.data;
+          let historia = response.data;
 
           // Guardar el objeto JSON en el localStorage como historia
           localStorage.setItem("historia", JSON.stringify(historia));
@@ -48,16 +61,12 @@ export default function Creation() {
         });
     } catch (err) {
       console.log(err);
-      message = err.response.data;
+      let message = err.response.data;
+      alertMessage = message;
       setShowAlert(true);
     }
   };
   const [showAlert, setShowAlert] = React.useState(false);
-  const AlertCustom = () => (
-    <Alert variant="outlined" severity="error" sx={{ m: 2 }}>
-      {message}
-    </Alert>
-  );
 
   const storyStr = localStorage.getItem("historia");
   const [historia, setHistoria] = React.useState([]);
@@ -99,7 +108,7 @@ export default function Creation() {
           <SubdirectoryArrowRightIcon />
           Añadir trama
         </Typography>
-        {showAlert ? <AlertCustom /> : null}
+        <AlertCustom showAlert={showAlert} />
 
         <Box
           component="form"

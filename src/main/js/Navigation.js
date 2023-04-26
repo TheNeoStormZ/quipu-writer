@@ -24,19 +24,17 @@ import BottomNavigation from "@mui/material/BottomNavigation";
 import BottomNavigationAction from "@mui/material/BottomNavigationAction";
 
 const pages = ["historia", "personaje"];
-const iconosNav = [<CollectionsBookmarkIcon />, <PeopleAltIcon />];
+const iconosNav = [<CollectionsBookmarkIcon key="CollectionsBookmarkIcon" />, <PeopleAltIcon key="PeopleAltIcon" />];
 const urls = ["/", "/personajes"];
 const urls_add = ["/historias", "/personajes"];
 const settings = ["Cuenta", "Cerrar sesión"];
 
 function ResponsiveAppBar() {
-  const [anchorElNav, setAnchorElNav] = React.useState(null);
+
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const [anchorElAdd, setAnchorElAdd] = React.useState(null);
 
-  const handleOpenNavMenu = (event) => {
-    setAnchorElNav(event.currentTarget);
-  };
+
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
   };

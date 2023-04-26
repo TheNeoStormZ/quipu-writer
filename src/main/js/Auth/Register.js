@@ -18,14 +18,26 @@ import Copyright from "../Copyright";
 
 
 const theme = createTheme();
-var message = "ERROR — check it out!";
+let message = "ERROR — check it out!";
+
+const AlertCustom = ({ showAlert }) => {
+  if (!showAlert) {
+    return null;
+  }
+
+  return (
+    <Alert variant="outlined" severity="error" sx={{ m: 2}}>
+      Los datos son incorrectos
+    </Alert>
+  );
+};
 
 export default function Register() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    var password = data.get("password");
-    var conf_password = data.get("conf_password");
+    let password = data.get("password");
+    let conf_password = data.get("conf_password");
     if (password != conf_password) {
       alert("La contraseña no coincide");
     } else {
@@ -43,11 +55,7 @@ export default function Register() {
     }
   };
   const [showAlert, setShowAlert] = React.useState(false);
-  const AlertCustom = () => (
-    <Alert variant="outlined" severity="error" sx={{ m: 2 }}>
-      {message}
-    </Alert>
-  );
+
 
   return (
     <ThemeProvider theme={theme}>
@@ -67,7 +75,7 @@ export default function Register() {
           <Typography component="h1" variant="h5">
             Registro
           </Typography>
-          {showAlert ? <AlertCustom /> : null}
+          <AlertCustom showAlert={showAlert} />
           <Box component="form" onSubmit={handleSubmit} z sx={{ mt: 1 }}>
             <TextField
               margin="normal"

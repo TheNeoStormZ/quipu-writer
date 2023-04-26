@@ -4,7 +4,20 @@ import CloseIcon from "@mui/icons-material/Close";
 import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import { Alert, Collapse } from "@mui/material";
+import {
+  Alert,
+  Collapse,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Card,
+  CardActionArea,
+  CardActions,
+  CardContent,
+  CardHeader,
+} from "@mui/material";
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -33,23 +46,6 @@ import Modal from "../Utils/Modal";
 import DataTable from "./Relationships/RelationshipTable";
 
 import GroupWorkIcon from "@mui/icons-material/GroupWork";
-
-
-import {
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-} from "@mui/material";
-
-import {
-  Card,
-  CardActionArea,
-  CardActions,
-  CardContent,
-  CardHeader,
-} from "@mui/material";
 
 import Navigation from "../Navigation";
 
@@ -82,7 +78,7 @@ export default function Personaje() {
   const [personaje, setPersonaje] = React.useState([]);
   const [openExportAlert, setOpenExportAlert] = React.useState(false);
   const [openExportFailAlert, setOpenExportFailAlert] = React.useState(false);
-  var personajeTemp = personajeStr;
+  let personajeTemp = personajeStr;
 
   const [openDelete, setOpenDelete] = React.useState(false);
 
@@ -115,28 +111,9 @@ export default function Personaje() {
       });
     setShowListRel(true);
   };
-  const [showGraph, setShowGraph] = React.useState(false);
-
-  const openModalGraph = () => {
-    axios
-      .get("/api/personajes/relaciones/" + personaje.id + "/detailed")
-      .then((response) => {
-        setDataRelations(response.data);
-        console.log(response.data);
-        setShowGraph(true);
-      })
-
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-
-  const closeModalGraph = () => {
-    setShowGraph(false);
-  };
 
   function handleClick(index) {
-    var historiaGuardado = JSON.stringify(historiasApariciones[index]);
+    let historiaGuardado = JSON.stringify(historiasApariciones[index]);
     localStorage.setItem("historia", historiaGuardado);
     setTimeout(navigate("/historia/info"), 20);
   }
@@ -258,7 +235,7 @@ export default function Personaje() {
       personajeTemp = removeEmpty(JSON.parse(personajeStr));
       setPersonaje(personajeTemp);
       if (personajeTemp.historiasApariciones != null) {
-        var historiasApariciones = personajeTemp.historiasApariciones.filter(
+        let historiasApariciones = personajeTemp.historiasApariciones.filter(
           function (val) {
             return val != null;
           }
@@ -268,7 +245,7 @@ export default function Personaje() {
       handleRelations(personajeTemp.id);
 
       // Creamos un array con las keys que queremos excluir del objeto
-      var keysExcluidas = [
+      let keysExcluidas = [
         "creador",
         "id",
         "nombre",
@@ -278,7 +255,7 @@ export default function Personaje() {
         "historiasApariciones",
       ];
 
-      var datosPersonajeTemp = [
+      let datosPersonajeTemp = [
         Object.keys(personajeTemp)
           .filter((key) => !keysExcluidas.includes(key))
           .reduce((obj, key) => {
@@ -482,6 +459,7 @@ export default function Personaje() {
                   personajesRelacionados.length !== 0 &&
                   personajesRelacionados.map((personaje, index) => (
                     <Chip
+                      key={personaje.id}
                       avatar={<Avatar alt="avatar" src={personaje.urlIcon} />}
                       label={personaje.nombre}
                       variant="outlined"
@@ -511,7 +489,7 @@ export default function Personaje() {
               {datosPersonaje.map(([nombreDato, personajeDato], index) => (
                 <div
                   style={{ display: "flex", alignItems: "left" }}
-                  key={index}
+                  key={personajeDato+personajeDato}
                 >
                   <Typography
                     component="h3"

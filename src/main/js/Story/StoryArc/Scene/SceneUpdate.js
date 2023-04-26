@@ -5,7 +5,6 @@ import Autocomplete from "@mui/material/Autocomplete";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
-import Link from "@mui/material/Link";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
@@ -26,6 +25,22 @@ import axios from "axios";
 import Footer from "../../../Footer";
 
 const theme = createTheme();
+
+
+let alertMessage = "";
+
+const AlertCustom = ({ showAlert }) => {
+  if (!showAlert) {
+    return null;
+  }
+
+  return (
+    <Alert variant="outlined" severity="error" sx={{ m: 2}}>
+      {alertMessage}
+    </Alert>
+  );
+};
+
 
 function convertirFecha(fechaOriginal) {
   // Crear objeto Date a partir de la fecha original
@@ -64,16 +79,16 @@ export default function Update() {
         })
         .then((response) => {
           // Obtener el objeto JSON que se recibe de respuesta
-          var historia_recv = response.data;
+          let historia_recv = response.data;
 
           localStorage.setItem("historia", JSON.stringify(historia_recv));
 
-          var trama_temp = historia_recv.tramas.find(
+          let trama_temp = historia_recv.tramas.find(
             (trama_find) => trama_find.id === trama.id
           );
           localStorage.setItem("trama", JSON.stringify(trama_temp));
 
-          var escena_temp = trama_temp.escenas.find(
+          let escena_temp = trama_temp.escenas.find(
             (escena_find) => escena_find.id === escena.id
           );
           localStorage.setItem("escena", JSON.stringify(escena_temp));
@@ -83,16 +98,12 @@ export default function Update() {
         });
     } catch (err) {
       console.log(err);
-      message = err.response.data;
+      let message = err.response.data;
+      alertMessage = message;
       setShowAlert(true);
     }
   };
   const [showAlert, setShowAlert] = React.useState(false);
-  const AlertCustom = () => (
-    <Alert variant="outlined" severity="error" sx={{ m: 2 }}>
-      {message}
-    </Alert>
-  );
 
   const [historia, setHistoria] = React.useState([]);
   const [trama, setTrama] = React.useState([]);
@@ -182,7 +193,7 @@ export default function Update() {
           <SubdirectoryArrowRightIcon />
           Actualizar escena
         </Typography>
-        {showAlert ? <AlertCustom /> : null}
+        <AlertCustom showAlert={showAlert} />
 
         <Box
           component="form"
