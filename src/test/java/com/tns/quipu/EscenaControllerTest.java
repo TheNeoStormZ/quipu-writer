@@ -81,8 +81,7 @@ public class EscenaControllerTest {
                 String id = "1";
                 Historia historia = new Historia();
                 historia.setId(id);
-                Usuario user = new Usuario(new BigInteger("1"), "user@example.com", "user", "pass",
-                                Collections.singleton(new UsuarioRol("USER")));
+                Usuario user = new Usuario(new String("1"),"user@example.com","user","pass","",Collections.singleton(new UsuarioRol("USER")));
                 historia.setCreador(user);
 
                 Trama trama = new Trama(user, "1", "trama1", "descripcion1", new ArrayList<>());
@@ -123,8 +122,7 @@ public class EscenaControllerTest {
                 Historia historia = new Historia();
                 historia.setId(id);
                 historia.setNombreHistoria("Test1");
-                Usuario user = new Usuario(new BigInteger("1"), "user@example.com", "user", "pass",
-                                Collections.singleton(new UsuarioRol("USER")));
+                Usuario user = new Usuario(new String("1"),"user@example.com","user","pass","",Collections.singleton(new UsuarioRol("USER")));
                 historia.setCreador(user);
 
                 Trama trama = new Trama(user, "1", "trama1", "descripcion1", new ArrayList<>());
@@ -175,9 +173,8 @@ public class EscenaControllerTest {
                 Historia historia = new Historia();
                 historia.setId(id);
                 historia.setNombreHistoria("Test1");
-                Usuario user = new Usuario(new BigInteger("1"), "user@example.com", "user", "pass",
-                                Collections.singleton(new UsuarioRol("USER")));
-                Usuario user2 = new Usuario(new BigInteger("2"), "user2@example.com", "user2", "pass",
+                Usuario user = new Usuario(new String("1"),"user@example.com","user","pass","",Collections.singleton(new UsuarioRol("USER")));
+                Usuario user2 = new Usuario(new String("2"), "user2@example.com", "user2", "pass", "",
                                 Collections.singleton(new UsuarioRol("USER")));
                 historia.setCreador(user2);
 
@@ -220,8 +217,7 @@ public class EscenaControllerTest {
                 Historia historia = new Historia();
                 historia.setId(id);
                 historia.setNombreHistoria("Test1");
-                Usuario user = new Usuario(new BigInteger("1"), "user@example.com", "user", "pass",
-                                Collections.singleton(new UsuarioRol("USER")));
+                Usuario user = new Usuario(new String("1"),"user@example.com","user","pass","",Collections.singleton(new UsuarioRol("USER")));
                 historia.setCreador(user);
 
                 Trama trama = new Trama(user, "1", "trama1", "descripcion1", new ArrayList<>());
@@ -262,8 +258,7 @@ public class EscenaControllerTest {
                 Historia historia = new Historia();
                 historia.setId(id);
                 historia.setNombreHistoria("Test1");
-                Usuario user = new Usuario(new BigInteger("1"), "user@example.com", "user", "pass",
-                                Collections.singleton(new UsuarioRol("USER")));
+                Usuario user = new Usuario(new String("1"),"user@example.com","user","pass","",Collections.singleton(new UsuarioRol("USER")));
                 historia.setCreador(user);
 
                 Trama trama = new Trama(user, "1", "trama1", "descripcion1", new ArrayList<>());
@@ -317,8 +312,7 @@ public class EscenaControllerTest {
                 Historia historia = new Historia();
                 historia.setId(id);
                 historia.setNombreHistoria("Test1");
-                Usuario user = new Usuario(new BigInteger("1"), "user@example.com", "user", "pass",
-                                Collections.singleton(new UsuarioRol("USER")));
+                Usuario user = new Usuario(new String("1"),"user@example.com","user","pass","",Collections.singleton(new UsuarioRol("USER")));
                 historia.setCreador(user);
 
                 Trama trama = new Trama(user, "1", "trama1", "descripcion1", new ArrayList<>());

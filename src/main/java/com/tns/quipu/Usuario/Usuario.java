@@ -31,9 +31,10 @@ import lombok.ToString;
 @EqualsAndHashCode
 public class Usuario {
 
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	protected BigInteger id;
+	protected String id;
 
 	@Valid
 	@NotEmpty
@@ -50,8 +51,9 @@ public class Usuario {
 
 	@Valid
     @NotBlank
-	@NotBlank
 	protected String password;
+
+	protected String urlIcon;
 
 	private Set<UsuarioRol> authorities;
 

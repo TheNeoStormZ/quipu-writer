@@ -27,6 +27,11 @@ public class UsuarioService implements UserDetailsService {
         return ur.findAll();
     }
 
+    @Transactional()
+    public Usuario findUserById(String id) {
+        return ur.findById(id).orElse(null);
+    } 
+
     @Transactional(readOnly = true)
     public Usuario findUserByEmail(String email) {
         return ur.findByEmail(email).orElse(null);
@@ -43,22 +48,30 @@ public class UsuarioService implements UserDetailsService {
         ur.save(usuario);
     }
 
+    
+    @Transactional()
+    public void saveUsuarioExceptional(Usuario usuario) {
+        usuario.setPassword(usuario.getPassword());
+        ur.save(usuario);
+    }
+
 
     @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
         Usuario user = ur.findByUsernameOrEmail(userName,userName).orElse(null);
+        if (user != null) {
+            Set<UsuarioRol> authorities = user
+            .getAuthorities()
+            .stream()
+            .map((role) -> new UsuarioRol(role.getAuthority())).collect(Collectors.toSet());
 
-        Set<UsuarioRol> authorities = user
-                .getAuthorities()
-                .stream()
-                .map((role) -> new UsuarioRol(role.getAuthority())).collect(Collectors.toSet());
 
-
-                SecUserDetails usuario = new SecUserDetails(user,user.getUsername(),
-                user.getPassword(),
-                authorities);
-
-                return usuario;
+            SecUserDetails usuario = new SecUserDetails(user,user.getUsername(),
+            user.getPassword(),
+            authorities);
+            return usuario;
+        }
+        return null;
     }
 
 }
