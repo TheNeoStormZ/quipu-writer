@@ -60,14 +60,10 @@ export default function Usuario() {
   const handleProccesDelete = () => {
     console.log(usuario);
     axios
-      .delete("/api/personajes/delete", {
-        data: {
-          id: usuario.id,
-        },
-      })
+      .delete("/api/auth/delete")
       .then((response) => {
-        console.log("Item deleted successfully");
-        navigate("/personajes");
+        console.log("User deleted successfully");
+        window.location.href="/";
       })
       .catch((error) => {
         console.error("Error deleting item:", error);

@@ -30,6 +30,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.tns.quipu.Historia.Trama.Trama;
 import com.tns.quipu.Historia.Trama.TramaService;
+import com.tns.quipu.Historia.Trama.Escena.Escena;
 import com.tns.quipu.Historia.Trama.Escena.EscenaService;
 import com.tns.quipu.Personaje.Personaje;
 import com.tns.quipu.Personaje.PersonajeService;
@@ -189,6 +190,7 @@ public class HistoriaController {
 
         historia.purgeDepedencies();
 
+
         tramasBackup.parallelStream().forEach(x -> {
             x.setCreador(loggedUser);
             x.setId(null);
@@ -201,15 +203,15 @@ public class HistoriaController {
                     if (p.getId() != null) {
                         Personaje pFound = ps.findById(p.getId());
                         if (pFound == null) {
-                            p.setCreador(loggedUser);
-                            ps.savePersonaje(p);
-                            e.añadirPersonaje(p);
+                            saveIgnoringCreator(e,p,loggedUser);
                         } else if (pFound.getCreador() == null) {
                             pFound.setCreador(loggedUser);
                             ps.savePersonaje(pFound);
                             e.añadirPersonaje(pFound);
                         } else if (pFound.getCreador().getUsername().equals(principal.getName())) {
                             e.añadirPersonaje(pFound);
+                        } else {
+                            saveIgnoringCreator(e,p,loggedUser);
                         }
                     }
                 });
@@ -224,6 +226,13 @@ public class HistoriaController {
 
         return new ResponseEntity<>(message, HttpStatus.CREATED);
 
+    }
+
+    private void saveIgnoringCreator(Escena e,Personaje p, Usuario usuario) {
+        p.setId(null);
+        p.setCreador(usuario);
+        ps.savePersonaje(p);
+        e.añadirPersonaje(p);
     }
 
     @GetMapping(value = "/api/historias/{id}/export", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -251,14 +260,21 @@ public class HistoriaController {
             String propiedadAEliminar = "creador";
 
             jsonObject.remove(propiedadAEliminar);
+            jsonObject.remove("numPersonajes");
 
             JsonArray tramasJson = jsonObject.get("tramas").getAsJsonArray();
 
             for (JsonElement trama : tramasJson) {
                 trama.getAsJsonObject().remove(propiedadAEliminar);
+                trama.getAsJsonObject().remove("numPersonajes");
+                trama.getAsJsonObject().remove("fechaGlobal");
                 JsonArray escenas = trama.getAsJsonObject().get("escenas").getAsJsonArray();
                 for (JsonElement escena : escenas) {
                     escena.getAsJsonObject().remove(propiedadAEliminar);
+                    JsonArray personajesInvolucrados = escena.getAsJsonObject().get("personajesInvolucrados").getAsJsonArray();
+                    for (JsonElement personaje : personajesInvolucrados) {
+                        personaje.getAsJsonObject().remove(propiedadAEliminar);
+                    }
                 }
             }
 

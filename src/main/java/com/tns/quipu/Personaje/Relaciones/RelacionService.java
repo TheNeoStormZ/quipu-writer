@@ -26,14 +26,15 @@ public class RelacionService {
     }
 
     @Transactional()
-    public Set<Personaje> findAllPersonajeRelacionados(Personaje p) {
-       List<Relacion> relaciones = rs.findBypersonajesInvolucradosContains(p);
+    public Set<Personaje> findAllPersonajeRelacionados(Personaje p, Usuario u) {
+       List<Relacion> relaciones = rs.findBypersonajesInvolucradosContainsAndCreadorEquals(p,u);
 
        Set<Personaje> result = relaciones.stream().map(x -> x.getPersonajesInvolucrados()).filter(Objects::nonNull).flatMap(List::stream).collect(Collectors.toSet());
        result.remove(p);
        return result;
        
     }
+
 
     @Transactional()
     public Relacion findById(String id) {
@@ -53,8 +54,8 @@ public class RelacionService {
     }
 
     @Transactional()
-    public List<Relacion> findAllPersonajeRelaciones(Personaje p) {
-       List<Relacion> relaciones = rs.findBypersonajesInvolucradosContains(p);
+    public List<Relacion> findAllPersonajeRelaciones(Personaje p, Usuario u) {
+       List<Relacion> relaciones = rs.findBypersonajesInvolucradosContainsAndCreadorEquals(p,u);
        return relaciones;
        
     }

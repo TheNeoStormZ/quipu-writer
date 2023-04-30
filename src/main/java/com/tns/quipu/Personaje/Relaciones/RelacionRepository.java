@@ -9,7 +9,7 @@ import com.tns.quipu.Usuario.Usuario;
 
 public interface RelacionRepository extends MongoRepository<Relacion, String>{
 
-    public List<Relacion> findBypersonajesInvolucradosContains(Personaje personaje);
+    public List<Relacion> findBypersonajesInvolucradosContainsAndCreadorEquals(Personaje personaje, Usuario loggedUser);
  
     public List<Relacion> findByCreador(Usuario user);
     

@@ -1,7 +1,6 @@
 package com.tns.quipu.Usuario;
 
 
-import java.math.BigInteger;
 import java.util.Set;
 
 import javax.persistence.GeneratedValue;

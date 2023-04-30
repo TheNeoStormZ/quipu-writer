@@ -1,6 +1,5 @@
 package com.tns.quipu.Usuario;
 
-import java.math.BigInteger;
 import java.util.Optional;
 
 import org.springframework.data.mongodb.repository.MongoRepository;

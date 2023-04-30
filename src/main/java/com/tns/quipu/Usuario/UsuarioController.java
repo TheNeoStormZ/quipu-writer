@@ -13,11 +13,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tns.quipu.Historia.HistoriaService;
@@ -59,6 +59,14 @@ public class UsuarioController {
     @GetMapping(value = "/alive")
     public ResponseEntity<String> alive() {
         return new ResponseEntity<>("I AM ALIVE!!", HttpStatus.ACCEPTED);
+    }
+
+    @DeleteMapping(value = "/api/auth/delete")
+    public ResponseEntity<String> deleteUsuario(Principal principal) {
+        Usuario loggedUser = us.findUserByUsername(principal.getName());
+        us.deleteUser(loggedUser);
+        return new ResponseEntity<>("OK", HttpStatus.OK);
+
     }
 
     @PostMapping(value = "/api/auth/register")

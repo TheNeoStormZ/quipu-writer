@@ -12,14 +12,20 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.tns.quipu.Historia.Historia;
+import com.tns.quipu.Historia.HistoriaRepository;
+import com.tns.quipu.Historia.HistoriaService;
+
 @Service
 public class UsuarioService implements UserDetailsService {
 
     private UsuarioRepository ur;
+    private HistoriaService hs;
 
     @Autowired
-    public UsuarioService(UsuarioRepository ur) {
+    public UsuarioService(UsuarioRepository ur,HistoriaService hs) {
         this.ur = ur;
+        this.hs = hs;
     }
 
     @Transactional(readOnly = true)
@@ -55,6 +61,12 @@ public class UsuarioService implements UserDetailsService {
         ur.save(usuario);
     }
 
+    @Transactional()
+    public void deleteUser(Usuario usuario) {
+        List<Historia> historiasUsuario = hs.findAllUserStories(usuario);
+        historiasUsuario.stream().forEach(x -> hs.deleteHistoria(x));
+        ur.delete(usuario);
+    }
 
     @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
