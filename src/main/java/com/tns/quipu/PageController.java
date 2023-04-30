@@ -64,4 +64,11 @@ public class PageController {
 		return "redirect:/";
 
 	}
+
+	@CrossOrigin(origins = "*", allowedHeaders = "Accept-Encoding")
+	@RequestMapping(value = "/usuario/info")
+	public String paginaUsuarioInfo() {
+            return "index";
+
+	}
 }

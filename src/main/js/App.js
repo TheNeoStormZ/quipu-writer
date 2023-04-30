@@ -22,6 +22,9 @@ import RelationshipAdd from "./Character/Relationships/RelationshipAdd";
 import RelationshipUpdate from "./Character/Relationships/RelationshipUpdate";
 import RelationshipGraph from "./Character/Relationships/RelationshipGraphPage";
 
+import UserInfo from "./User/UserInfo";
+import UserUpdate from "./User/UserUpdate";
+
 import Index from "./index";
 import Login from "./Auth/Login";
 import Register from "./Auth/Register";
@@ -55,6 +58,9 @@ export default function App() {
                   <Route path="/historia/trama/escenas/add" element= {<SceneAdd/>} />
                   <Route path="/historia/trama/escena/info" element= {<SceneInfo/>} />
                   <Route path="/historia/trama/escena/update" element= {<SceneUpdate/>} />
+
+              <Route path="/usuario/info" element= {<UserInfo/>} />
+              <Route path="/usuario/update" element= {<UserUpdate/>} />
             </Routes>
     </BrowserRouter>
   );

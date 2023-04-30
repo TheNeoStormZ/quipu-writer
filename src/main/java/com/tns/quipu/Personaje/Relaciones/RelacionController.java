@@ -49,8 +49,8 @@ public class RelacionController {
         else if (!(personaje.getCreador().getUsername().equals(principal.getName()))) {
             return new ResponseEntity<>(new HashSet<>(null), HttpStatus.FORBIDDEN);
         }
-
-        Set<Personaje> personajes = rs.findAllPersonajeRelacionados(personaje);
+        Usuario loggedUser = us.findUserByUsername(principal.getName());
+        Set<Personaje> personajes = rs.findAllPersonajeRelacionados(personaje,loggedUser);
 
         return new ResponseEntity<>(personajes, HttpStatus.OK);
 
@@ -67,8 +67,9 @@ public class RelacionController {
         else if (!(personaje.getCreador().getUsername().equals(principal.getName()))) {
             return new ResponseEntity<>(new ArrayList<>(null), HttpStatus.FORBIDDEN);
         }
+        Usuario loggedUser = us.findUserByUsername(principal.getName());
+        List<Relacion> personajes = rs.findAllPersonajeRelaciones(personaje,loggedUser);
 
-        List<Relacion> personajes = rs.findAllPersonajeRelaciones(personaje);
 
         return new ResponseEntity<>(personajes, HttpStatus.OK);
 

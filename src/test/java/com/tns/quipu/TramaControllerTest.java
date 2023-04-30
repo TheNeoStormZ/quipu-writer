@@ -14,7 +14,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.math.BigInteger;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -83,7 +82,7 @@ public class TramaControllerTest {
                 String id = "1";
                 Historia historia = new Historia();
                 historia.setId(id);
-                Usuario user = new Usuario(new BigInteger("1"), "user@example.com", "user", "pass",
+                Usuario user = new Usuario(new String("1"), "user@example.com", "user", "pass", "",
                                 Collections.singleton(new UsuarioRol("USER")));
                 historia.setCreador(user);
                 List<Trama> tramas = Arrays.asList(new Trama(user, "1", "trama1", "descripcion1", new ArrayList<>()),
@@ -121,9 +120,9 @@ public class TramaControllerTest {
                 String id = "1";
                 Historia historia = new Historia();
                 historia.setId(id);
-                Usuario user = new Usuario(new BigInteger("1"), "user@example.com", "user", "pass",
+                Usuario user = new Usuario(new String("1"), "user@example.com", "user", "pass", "",
                                 Collections.singleton(new UsuarioRol("USER")));
-                Usuario user2 = new Usuario(new BigInteger("2"), "use2r@example.com", "user2", "pass",
+                Usuario user2 = new Usuario(new String("2"), "use2r@example.com", "user2", "pass", "",
                                 Collections.singleton(new UsuarioRol("USER")));
                 historia.setCreador(user2);
                 List<Trama> tramas = Arrays.asList(new Trama(user2, "1", "trama1", "descripcion1", new ArrayList<>()),
@@ -154,7 +153,7 @@ public class TramaControllerTest {
                 String id = "1234";
 
                 Trama trama = new Trama();
-                Usuario user = new Usuario(new BigInteger("1"), "user@example.com", "user", "pass",
+                Usuario user = new Usuario(new String("1"), "user@example.com", "user", "pass", "",
                                 Collections.singleton(new UsuarioRol("USER")));
                 trama.setCreador(user);
                 trama.setId(id);
@@ -189,7 +188,7 @@ public class TramaControllerTest {
                 String id = "1";
                 Historia historia = new Historia();
                 historia.setId(id);
-                Usuario user = new Usuario(new BigInteger("1"), "user@example.com", "user", "pass",
+                Usuario user = new Usuario(new String("1"), "user@example.com", "user", "pass", "",
                                 Collections.singleton(new UsuarioRol("USER")));
                 historia.setCreador(user);
                 // Crea un objeto Trama
@@ -225,7 +224,7 @@ public class TramaControllerTest {
                 String id = "1";
                 Historia historia = new Historia();
                 historia.setId(id);
-                Usuario user = new Usuario(new BigInteger("1"), "user@example.com", "user", "pass",
+                Usuario user = new Usuario(new String("1"), "user@example.com", "user", "pass", "",
                                 Collections.singleton(new UsuarioRol("USER")));
                 historia.setCreador(user);
                 // Crea un objeto Trama
@@ -271,7 +270,7 @@ public class TramaControllerTest {
                 trama.setId("1");
                 trama.setNombreTrama("Trama de prueba");
                 trama.setDescripcion("Esta es una trama de prueba");
-                Usuario user = new Usuario(new BigInteger("1"), "user@example.com", "user", "pass",
+                Usuario user = new Usuario(new String("1"), "user@example.com", "user", "pass", "",
                                 Collections.singleton(new UsuarioRol("USER")));
 
                 Trama trama2 = new Trama();

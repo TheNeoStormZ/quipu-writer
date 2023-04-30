@@ -15,7 +15,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.math.BigInteger;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -82,7 +81,7 @@ public class HistoriaControllerTest {
         @Test
         public void testListGeneros() throws Exception {
                 // Crear un objeto mock de Usuario
-                Usuario user = new Usuario(new BigInteger("1"), "user@example.com", "user", "pass",
+                Usuario user = new Usuario(new String("1"), "user@example.com", "user", "pass", "",
                                 Collections.singleton(new UsuarioRol("USER")));
 
                 // Crear un objeto mock de Principal
@@ -112,7 +111,7 @@ public class HistoriaControllerTest {
         @Test
         public void testListHistorias() throws Exception {
                 // Crear un usuario y una lista de historias
-                Usuario user = new Usuario(new BigInteger("1"), "user@example.com", "user", "pass",
+                Usuario user = new Usuario(new String("1"), "user@example.com", "user", "pass", "",
                                 Collections.singleton(new UsuarioRol("USER")));
                 List<Historia> historias = new ArrayList<>();
                 Historia historia1 = new Historia();
@@ -166,7 +165,7 @@ public class HistoriaControllerTest {
         @Test
         public void testNewHistoria() throws Exception {
                 // Crear un usuario y una historia válida
-                Usuario user = new Usuario(new BigInteger("1"), "user@example.com", "user", "pass",
+                Usuario user = new Usuario(new String("1"), "user@example.com", "user", "pass", "",
                                 Collections.singleton(new UsuarioRol("USER")));
                 Historia historia = new Historia();
                 historia.setId("1");
@@ -223,7 +222,7 @@ public class HistoriaControllerTest {
         @Test
         public void testUpdateHistoria() throws Exception {
                 // Crear un usuario y una historia original
-                Usuario user = new Usuario(new BigInteger("1"), "user@example.com", "user", "pass",
+                Usuario user = new Usuario(new String("1"), "user@example.com", "user", "pass", "",
                                 Collections.singleton(new UsuarioRol("USER")));
                 Historia historiaOriginal = new Historia();
                 historiaOriginal.setCreador(user);
@@ -290,7 +289,7 @@ public class HistoriaControllerTest {
         @Test
         public void testEliminarHistoria() throws Exception {
                 // Crear un usuario y una historia
-                Usuario user = new Usuario(new BigInteger("1"), "user@example.com", "user", "pass",
+                Usuario user = new Usuario(new String("1"), "user@example.com", "user", "pass", "",
                                 Collections.singleton(new UsuarioRol("USER")));
                 Historia historia = new Historia();
                 historia.setCreador(user);

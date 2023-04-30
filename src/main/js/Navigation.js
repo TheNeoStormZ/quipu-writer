@@ -15,25 +15,46 @@ import MenuItem from "@mui/material/MenuItem";
 import Toolbar from "@mui/material/Toolbar";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
+import axios from "axios";
 
 import { SpeedDial, SpeedDialAction, SpeedDialIcon } from "@mui/material";
 
-import { Link as LinkRouter } from "react-router-dom";
+import { Link as LinkRouter, useNavigate } from "react-router-dom";
 
 import BottomNavigation from "@mui/material/BottomNavigation";
 import BottomNavigationAction from "@mui/material/BottomNavigationAction";
 
 const pages = ["historia", "personaje"];
-const iconosNav = [<CollectionsBookmarkIcon key="CollectionsBookmarkIcon" />, <PeopleAltIcon key="PeopleAltIcon" />];
+const iconosNav = [
+  <CollectionsBookmarkIcon key="CollectionsBookmarkIcon" />,
+  <PeopleAltIcon key="PeopleAltIcon" />,
+];
 const urls = ["/", "/personajes"];
 const urls_add = ["/historias", "/personajes"];
 const settings = ["Cuenta", "Cerrar sesión"];
 
 function ResponsiveAppBar() {
-
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const [anchorElAdd, setAnchorElAdd] = React.useState(null);
+  const [usuario, setUsuario] = React.useState([]);
 
+  React.useEffect(() => {
+    axios
+      .get("/api/me")
+      .then((response) => {
+        let usuarioTemp = response.data;
+        if (usuarioTemp) {
+          setUsuario(usuarioTemp);
+          console.log(usuarioTemp);
+        } else {
+          console.log("FATAL ERROR");
+          navigate("/");
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, []);
 
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
@@ -59,6 +80,11 @@ function ResponsiveAppBar() {
     document.cookie =
       "token" + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     location.reload();
+  };
+  const navigate = useNavigate();
+
+  const handlUserInfo = () => {
+    navigate("/usuario/info");
   };
 
   const [value, setValue] = React.useState();
@@ -219,7 +245,7 @@ function ResponsiveAppBar() {
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Cuenta">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                <Avatar alt={usuario.username} src={usuario.urlIcon}/>
               </IconButton>
             </Tooltip>
             <Menu
@@ -238,7 +264,7 @@ function ResponsiveAppBar() {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              <MenuItem key={settings[0]} onClick={handleCloseUserMenu}>
+              <MenuItem key={settings[0]} onClick={handlUserInfo}>
                 <Typography textAlign="center">{settings[0]}</Typography>
               </MenuItem>
               <MenuItem key={settings[1]} onClick={handleLogOut}>

@@ -13,7 +13,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.math.BigInteger;
 import java.security.Principal;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -76,7 +75,7 @@ public class PersonajeControllerTest {
         public void testListPersonajes() throws Exception {
                 // Arrange
 
-                Usuario user = new Usuario(new BigInteger("1"), "user@example.com", "user", "pass",
+                Usuario user = new Usuario(new String("1"), "user@example.com", "user", "pass", "",
                                 Collections.singleton(new UsuarioRol("USER")));
                 List<Personaje> personajes = Arrays.asList(
                                 new Personaje(user, "1", "Mario", "Pérez", "García", "Madrid", new Date(1638112320000L),
@@ -113,7 +112,7 @@ public class PersonajeControllerTest {
         @Test
         public void testListGeneros() throws Exception {
                 // Crear un objeto mock de Usuario
-                Usuario user = new Usuario(new BigInteger("1"), "user@example.com", "user", "pass",
+                Usuario user = new Usuario(new String("1"), "user@example.com", "user", "pass", "",
                                 Collections.singleton(new UsuarioRol("USER")));
 
                 // Crear un objeto mock de Principal
@@ -157,7 +156,7 @@ public class PersonajeControllerTest {
                                 "https://upload.wikimedia.org/wikipedia/en/d/d7/Harry_Potter_character_poster.jpg");
 
                 // Crear un objeto mock de Usuario
-                Usuario user = new Usuario(new BigInteger("1"), "user@example.com", "user", "pass",
+                Usuario user = new Usuario(new String("1"), "user@example.com", "user", "pass", "",
                                 Collections.singleton(new UsuarioRol("USER")));
 
                 // Simular el comportamiento del servicio us y ps
