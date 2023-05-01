@@ -1,5 +1,6 @@
 package com.tns.quipu.Personaje.Relaciones;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -29,7 +30,15 @@ public class RelacionService {
     public Set<Personaje> findAllPersonajeRelacionados(Personaje p, Usuario u) {
        List<Relacion> relaciones = rs.findBypersonajesInvolucradosContainsAndCreadorEquals(p,u);
 
-       Set<Personaje> result = relaciones.stream().map(x -> x.getPersonajesInvolucrados()).filter(Objects::nonNull).flatMap(List::stream).collect(Collectors.toSet());
+       Set<Personaje> result = new HashSet<>();
+       for (Relacion x : relaciones) {
+           List<Personaje> personajes = x.getPersonajesInvolucrados();
+           if (personajes != null) {
+               for (Personaje p1 : personajes) {
+                   result.add(p1);
+               }
+           }
+       }
        result.remove(p);
        return result;
        

@@ -34,7 +34,7 @@ public class TramaController {
     private UsuarioService us;
 
     @Autowired
-    public TramaController(TramaService ts,HistoriaService hs) {
+    public TramaController(TramaService ts, HistoriaService hs) {
         this.ts = ts;
         this.hs = hs;
     }
@@ -42,10 +42,19 @@ public class TramaController {
     @GetMapping(value = "/api/historia/{id}/tramas")
     public ResponseEntity<List<Trama>> getTramas(@PathVariable String id, Principal principal) {
         Historia historia = hs.findById(id);
-        if (!(historia.getCreador().getUsername().equals(principal.getName()))) {
+
+        if (historia == null) {
             return new ResponseEntity<>(new ArrayList<>(), HttpStatus.FORBIDDEN);
-        }   
-        
+        }
+
+        else if (historia.getCreador() == null) {
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.FORBIDDEN);
+        }
+
+        else if (!(historia.getCreador().getUsername().equals(principal.getName()))) {
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.FORBIDDEN);
+        }
+
         List<Trama> tramas = historia.getTramas();
         return new ResponseEntity<>(tramas, HttpStatus.OK);
     }
@@ -54,27 +63,41 @@ public class TramaController {
     public ResponseEntity<Trama> getTrama(@PathVariable String id, Principal principal) {
 
         Trama trama = ts.findById(id);
+
+        if (trama == null) {
+            return new ResponseEntity<>(new Trama(), HttpStatus.FORBIDDEN);
+        }
+
+        else if (trama.getCreador() == null) {
+            return new ResponseEntity<>(new Trama(), HttpStatus.FORBIDDEN);
+        }
+
         if (!(trama.getCreador().getUsername().equals(principal.getName()))) {
             return new ResponseEntity<>(new Trama(), HttpStatus.FORBIDDEN);
-        }     
+        }
         return new ResponseEntity<>(ts.findById(id), HttpStatus.OK);
     }
 
-
     @PostMapping(value = "/api/historia/{hid}/trama/new")
-    public ResponseEntity<Historia> newTrama(@PathVariable String hid, @Valid @RequestBody Trama trama, Principal principal,
+    public ResponseEntity<Historia> newTrama(@PathVariable String hid, @Valid @RequestBody Trama trama,
+            Principal principal,
             BindingResult result) {
 
         Usuario loggedUser = us.findUserByUsername(principal.getName());
 
         Historia og = hs.findById(hid);
 
-        if (!(og.getCreador().getUsername().equals(principal.getName()))) {
+        if (og == null) {
             return new ResponseEntity<>(new Historia(), HttpStatus.FORBIDDEN);
         }
 
+        else if (og.getCreador() == null) {
+            return new ResponseEntity<>(new Historia(), HttpStatus.FORBIDDEN);
+        }
 
-
+        else if (!(og.getCreador().getUsername().equals(principal.getName()))) {
+            return new ResponseEntity<>(new Historia(), HttpStatus.FORBIDDEN);
+        }
 
         trama.setCreador(loggedUser);
 
@@ -97,21 +120,35 @@ public class TramaController {
             BindingResult result) {
 
         Trama trama_og = ts.findById(trama.getId());
-        
+
         Historia og = hs.findByTrama(trama_og);
         String hid = og.getId();
-        
+
         Usuario loggedUser = us.findUserByUsername(principal.getName());
 
-        if (!(og.getCreador().getUsername().equals(principal.getName()))) {
+        if (og == null) {
             return new ResponseEntity<>(new Historia(), HttpStatus.FORBIDDEN);
         }
-        
+
+        else if (og.getCreador() == null) {
+            return new ResponseEntity<>(new Historia(), HttpStatus.FORBIDDEN);
+        }
+
+        else if (!(og.getCreador().getUsername().equals(principal.getName()))) {
+            return new ResponseEntity<>(new Historia(), HttpStatus.FORBIDDEN);
+        }
+
+        if (trama_og == null) {
+            return new ResponseEntity<>(new Historia(), HttpStatus.FORBIDDEN);
+        }
+
+        else if (trama_og.getCreador() == null) {
+            return new ResponseEntity<>(new Historia(), HttpStatus.FORBIDDEN);
+        }
 
         if (!(trama_og.getCreador().getUsername().equals(principal.getName()))) {
             return new ResponseEntity<>(new Historia(), HttpStatus.FORBIDDEN);
         }
-
 
         trama.setCreador(loggedUser);
 
@@ -123,7 +160,6 @@ public class TramaController {
 
         og = hs.findById(hid);
 
-
         return new ResponseEntity<>(og, HttpStatus.CREATED);
 
     }
@@ -133,7 +169,16 @@ public class TramaController {
         String id = mapId.get("id");
 
         Trama trama = ts.findById(id);
-        if (!(trama.getCreador().getUsername().equals(principal.getName()))) {
+
+        if (trama == null) {
+            return new ResponseEntity<>(new Historia(), HttpStatus.FORBIDDEN);
+        }
+
+        else if (trama.getCreador() == null) {
+            return new ResponseEntity<>(new Historia(), HttpStatus.FORBIDDEN);
+        }
+
+        else if (!(trama.getCreador().getUsername().equals(principal.getName()))) {
             return new ResponseEntity<>(new Historia(), HttpStatus.FORBIDDEN);
         }
 
@@ -142,7 +187,6 @@ public class TramaController {
         ts.deleteTrama(trama);
 
         Historia og = hs.findById(ogId);
-
 
         return new ResponseEntity<>(og, HttpStatus.ACCEPTED);
 

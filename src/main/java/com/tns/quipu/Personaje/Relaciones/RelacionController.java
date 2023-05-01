@@ -43,14 +43,19 @@ public class RelacionController {
         Personaje personaje = ps.findById(pid);
 
         if (personaje == null) {
-            return new ResponseEntity<>(new HashSet<>(null), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(new HashSet<>(), HttpStatus.FORBIDDEN);
+        }
+
+        else if ((personaje.getCreador() == null)) {
+            return new ResponseEntity<>(new HashSet<>(), HttpStatus.FORBIDDEN);
         }
 
         else if (!(personaje.getCreador().getUsername().equals(principal.getName()))) {
-            return new ResponseEntity<>(new HashSet<>(null), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(new HashSet<>(), HttpStatus.FORBIDDEN);
         }
+
         Usuario loggedUser = us.findUserByUsername(principal.getName());
-        Set<Personaje> personajes = rs.findAllPersonajeRelacionados(personaje,loggedUser);
+        Set<Personaje> personajes = rs.findAllPersonajeRelacionados(personaje, loggedUser);
 
         return new ResponseEntity<>(personajes, HttpStatus.OK);
 
@@ -61,15 +66,18 @@ public class RelacionController {
         Personaje personaje = ps.findById(pid);
 
         if (personaje == null) {
-            return new ResponseEntity<>(new ArrayList<>(null), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.FORBIDDEN);
+        }
+
+        else if ((personaje.getCreador() == null)) {
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.FORBIDDEN);
         }
 
         else if (!(personaje.getCreador().getUsername().equals(principal.getName()))) {
-            return new ResponseEntity<>(new ArrayList<>(null), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.FORBIDDEN);
         }
         Usuario loggedUser = us.findUserByUsername(principal.getName());
-        List<Relacion> personajes = rs.findAllPersonajeRelaciones(personaje,loggedUser);
-
+        List<Relacion> personajes = rs.findAllPersonajeRelaciones(personaje, loggedUser);
 
         return new ResponseEntity<>(personajes, HttpStatus.OK);
 
@@ -136,7 +144,19 @@ public class RelacionController {
             return new ResponseEntity<>("FORBIDDEN", HttpStatus.FORBIDDEN);
         }
 
+        else if (personaje.getCreador() == null) {
+            return new ResponseEntity<>("FORBIDDEN", HttpStatus.FORBIDDEN);
+        }
+
         else if (!(personaje.getCreador().getUsername().equals(principal.getName()))) {
+            return new ResponseEntity<>("FORBIDDEN", HttpStatus.FORBIDDEN);
+        }
+
+        if (relacion == null) {
+            return new ResponseEntity<>("FORBIDDEN", HttpStatus.FORBIDDEN);
+        }
+
+        else if (relacion.getCreador() == null) {
             return new ResponseEntity<>("FORBIDDEN", HttpStatus.FORBIDDEN);
         }
 

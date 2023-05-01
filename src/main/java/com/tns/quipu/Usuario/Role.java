@@ -9,13 +9,17 @@ import javax.persistence.GenerationType;
 
 import org.springframework.data.annotation.Id;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 
 @Setter
 @Getter
 
 public class Role {
-
-    public Role(String authority) {
+    
+    @JsonCreator
+    public Role(@JsonProperty("rol") String authority) {
         this.name=authority;
     }
 

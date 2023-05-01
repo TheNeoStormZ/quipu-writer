@@ -121,7 +121,11 @@ public class HistoriaController {
 
         Historia og = hs.findById(historia.getId());
 
-        if (!(og.getCreador().getUsername().equals(principal.getName()))) {
+        if (og.getCreador() == null) {
+            return new ResponseEntity<>("Not the owner", HttpStatus.FORBIDDEN);
+        }
+
+        else if (!(og.getCreador().getUsername().equals(principal.getName()))) {
             return new ResponseEntity<>("Not the owner", HttpStatus.FORBIDDEN);
         }
 
@@ -152,6 +156,11 @@ public class HistoriaController {
     public ResponseEntity<String> eliminarHistoria(@RequestBody Map<String, String> mapId, Principal principal) {
         String id = mapId.get("id");
         Historia historia = hs.findById(id);
+
+        if (historia.getCreador() == null) {
+            return new ResponseEntity<>("Not the owner", HttpStatus.FORBIDDEN);
+        }
+
         if (!(historia.getCreador().getUsername().equals(principal.getName()))) {
             return new ResponseEntity<>("Not the owner", HttpStatus.FORBIDDEN);
         }
@@ -241,6 +250,10 @@ public class HistoriaController {
 
         if (historia == null) {
             return ResponseEntity.notFound().build();
+        }
+
+        if (historia.getCreador() == null) {
+            return new ResponseEntity<>("Not the owner", HttpStatus.FORBIDDEN);
         }
 
         else if (!(historia.getCreador().getUsername().equals(principal.getName()))) {
