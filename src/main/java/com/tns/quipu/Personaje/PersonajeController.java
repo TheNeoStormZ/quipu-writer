@@ -83,10 +83,6 @@ public class PersonajeController {
     public ResponseEntity<String> newPersonaje(@Valid @RequestBody Personaje personaje, Principal principal,
             BindingResult result) {
 
-        Usuario loggedUser = us.findUserByUsername(principal.getName());
-
-        personaje.setCreador(loggedUser);
-
         if (result.hasErrors()) {
             FieldError error = result.getFieldError();
             String message = "Error desconocido";
@@ -95,6 +91,10 @@ public class PersonajeController {
             }
             return new ResponseEntity<>(message, HttpStatus.FORBIDDEN);
         }
+
+        Usuario loggedUser = us.findUserByUsername(principal.getName());
+
+        personaje.setCreador(loggedUser);
 
         ps.savePersonaje(personaje);
 
@@ -105,6 +105,19 @@ public class PersonajeController {
     @PutMapping(value = "/api/personajes/update")
     public ResponseEntity<String> updatePersonaje(@RequestBody Personaje personaje, Principal principal,
             BindingResult result) {
+
+    if (result.hasErrors()) {
+        FieldError error = result.getFieldError();
+        String message = "Error desconocido";
+        if (error != null) {
+            message = error.getField() + ": " + error.getDefaultMessage();
+        }
+        return new ResponseEntity<>(message, HttpStatus.FORBIDDEN);
+    }
+
+        if (personaje == null) {
+            return new ResponseEntity<>("Not found", HttpStatus.FORBIDDEN);
+        }
 
         if (personaje.getId() != null) {
             Personaje og = ps.findById(personaje.getId());
@@ -122,15 +135,6 @@ public class PersonajeController {
 
         personaje.setCreador(loggedUser);
 
-        if (result.hasErrors()) {
-            FieldError error = result.getFieldError();
-            String message = "Error desconocido";
-            if (error != null) {
-                message = error.getField() + ": " + error.getDefaultMessage();
-            }
-            return new ResponseEntity<>(message, HttpStatus.FORBIDDEN);
-        }
-
         ps.savePersonaje(personaje);
 
         return new ResponseEntity<>("OK", HttpStatus.CREATED);
@@ -142,11 +146,15 @@ public class PersonajeController {
         String id = mapId.get("id");
         Personaje personaje = ps.findById(id);
 
-        if (personaje.getCreador() == null) {
+        if (personaje == null) {
+            return new ResponseEntity<>("Personaje not found", HttpStatus.FORBIDDEN);
+        }
+
+        else if (personaje.getCreador() == null) {
             return new ResponseEntity<>("Not the owner", HttpStatus.FORBIDDEN);
         }
 
-       else if (!(personaje.getCreador().getUsername().equals(principal.getName()))) {
+        else if (!(personaje.getCreador().getUsername().equals(principal.getName()))) {
             return new ResponseEntity<>("Not the owner", HttpStatus.FORBIDDEN);
         }
         ps.deletePersonaje(personaje);

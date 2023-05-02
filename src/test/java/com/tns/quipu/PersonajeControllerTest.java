@@ -15,6 +15,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.security.Principal;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -80,7 +81,8 @@ public class PersonajeControllerTest {
                 List<Personaje> personajes = Arrays.asList(
                                 new Personaje(user, "1", "Mario", "Pérez", "García", "Madrid", new Date(1638112320000L),
                                                 "Masculino",
-                                                "170 cm", "Barcelona", "Un fontanero aventurero.", "/mario.png", null, null),
+                                                "170 cm", "Barcelona", "Un fontanero aventurero.", "/mario.png", null,
+                                                null),
                                 new Personaje(user, "2", "Luigi", "López", "Sánchez", "Roma", new Date(1638112320000L),
                                                 "Masculino",
                                                 "180 cm", "Milán", "El hermano de Mario.", "/luigi.png", null, null));
@@ -104,6 +106,45 @@ public class PersonajeControllerTest {
                                 .andExpect(jsonPath("$[0].residencia", is("Barcelona")))
                                 .andExpect(jsonPath("$[0].descripcion", is("Un fontanero aventurero.")))
                                 .andExpect(jsonPath("$[0].urlIcon", is("/mario.png")));
+
+                verify(us).findUserByUsername("user");
+                verify(ps).findAllUserCharacters(user);
+        }
+
+        @Test
+        public void testListPersonajesExcept() throws Exception {
+                // Arrange
+
+                Usuario user = new Usuario(new String("1"), "user@example.com", "user", "pass", "",
+                                Collections.singleton(new UsuarioRol("USER")));
+                List<Personaje> personajes = Arrays.asList(
+                                new Personaje(user, "1", "Mario", "Pérez", "García", "Madrid", new Date(1638112320000L),
+                                                "Masculino",
+                                                "170 cm", "Barcelona", "Un fontanero aventurero.", "/mario.png", null,
+                                                null),
+                                new Personaje(user, "2", "Luigi", "López", "Sánchez", "Roma", new Date(1638112320000L),
+                                                "Masculino",
+                                                "180 cm", "Milán", "El hermano de Mario.", "/luigi.png", null, null));
+                when(us.findUserByUsername("user")).thenReturn(user);
+                when(ps.findAllUserCharacters(user)).thenReturn(new ArrayList<>(personajes));
+                when(ps.findById("1")).thenReturn(personajes.get(0));
+
+                // Act and Assert
+                mockMvc.perform(get("/api/personajes/{pid}", "1"))
+                                .andExpect(status().isOk())
+                                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                                .andExpect(jsonPath("$", hasSize(1)))
+                                .andExpect(jsonPath("$[0].creador.username", is("user")))
+                                .andExpect(jsonPath("$[0].id", is("2")))
+                                .andExpect(jsonPath("$[0].nombre", is("Luigi")))
+                                .andExpect(jsonPath("$[0].primerApellido", is("López")))
+                                .andExpect(jsonPath("$[0].segundoApellido", is("Sánchez")))
+                                .andExpect(jsonPath("$[0].lugarNacimiento", is("Roma")))
+                                .andExpect(jsonPath("$[0].genero", is("Masculino")))
+                                .andExpect(jsonPath("$[0].altura", is("180 cm")))
+                                .andExpect(jsonPath("$[0].residencia", is("Milán")))
+                                .andExpect(jsonPath("$[0].descripcion", is("El hermano de Mario.")))
+                                .andExpect(jsonPath("$[0].urlIcon", is("/luigi.png")));
 
                 verify(us).findUserByUsername("user");
                 verify(ps).findAllUserCharacters(user);
@@ -177,6 +218,28 @@ public class PersonajeControllerTest {
         }
 
         @Test
+        void newPersonajeEmpty() throws Exception {
+                // Arrange
+                Personaje personaje = new Personaje();
+
+                // Crear un objeto mock de Usuario
+                Usuario user = new Usuario(new String("1"), "user@example.com", "user", "pass", "",
+                                Collections.singleton(new UsuarioRol("USER")));
+
+                // Simular el comportamiento del servicio us y ps
+                when(us.findUserByUsername("user")).thenReturn(user);
+                doNothing().when(ps).savePersonaje(personaje);
+
+                // Act and Assert
+                Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
+                mockMvc.perform(post("/api/personajes/new")
+                                .content(gson.toJson(personaje))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .principal(() -> "user"))
+                                .andExpect(status().is4xxClientError());
+        }
+
+        @Test
         public void testEliminarPersonaje() throws Exception {
 
                 // Arrange
@@ -203,6 +266,73 @@ public class PersonajeControllerTest {
 
         }
 
+        @Test
+        public void testEliminarPersonajeNull() throws Exception {
+
+                // Arrange
+                Personaje personaje = null;
+                Usuario creador = new Usuario();
+                creador.setUsername("user");
+
+                // Simular el comportamiento de los métodos del servicio y del principal
+                when(ps.findById("123")).thenReturn(personaje);
+                when(us.findUserByUsername("user")).thenReturn(creador);
+
+                // Simular una petición HTTP al método del controlador y verificar la respuesta
+                mockMvc.perform(delete("/api/personajes/delete")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("{\"id\":\"123\"}"))
+                                .andExpect(status().isForbidden());
+
+        }
+
+        @Test
+        public void testEliminarPersonajeCreadorNull() throws Exception {
+
+                // Arrange
+                Personaje personaje = new Personaje();
+                personaje.setId("123");
+                personaje.setNombre("Batman");
+                Usuario creador = null;
+                personaje.setCreador(creador);
+
+                // Simular el comportamiento de los métodos del servicio y del principal
+                when(ps.findById("123")).thenReturn(personaje);
+                when(us.findUserByUsername("user")).thenReturn(creador);
+
+                // Simular una petición HTTP al método del controlador y verificar la respuesta
+                mockMvc.perform(delete("/api/personajes/delete")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("{\"id\":\"123\"}"))
+                                .andExpect(status().isForbidden());
+
+        }
+
+        @Test
+        public void testEliminarPersonajeNotCreator() throws Exception {
+
+                // Arrange
+                Personaje personaje = new Personaje();
+                personaje.setId("123");
+                personaje.setNombre("Batman");
+                Usuario creador = new Usuario();
+                creador.setUsername("user");
+
+                Usuario creador2 = new Usuario();
+                creador2.setUsername("user2");
+                personaje.setCreador(creador2);
+
+                // Simular el comportamiento de los métodos del servicio y del principal
+                when(ps.findById("123")).thenReturn(personaje);
+                when(us.findUserByUsername("user")).thenReturn(creador);
+
+                // Simular una petición HTTP al método del controlador y verificar la respuesta
+                mockMvc.perform(delete("/api/personajes/delete")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("{\"id\":\"123\"}"))
+                                .andExpect(status().isForbidden());
+
+        }
 
         @Test
         public void testUpdatePersonajeSuccess() throws Exception {
@@ -213,7 +343,7 @@ public class PersonajeControllerTest {
                                 null, null, null, null, null);
 
                 Personaje personaje2 = new Personaje(usuario, "1", "MarioEdit", "Font", "Bro", null, null, null, "100",
-                                null, null, null,null, null);
+                                null, null, null, null, null);
                 Principal principal = () -> "user";
 
                 // Definir el comportamiento de los objetos simulados
@@ -231,6 +361,127 @@ public class PersonajeControllerTest {
                                 .andExpect(content().string("OK"));
 
                 verify(us).findUserByUsername("user");
+
+        }
+
+        @Test
+        public void testUpdatePersonajeNull() throws Exception {
+                // Arrange
+                Usuario usuario = new Usuario();
+                usuario.setUsername("user");
+                Personaje personaje = new Personaje(usuario, "1", "Mario", "Fontanero", null, null, null, null, null,
+                                null, null, null, null, null);
+
+                Personaje personaje2 = null;
+                Principal principal = () -> "user";
+
+                // Definir el comportamiento de los objetos simulados
+                when(ps.findById("1")).thenReturn(personaje);
+
+                // Invocar el método bajo prueba y verificar el resultado
+                Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
+                mockMvc.perform(put("/api/personajes/update")
+                                .content(gson.toJson(personaje2))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .principal(() -> "user"))
+                                .andExpect(status().is4xxClientError());
+
+        }
+
+        @Test
+        public void testUpdatePersonajeSuccessEvenIDNull() throws Exception {
+                // Arrange
+                Usuario usuario = new Usuario();
+                usuario.setUsername("user");
+                Personaje personaje = new Personaje(usuario, null, "Mario", "Fontanero", null, null, null, null, null,
+                                null, null, null, null, null);
+
+                Personaje personaje2 = new Personaje(usuario, "1", "MarioEdit", "Font", "Bro", null, null, null, "100",
+                                null, null, null, null, null);
+                Principal principal = () -> "user";
+
+                // Definir el comportamiento de los objetos simulados
+                when(ps.findById("1")).thenReturn(personaje);
+                when(us.findUserByUsername("user")).thenReturn(usuario);
+                doNothing().when(ps).savePersonaje(personaje);
+
+                // Invocar el método bajo prueba y verificar el resultado
+                Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
+                mockMvc.perform(put("/api/personajes/update")
+                                .content(gson.toJson(personaje2))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .principal(() -> "user"))
+                                .andExpect(status().isCreated())
+                                .andExpect(content().string("OK"));
+
+                verify(us).findUserByUsername("user");
+
+        }
+
+        @Test
+        public void testUpdatePersonajeCreadorNull() throws Exception {
+                // Arrange
+                Usuario usuario = new Usuario();
+                usuario.setUsername("user");
+                Personaje personaje = new Personaje(null, "1", "Mario", "Fontanero", null, null, null, null, null,
+                                null, null, null, null, null);
+
+                Personaje personaje2 = new Personaje(null, "1", "MarioEdit", "Font", "Bro", null, null, null, "100",
+                                null, null, null, null, null);
+                Principal principal = () -> "user";
+
+                // Definir el comportamiento de los objetos simulados
+                when(ps.findById("1")).thenReturn(personaje);
+                when(us.findUserByUsername("user")).thenReturn(usuario);
+                doNothing().when(ps).savePersonaje(personaje);
+
+                // Invocar el método bajo prueba y verificar el resultado
+                Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
+                mockMvc.perform(put("/api/personajes/update")
+                                .content(gson.toJson(personaje2))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .principal(() -> "user"))
+                                .andExpect(status().isForbidden());
+
+        }
+
+        @Test
+        public void testUpdatePersonajeNotTheCreator() throws Exception {
+                // Arrange
+                Usuario usuario = new Usuario();
+                Usuario usuario2 = new Usuario();
+                usuario.setUsername("user");
+                usuario2.setUsername("user2");
+
+                Personaje personaje = new Personaje(usuario2, "1", "Mario", "Fontanero", null, null, null, null, null,
+                                null, null, null, null, null);
+
+                Personaje personaje2 = new Personaje(usuario, "1", "MarioEdit", "Font", "Bro", null, null, null, "100",
+                                null, null, null, null, null);
+
+                // Crear un objeto mock de Principal
+                Principal principal = new Principal() {
+                        @Override
+                        public String getName() {
+                                return "user";
+                        }
+                };
+
+                // Definir el comportamiento de los objetos simulados
+                when(ps.findById(personaje.getId())).thenReturn(personaje);
+                when(us.findUserByUsername("user")).thenReturn(usuario);
+                when(us.findUserByUsername("user2")).thenReturn(usuario2);
+                doNothing().when(ps).savePersonaje(personaje);
+
+                // Invocar el método bajo prueba y verificar el resultado
+                Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
+
+                mockMvc.perform(put("/api/personajes/update")
+                                .content(gson.toJson(personaje2))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .principal(principal))
+                                .andExpect(status().isForbidden());
+
 
         }
 

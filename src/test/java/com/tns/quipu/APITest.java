@@ -16,8 +16,6 @@ import org.junit.jupiter.api.Test;
 
 public class APITest {
 
-    
-
     // El método que hace la petición HTTP y devuelve el JSON como un objeto
     private JSONObject getJSONFromAPI(String API_URL) throws IOException, JSONException {
         URL url = new URL(API_URL);
