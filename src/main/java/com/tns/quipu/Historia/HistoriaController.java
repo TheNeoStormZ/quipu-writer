@@ -66,7 +66,6 @@ public class HistoriaController {
 
     }
 
-
     @GetMapping(value = "/api/historias/generos")
     public Set<String> listGeneros(Principal principal) {
         Usuario loggedUser = us.findUserByUsername(principal.getName());
@@ -77,18 +76,18 @@ public class HistoriaController {
     public ResponseEntity<String> newHistoria(@Valid @RequestBody Historia historia, Principal principal,
             BindingResult result) {
 
-        Usuario loggedUser = us.findUserByUsername(principal.getName());
-
-        historia.setCreador(loggedUser);
-
         if (result.hasErrors()) {
             FieldError error = result.getFieldError();
             String message = "Error desconocido";
-            if (error != null){
+            if (error != null) {
                 message = error.getField() + ": " + error.getDefaultMessage();
             }
             return new ResponseEntity<>(message, HttpStatus.FORBIDDEN);
         }
+
+        Usuario loggedUser = us.findUserByUsername(principal.getName());
+
+        historia.setCreador(loggedUser);
 
         hs.saveHistoria(historia);
 
@@ -98,30 +97,34 @@ public class HistoriaController {
 
     @PostMapping(value = "/api/historias/new/fast")
     public ResponseEntity<Historia> newHistoriaFast(@Valid @RequestBody Historia historia, Principal principal,
-            BindingResult result) { 
-                ResponseEntity<String> resutCreation = this.newHistoria(historia, principal, result);
-                 if (resutCreation.getStatusCode().is2xxSuccessful()){
-                    Usuario loggedUser = us.findUserByUsername(principal.getName());
-                    Historia og = hs.findById(historia.getId());
+            BindingResult result) {
+        ResponseEntity<String> resutCreation = this.newHistoria(historia, principal, result);
+        if (resutCreation.getStatusCode().is2xxSuccessful()) {
+            Usuario loggedUser = us.findUserByUsername(principal.getName());
+            Historia og = hs.findById(historia.getId());
 
-                    Trama t = new Trama(loggedUser, null, "Introducción", "El inicio de la historia", new ArrayList<>());
-                    ts.saveTrama(t);
-                    og.añadirTrama(t);
-                    hs.saveHistoria(og);
+            Trama t = new Trama(loggedUser, null, "Introducción", "El inicio de la historia", new ArrayList<>());
+            ts.saveTrama(t);
+            og.añadirTrama(t);
+            hs.saveHistoria(og);
 
-                    return new ResponseEntity<>(og, HttpStatus.CREATED);
-                 }
+            return new ResponseEntity<>(og, HttpStatus.CREATED);
+        }
 
-                 return new ResponseEntity<>(new Historia(), HttpStatus.FORBIDDEN);
-            }
-    
+        return new ResponseEntity<>(new Historia(), HttpStatus.FORBIDDEN);
+    }
+
     @PutMapping(value = "/api/historias/update")
     public ResponseEntity<String> updateHistoria(@RequestBody Historia historia, Principal principal,
             BindingResult result) {
 
         Historia og = hs.findById(historia.getId());
 
-        if (og.getCreador() == null) {
+        if (og == null) {
+            return new ResponseEntity<>("Not found", HttpStatus.FORBIDDEN);
+        }
+
+        else if (og.getCreador() == null) {
             return new ResponseEntity<>("Not the owner", HttpStatus.FORBIDDEN);
         }
 
@@ -136,7 +139,7 @@ public class HistoriaController {
         if (result.hasErrors()) {
             FieldError error = result.getFieldError();
             String message = "Error desconocido";
-            if (error != null){
+            if (error != null) {
                 message = error.getField() + ": " + error.getDefaultMessage();
             }
             return new ResponseEntity<>(message, HttpStatus.FORBIDDEN);
@@ -156,6 +159,10 @@ public class HistoriaController {
     public ResponseEntity<String> eliminarHistoria(@RequestBody Map<String, String> mapId, Principal principal) {
         String id = mapId.get("id");
         Historia historia = hs.findById(id);
+
+        if (historia == null) {
+            return new ResponseEntity<>("Not Found", HttpStatus.FORBIDDEN);
+        }
 
         if (historia.getCreador() == null) {
             return new ResponseEntity<>("Not the owner", HttpStatus.FORBIDDEN);
@@ -199,7 +206,6 @@ public class HistoriaController {
 
         historia.purgeDepedencies();
 
-
         tramasBackup.parallelStream().forEach(x -> {
             x.setCreador(loggedUser);
             x.setId(null);
@@ -212,7 +218,7 @@ public class HistoriaController {
                     if (p.getId() != null) {
                         Personaje pFound = ps.findById(p.getId());
                         if (pFound == null) {
-                            saveIgnoringCreator(e,p,loggedUser);
+                            saveIgnoringCreator(e, p, loggedUser);
                         } else if (pFound.getCreador() == null) {
                             pFound.setCreador(loggedUser);
                             ps.savePersonaje(pFound);
@@ -220,7 +226,7 @@ public class HistoriaController {
                         } else if (pFound.getCreador().getUsername().equals(principal.getName())) {
                             e.añadirPersonaje(pFound);
                         } else {
-                            saveIgnoringCreator(e,p,loggedUser);
+                            saveIgnoringCreator(e, p, loggedUser);
                         }
                     }
                 });
@@ -237,7 +243,7 @@ public class HistoriaController {
 
     }
 
-    private void saveIgnoringCreator(Escena e,Personaje p, Usuario usuario) {
+    private void saveIgnoringCreator(Escena e, Personaje p, Usuario usuario) {
         p.setId(null);
         p.setCreador(usuario);
         ps.savePersonaje(p);
@@ -284,7 +290,8 @@ public class HistoriaController {
                 JsonArray escenas = trama.getAsJsonObject().get("escenas").getAsJsonArray();
                 for (JsonElement escena : escenas) {
                     escena.getAsJsonObject().remove(propiedadAEliminar);
-                    JsonArray personajesInvolucrados = escena.getAsJsonObject().get("personajesInvolucrados").getAsJsonArray();
+                    JsonArray personajesInvolucrados = escena.getAsJsonObject().get("personajesInvolucrados")
+                            .getAsJsonArray();
                     for (JsonElement personaje : personajesInvolucrados) {
                         personaje.getAsJsonObject().remove(propiedadAEliminar);
                     }
@@ -301,6 +308,5 @@ public class HistoriaController {
         }
 
     }
-
 
 }
