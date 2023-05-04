@@ -115,6 +115,61 @@ public class TramaControllerTest {
         }
 
         @Test
+        public void getTramas_shouldReturnForbidden_whenHistoriaIsNull() throws Exception {
+                // Arrange
+                String id = "1";
+                Historia historia = null;
+                Usuario user = new Usuario(new String("1"), "user@example.com", "user", "pass", "",
+                                Collections.singleton(new UsuarioRol("USER")));
+                List<Trama> tramas = Arrays.asList(new Trama(user, "1", "trama1", "descripcion1", new ArrayList<>()),
+                                new Trama(user, "2", "trama2", "descripcion2", new ArrayList<>()));
+
+                // Crear un objeto mock de Principal
+                Principal principal = new Principal() {
+                        @Override
+                        public String getName() {
+                                return "user";
+                        }
+                };
+
+                when(hs.findById(id)).thenReturn(historia);
+
+                // Act and Assert
+                mockMvc.perform(get("/api/historia/{id}/tramas", id))
+                                .andExpect(status().isForbidden());
+
+        }
+
+        @Test
+        public void getTramas_shouldReturnForbidden_whenUCreadorIsNull() throws Exception {
+                // Arrange
+                String id = "1";
+                Historia historia = new Historia();
+                historia.setId(id);
+                Usuario user = new Usuario(new String("1"), "user@example.com", "user", "pass", "",
+                                Collections.singleton(new UsuarioRol("USER")));
+                historia.setCreador(null);
+                List<Trama> tramas = Arrays.asList(new Trama(user, "1", "trama1", "descripcion1", new ArrayList<>()),
+                                new Trama(user, "2", "trama2", "descripcion2", new ArrayList<>()));
+                historia.setTramas(tramas);
+
+                // Crear un objeto mock de Principal
+                Principal principal = new Principal() {
+                        @Override
+                        public String getName() {
+                                return "user";
+                        }
+                };
+
+                when(hs.findById("1")).thenReturn(historia);
+
+                // Act and Assert
+                mockMvc.perform(get("/api/historia/{id}/tramas", id))
+                                .andExpect(status().isForbidden());
+
+        }
+
+        @Test
         public void getTramas_shouldReturnForbidden_whenUserIsNotCreador() throws Exception {
                 // Arrange
                 String id = "1";
@@ -183,6 +238,81 @@ public class TramaControllerTest {
         }
 
         @Test
+        public void getTrama_ShouldReturnForbidden_WhenTramaIsNull() throws Exception {
+                // Arrange
+                String id = "1234";
+
+                Trama trama = null;
+
+                // Crear un objeto mock de Principal
+                Principal principal = new Principal() {
+                        @Override
+                        public String getName() {
+                                return "user";
+                        }
+                };
+                when(ts.findById(id)).thenReturn(trama);
+
+                // Act && Assert
+                mockMvc.perform(get("/api/historia/trama/{id}", id))
+                                .andExpect(status().isForbidden());
+
+        }
+
+        @Test
+        public void getTrama_ShouldReturnForbidden_WhenTramaCreadorIsNull() throws Exception {
+                // Arrange
+                String id = "1234";
+
+                Trama trama = new Trama();
+                trama.setCreador(null);
+
+                // Crear un objeto mock de Principal
+                Principal principal = new Principal() {
+                        @Override
+                        public String getName() {
+                                return "user";
+                        }
+                };
+                when(ts.findById(id)).thenReturn(trama);
+
+                // Act && Assert
+                mockMvc.perform(get("/api/historia/trama/{id}", id))
+                                .andExpect(status().isForbidden());
+
+        }
+
+        @Test
+        public void getTrama_ShouldReturnTrama_WhenCreadorNotSame() throws Exception {
+                // Arrange
+                String id = "1234";
+
+                Trama trama = new Trama();
+                Usuario user = new Usuario(new String("1"), "user@example.com", "user", "pass", "",
+                                Collections.singleton(new UsuarioRol("USER")));
+                Usuario user2 = new Usuario(new String("2"), "user@example.com", "user2", "pass", "",
+                                Collections.singleton(new UsuarioRol("USER")));
+                trama.setCreador(user2);
+                trama.setId(id);
+                trama.setNombreTrama("Trama de prueba");
+                trama.setDescripcion("Esta es una trama de prueba");
+                trama.setEscenas(new ArrayList<>());
+
+                // Crear un objeto mock de Principal
+                Principal principal = new Principal() {
+                        @Override
+                        public String getName() {
+                                return "user2";
+                        }
+                };
+                when(ts.findById(id)).thenReturn(trama);
+
+                // Act && Assert
+                mockMvc.perform(get("/api/historia/trama/{id}", id).principal(principal))
+                                .andExpect(status().isForbidden());
+        }
+
+        @Test
         public void newTramaTest() throws Exception {
                 Gson gson = new Gson();
                 String id = "1";
@@ -216,6 +346,141 @@ public class TramaControllerTest {
                                 .andExpect(status().isCreated())
                                 .andExpect(jsonPath("$.tramas[0].nombreTrama").value("trama1"))
                                 .andExpect(jsonPath("$.tramas[0].descripcion").value("descripcion1"));
+        }
+
+        @Test
+        public void newTramaTestNullHisotria() throws Exception {
+                Gson gson = new Gson();
+                String id = "1";
+                Historia historia = null;
+                Usuario user = new Usuario(new String("1"), "user@example.com", "user", "pass", "",
+                                Collections.singleton(new UsuarioRol("USER")));
+                // Crea un objeto Trama
+                Trama trama = new Trama();
+                trama.setNombreTrama("trama1");
+                trama.setDescripcion("descripcion1");
+
+                // Convierte el objeto Trama en una cadena JSON
+                String tramaJson = gson.toJson(trama);
+
+                // Simular el principal
+                Principal principal = new Principal() {
+                        @Override
+                        public String getName() {
+                                return "user";
+                        }
+                };
+                when(hs.findById("1")).thenReturn(historia);
+                // Simula una petición POST a la API con el JSON como cuerpo y verifica la
+                // respuesta
+                mockMvc.perform(post("/api/historia/{hid}/trama/new", "1")
+                                .principal(principal)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(tramaJson))
+                                .andExpect(status().isForbidden());
+        }
+
+        @Test
+        public void newTramaTestHistoriaCreadorNull() throws Exception {
+                Gson gson = new Gson();
+                String id = "1";
+                Historia historia = new Historia();
+                historia.setId(id);
+                Usuario user = new Usuario(new String("1"), "user@example.com", "user", "pass", "",
+                                Collections.singleton(new UsuarioRol("USER")));
+                historia.setCreador(null);
+                // Crea un objeto Trama
+                Trama trama = new Trama();
+                trama.setNombreTrama("trama1");
+                trama.setDescripcion("descripcion1");
+
+                // Convierte el objeto Trama en una cadena JSON
+                String tramaJson = gson.toJson(trama);
+
+                // Simular el principal
+                Principal principal = new Principal() {
+                        @Override
+                        public String getName() {
+                                return "user";
+                        }
+                };
+                when(hs.findById("1")).thenReturn(historia);
+                // Simula una petición POST a la API con el JSON como cuerpo y verifica la
+                // respuesta
+                mockMvc.perform(post("/api/historia/{hid}/trama/new", "1")
+                                .principal(principal)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(tramaJson))
+                                .andExpect(status().isForbidden());
+        }
+
+        @Test
+        public void newTramaTestForbiddenDifferentCreator() throws Exception {
+                Gson gson = new Gson();
+                String id = "2";
+                Historia historia = new Historia();
+                historia.setId(id);
+                Usuario user = new Usuario(new String("1"), "user@example.com", "user", "pass", "",
+                                Collections.singleton(new UsuarioRol("USER")));
+
+                Usuario user2 = new Usuario(new String("2"), "user@example.com", "user2", "pass", "",
+                                Collections.singleton(new UsuarioRol("USER")));
+                historia.setCreador(user2);
+                // Crea un objeto Trama
+                Trama trama = new Trama();
+                trama.setNombreTrama("trama1");
+                trama.setDescripcion("descripcion1");
+
+                // Convierte el objeto Trama en una cadena JSON
+                String tramaJson = gson.toJson(trama);
+
+                // Simular el principal
+                Principal principal = new Principal() {
+                        @Override
+                        public String getName() {
+                                return "user2";
+                        }
+                };
+                when(hs.findById("2")).thenReturn(historia);
+                // Simula una petición POST a la API con el JSON como cuerpo y verifica la
+                // respuesta
+                mockMvc.perform(post("/api/historia/{hid}/trama/new", "2")
+                                .principal(principal)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(tramaJson))
+                                .andExpect(status().isForbidden());
+        }
+
+        @Test
+        public void newTramaTestForbiddenTramaNull() throws Exception {
+                Gson gson = new Gson();
+                String id = "1";
+                Historia historia = new Historia();
+                historia.setId(id);
+                Usuario user = new Usuario(new String("1"), "user@example.com", "user", "pass", "",
+                                Collections.singleton(new UsuarioRol("USER")));
+                historia.setCreador(user);
+                // Crea un objeto Trama
+                Trama trama = null;
+
+                // Convierte el objeto Trama en una cadena JSON
+                String tramaJson = gson.toJson(trama);
+
+                // Simular el principal
+                Principal principal = new Principal() {
+                        @Override
+                        public String getName() {
+                                return "user";
+                        }
+                };
+                when(hs.findById("1")).thenReturn(historia);
+                // Simula una petición POST a la API con el JSON como cuerpo y verifica la
+                // respuesta
+                mockMvc.perform(post("/api/historia/{hid}/trama/new", "1")
+                                .principal(principal)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(tramaJson))
+                                .andExpect(status().is4xxClientError());
         }
 
         @Test
@@ -264,6 +529,178 @@ public class TramaControllerTest {
         }
 
         @Test
+        public void eliminarTramaTestTramaNull() throws Exception {
+                Gson gson = new Gson();
+                String id = "1";
+                Historia historia = new Historia();
+                historia.setId(id);
+                Usuario user = new Usuario(new String("1"), "user@example.com", "user", "pass", "",
+                                Collections.singleton(new UsuarioRol("USER")));
+                historia.setCreador(user);
+                // Crea un objeto Trama
+                Trama trama = null;
+
+
+                // Convierte el objeto Trama en una cadena JSON
+                String tramaJson = gson.toJson(trama);
+
+                when(us.findUserByUsername("user")).thenReturn(user);
+                when(hs.findByTrama(trama)).thenReturn(historia);
+                when(ts.findById("1")).thenReturn(trama);
+                doNothing().when(ts).deleteTrama(trama);
+
+                Map<String, String> mapId = new HashMap<>();
+                mapId.put("id", "1");
+
+                // Simular el principal
+                Principal principal = new Principal() {
+                        @Override
+                        public String getName() {
+                                return "user";
+                        }
+                };
+                when(hs.findById("1")).thenReturn(historia);
+
+                // Realizar la petición DELETE con el mapa y el principal
+                mockMvc.perform(delete("/api/historia/trama/delete")
+                                .principal(principal)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(gson.toJson(mapId))) // convertir el mapa en JSON usando Gson
+                                .andExpect(status().isForbidden());
+
+        }
+
+        @Test
+        public void eliminarTramaTestTramaNullId() throws Exception {
+                Gson gson = new Gson();
+                String id = "1";
+                Historia historia = new Historia();
+                historia.setId(id);
+                Usuario user = new Usuario(new String("1"), "user@example.com", "user", "pass", "",
+                                Collections.singleton(new UsuarioRol("USER")));
+                historia.setCreador(user);
+                // Crea un objeto Trama
+                Trama trama = null;
+
+
+                // Convierte el objeto Trama en una cadena JSON
+                String tramaJson = gson.toJson(trama);
+
+                when(us.findUserByUsername("user")).thenReturn(user);
+                when(hs.findByTrama(trama)).thenReturn(historia);
+                when(ts.findById("1")).thenReturn(trama);
+                doNothing().when(ts).deleteTrama(trama);
+
+                Map<String, String> mapId = new HashMap<>();
+                mapId.put("id", null);
+
+                // Simular el principal
+                Principal principal = new Principal() {
+                        @Override
+                        public String getName() {
+                                return "user";
+                        }
+                };
+                when(hs.findById("1")).thenReturn(historia);
+
+                // Realizar la petición DELETE con el mapa y el principal
+                mockMvc.perform(delete("/api/historia/trama/delete")
+                                .principal(principal)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(gson.toJson(mapId))) // convertir el mapa en JSON usando Gson
+                                .andExpect(status().isForbidden());
+
+        }
+
+        @Test
+        public void eliminarTramaTestTramaCreatorNull() throws Exception {
+                Gson gson = new Gson();
+                String id = "1";
+                Historia historia = new Historia();
+                historia.setId(id);
+                Usuario user = new Usuario(new String("1"), "user@example.com", "user", "pass", "",
+                                Collections.singleton(new UsuarioRol("USER")));
+                historia.setCreador(user);
+                // Crea un objeto Trama
+                Trama trama = new Trama();
+                trama.setCreador(null);
+
+                // Convierte el objeto Trama en una cadena JSON
+                String tramaJson = gson.toJson(trama);
+
+                when(us.findUserByUsername("user")).thenReturn(user);
+                when(hs.findByTrama(trama)).thenReturn(historia);
+                when(ts.findById("1")).thenReturn(trama);
+                doNothing().when(ts).deleteTrama(trama);
+
+                Map<String, String> mapId = new HashMap<>();
+                mapId.put("id", "1");
+
+                // Simular el principal
+                Principal principal = new Principal() {
+                        @Override
+                        public String getName() {
+                                return "user";
+                        }
+                };
+                when(hs.findById("1")).thenReturn(historia);
+
+                // Realizar la petición DELETE con el mapa y el principal
+                mockMvc.perform(delete("/api/historia/trama/delete")
+                                .principal(principal)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(gson.toJson(mapId))) // convertir el mapa en JSON usando Gson
+                                .andExpect(status().isForbidden());
+
+        }
+
+        @Test
+        public void eliminarTramaTestDifferentCreator() throws Exception {
+                Gson gson = new Gson();
+                String id = "1";
+                Historia historia = new Historia();
+                historia.setId(id);
+                Usuario user = new Usuario(new String("1"), "user@example.com", "user", "pass", "",
+                                Collections.singleton(new UsuarioRol("USER")));
+                Usuario user2 = new Usuario(new String("2"), "user@example.com", "user2", "pass", "",
+                Collections.singleton(new UsuarioRol("USER")));
+                historia.setCreador(user2);
+                // Crea un objeto Trama
+                Trama trama = new Trama();
+                trama.setCreador(user2);
+                trama.setNombreTrama("trama1");
+                trama.setDescripcion("descripcion1");
+
+                // Convierte el objeto Trama en una cadena JSON
+                String tramaJson = gson.toJson(trama);
+
+                when(us.findUserByUsername("user2")).thenReturn(user2);
+                when(hs.findByTrama(trama)).thenReturn(historia);
+                when(ts.findById("1")).thenReturn(trama);
+                doNothing().when(ts).deleteTrama(trama);
+
+                Map<String, String> mapId = new HashMap<>();
+                mapId.put("id", "1");
+
+                // Simular el principal
+                Principal principal = new Principal() {
+                        @Override
+                        public String getName() {
+                                return "user";
+                        }
+                };
+                when(hs.findById("1")).thenReturn(historia);
+
+                // Realizar la petición DELETE con el mapa y el principal
+                mockMvc.perform(delete("/api/historia/trama/delete")
+                                .principal(principal)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(gson.toJson(mapId))) // convertir el mapa en JSON usando Gson
+                                .andExpect(status().isForbidden());
+
+        }
+
+        @Test
         public void updateTramaTest() throws Exception {
                 // Arrange
                 Trama trama = new Trama();
@@ -306,6 +743,261 @@ public class TramaControllerTest {
                                 .andExpect(jsonPath("$.tramas[0].nombreTrama", is("Trama de prueba2")))
                                 .andExpect(jsonPath("$.tramas[0].descripcion", is("Esta es una trama de prueba2")))
                                 .andExpect(jsonPath("$.tramas[0].creador.username", is("user")));
+
+        }
+
+        @Test
+        public void updateTramaTestNull() throws Exception {
+                // Arrange
+                Trama trama = new Trama();
+                trama.setId("1");
+                trama.setNombreTrama("Trama de prueba");
+                trama.setDescripcion("Esta es una trama de prueba");
+                Usuario user = new Usuario(new String("1"), "user@example.com", "user", "pass", "",
+                                Collections.singleton(new UsuarioRol("USER")));
+
+                Trama trama2 = null;
+
+                Historia historia = new Historia();
+                historia.setId("1");
+                historia.setNombreHistoria("Historia de prueba");
+                historia.setDescripcion("Esta es una historia de prueba");
+                historia.setCreador(user);
+                historia.setTramas(Collections.singletonList(trama2));
+
+                when(ts.findById(trama.getId())).thenReturn(trama2);
+                when(hs.findByTrama(trama)).thenReturn(historia);
+                when(hs.findByTrama(trama2)).thenReturn(historia);
+                when(hs.findById("1")).thenReturn(historia);
+                when(us.findUserByUsername("user")).thenReturn(trama.getCreador());
+
+                Gson gson = new Gson();
+                // Act & Assert
+                mockMvc.perform(put("/api/historia/trama/update")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(gson.toJson(trama)))
+                                .andExpect(status().isForbidden());
+
+        }
+
+        @Test
+        public void updateTramaTestCreatorNull() throws Exception {
+                // Arrange
+                Trama trama = new Trama();
+                trama.setId("1");
+                trama.setNombreTrama("Trama de prueba");
+                trama.setDescripcion("Esta es una trama de prueba");
+                Usuario user = new Usuario(new String("1"), "user@example.com", "user", "pass", "",
+                                Collections.singleton(new UsuarioRol("USER")));
+
+                Trama trama2 = new Trama();
+                trama2.setId("1");
+                trama2.setNombreTrama("Trama de prueba2");
+                trama2.setDescripcion("Esta es una trama de prueba2");
+                trama2.setCreador(null);
+
+                Historia historia = new Historia();
+                historia.setId("1");
+                historia.setNombreHistoria("Historia de prueba");
+                historia.setDescripcion("Esta es una historia de prueba");
+                historia.setCreador(user);
+                historia.setTramas(Collections.singletonList(trama2));
+
+                when(ts.findById(trama.getId())).thenReturn(trama2);
+                when(hs.findByTrama(trama)).thenReturn(historia);
+                when(hs.findByTrama(trama2)).thenReturn(historia);
+                when(hs.findById("1")).thenReturn(historia);
+                when(us.findUserByUsername("user")).thenReturn(trama.getCreador());
+
+                Gson gson = new Gson();
+                // Act & Assert
+                mockMvc.perform(put("/api/historia/trama/update")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(gson.toJson(trama)))
+                                .andExpect(status().isForbidden());
+
+        }
+
+        @Test
+        public void updateTramaTestNotSameCreator() throws Exception {
+                // Arrange
+                Trama trama = new Trama();
+                trama.setId("1");
+                trama.setNombreTrama("Trama de prueba");
+                trama.setDescripcion("Esta es una trama de prueba");
+                Usuario user = new Usuario(new String("1"), "user@example.com", "user", "pass", "",
+                                Collections.singleton(new UsuarioRol("USER")));
+                Usuario user2 = new Usuario(new String("2"), "user@example.com", "user2", "pass", "",
+                                Collections.singleton(new UsuarioRol("USER")));
+
+                Trama trama2 = new Trama();
+                trama2.setId("1");
+                trama2.setNombreTrama("Trama de prueba2");
+                trama2.setDescripcion("Esta es una trama de prueba2");
+                trama2.setCreador(user2);
+
+                Historia historia = new Historia();
+                historia.setId("1");
+                historia.setNombreHistoria("Historia de prueba");
+                historia.setDescripcion("Esta es una historia de prueba");
+                historia.setCreador(user);
+                historia.setTramas(Collections.singletonList(trama2));
+
+                when(ts.findById(trama.getId())).thenReturn(trama2);
+                when(hs.findByTrama(trama)).thenReturn(historia);
+                when(hs.findByTrama(trama2)).thenReturn(historia);
+                when(hs.findById("1")).thenReturn(historia);
+                when(us.findUserByUsername("user2")).thenReturn(user2);
+
+                Gson gson = new Gson();
+                // Act & Assert
+                mockMvc.perform(put("/api/historia/trama/update")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(gson.toJson(trama)))
+                                .andExpect(status().isForbidden());
+
+        }
+
+        @Test
+        public void updateTramaTestOGNull() throws Exception {
+                // Arrange
+                Trama trama = new Trama();
+                trama.setId("1");
+                trama.setNombreTrama("Trama de prueba");
+                trama.setDescripcion("Esta es una trama de prueba");
+                Usuario user = new Usuario(new String("1"), "user@example.com", "user", "pass", "",
+                                Collections.singleton(new UsuarioRol("USER")));
+
+                Trama trama2 = new Trama();
+                trama2.setId("1");
+                trama2.setNombreTrama("Trama de prueba2");
+                trama2.setDescripcion("Esta es una trama de prueba2");
+                trama2.setCreador(user);
+
+                Historia historia = null;
+
+
+                when(ts.findById(trama.getId())).thenReturn(trama2);
+                when(hs.findByTrama(trama)).thenReturn(historia);
+                when(hs.findByTrama(trama2)).thenReturn(historia);
+                when(hs.findById("1")).thenReturn(historia);
+
+                Gson gson = new Gson();
+                // Act & Assert
+                mockMvc.perform(put("/api/historia/trama/update")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(gson.toJson(trama)))
+                                .andExpect(status().isForbidden());
+
+        }
+
+        @Test
+        public void updateTramaTestOGCreadorNull() throws Exception {
+                // Arrange
+                Trama trama = new Trama();
+                trama.setId("1");
+                trama.setNombreTrama("Trama de prueba");
+                trama.setDescripcion("Esta es una trama de prueba");
+                Usuario user = new Usuario(new String("1"), "user@example.com", "user", "pass", "",
+                                Collections.singleton(new UsuarioRol("USER")));
+
+                Trama trama2 = new Trama();
+                trama2.setId("1");
+                trama2.setNombreTrama("Trama de prueba2");
+                trama2.setDescripcion("Esta es una trama de prueba2");
+                trama2.setCreador(user);
+
+                Historia historia = new Historia();
+                historia.setId("1");
+                historia.setNombreHistoria("Historia de prueba");
+                historia.setDescripcion("Esta es una historia de prueba");
+                historia.setCreador(null);
+                historia.setTramas(Collections.singletonList(trama2));
+
+                when(ts.findById(trama.getId())).thenReturn(trama2);
+                when(hs.findByTrama(trama)).thenReturn(historia);
+                when(hs.findByTrama(trama2)).thenReturn(historia);
+                when(hs.findById("1")).thenReturn(historia);
+                when(us.findUserByUsername("user")).thenReturn(trama.getCreador());
+
+                Gson gson = new Gson();
+                // Act & Assert
+                mockMvc.perform(put("/api/historia/trama/update")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(gson.toJson(trama)))
+                                .andExpect(status().isForbidden());
+
+        }
+
+        @Test
+        public void updateTramaTestOGNotSameCreator() throws Exception {
+                // Arrange
+                Trama trama = new Trama();
+                trama.setId("1");
+                trama.setNombreTrama("Trama de prueba");
+                trama.setDescripcion("Esta es una trama de prueba");
+                Usuario user = new Usuario(new String("2"), "user@example.com", "user2", "pass", "",
+                                Collections.singleton(new UsuarioRol("USER")));
+
+                Trama trama2 = new Trama();
+                trama2.setId("1");
+                trama2.setNombreTrama("Trama de prueba2");
+                trama2.setDescripcion("Esta es una trama de prueba2");
+                trama2.setCreador(user);
+
+                Historia historia = new Historia();
+                historia.setId("1");
+                historia.setNombreHistoria("Historia de prueba");
+                historia.setDescripcion("Esta es una historia de prueba");
+                historia.setCreador(user);
+                historia.setTramas(Collections.singletonList(trama2));
+
+                when(ts.findById(trama.getId())).thenReturn(trama2);
+                when(hs.findByTrama(trama)).thenReturn(historia);
+                when(hs.findByTrama(trama2)).thenReturn(historia);
+                when(hs.findById("1")).thenReturn(historia);
+                when(us.findUserByUsername("user")).thenReturn(trama.getCreador());
+
+                Gson gson = new Gson();
+                // Act & Assert
+                mockMvc.perform(put("/api/historia/trama/update")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(gson.toJson(trama)))
+                                .andExpect(status().isForbidden());
+        }
+
+        @Test
+        public void updateTramaTestChangedToNull() throws Exception {
+                // Arrange
+                Trama trama = null;
+                Usuario user = new Usuario(new String("1"), "user@example.com", "user", "pass", "",
+                                Collections.singleton(new UsuarioRol("USER")));
+
+                Trama trama2 = new Trama();
+                trama2.setId("1");
+                trama2.setNombreTrama("Trama de prueba2");
+                trama2.setDescripcion("Esta es una trama de prueba2");
+                trama2.setCreador(user);
+
+                Historia historia = new Historia();
+                historia.setId("1");
+                historia.setNombreHistoria("Historia de prueba");
+                historia.setDescripcion("Esta es una historia de prueba");
+                historia.setCreador(user);
+                historia.setTramas(Collections.singletonList(trama2));
+
+                when(ts.findById("1")).thenReturn(trama2);
+                when(hs.findByTrama(trama)).thenReturn(historia);
+                when(hs.findByTrama(trama2)).thenReturn(historia);
+                when(hs.findById("1")).thenReturn(historia);
+                when(us.findUserByUsername("user")).thenReturn(user);
+
+                Gson gson = new Gson();
+                // Act & Assert
+                mockMvc.perform(put("/api/historia/trama/update")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(gson.toJson(trama)))
+                                .andExpect(status().is4xxClientError());
 
         }
 

@@ -82,6 +82,10 @@ public class TramaController {
     public ResponseEntity<Historia> newTrama(@PathVariable String hid, @Valid @RequestBody Trama trama,
             Principal principal,
             BindingResult result) {
+                
+        if (result.hasErrors()) {
+            return new ResponseEntity<>(new Historia(), HttpStatus.FORBIDDEN);
+        }
 
         Usuario loggedUser = us.findUserByUsername(principal.getName());
 
@@ -101,10 +105,6 @@ public class TramaController {
 
         trama.setCreador(loggedUser);
 
-        if (result.hasErrors()) {
-            return new ResponseEntity<>(new Historia(), HttpStatus.FORBIDDEN);
-        }
-
         ts.saveTrama(trama);
 
         og.añadirTrama(trama);
@@ -122,9 +122,7 @@ public class TramaController {
         Trama trama_og = ts.findById(trama.getId());
 
         Historia og = hs.findByTrama(trama_og);
-        String hid = og.getId();
 
-        Usuario loggedUser = us.findUserByUsername(principal.getName());
 
         if (og == null) {
             return new ResponseEntity<>(new Historia(), HttpStatus.FORBIDDEN);
@@ -149,6 +147,11 @@ public class TramaController {
         if (!(trama_og.getCreador().getUsername().equals(principal.getName()))) {
             return new ResponseEntity<>(new Historia(), HttpStatus.FORBIDDEN);
         }
+
+        
+        String hid = og.getId();
+
+        Usuario loggedUser = us.findUserByUsername(principal.getName());
 
         trama.setCreador(loggedUser);
 
