@@ -81,11 +81,11 @@ public class EscenaController {
             return new ResponseEntity<>(new Historia(), HttpStatus.FORBIDDEN);
         }
 
-        escena.setCreador(loggedUser);
-
         if (result.hasErrors()) {
             return new ResponseEntity<>(new Historia(), HttpStatus.FORBIDDEN);
         }
+
+        escena.setCreador(loggedUser);
 
         es.saveEscena(escena);
 
@@ -169,6 +169,10 @@ public class EscenaController {
         }
 
         Trama og = ts.findByEscena(escena);
+
+        if (og == null) {
+            return new ResponseEntity<>(new Historia(), HttpStatus.FORBIDDEN);
+        }
 
         es.deleteEscena(escena);
 
