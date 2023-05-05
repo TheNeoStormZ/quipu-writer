@@ -83,18 +83,18 @@ public class PersonajeController {
     public ResponseEntity<String> newPersonaje(@Valid @RequestBody Personaje personaje, Principal principal,
             BindingResult result) {
 
-        Usuario loggedUser = us.findUserByUsername(principal.getName());
-
-        personaje.setCreador(loggedUser);
-
         if (result.hasErrors()) {
             FieldError error = result.getFieldError();
             String message = "Error desconocido";
-            if (error != null){
+            if (error != null) {
                 message = error.getField() + ": " + error.getDefaultMessage();
             }
             return new ResponseEntity<>(message, HttpStatus.FORBIDDEN);
         }
+
+        Usuario loggedUser = us.findUserByUsername(principal.getName());
+
+        personaje.setCreador(loggedUser);
 
         ps.savePersonaje(personaje);
 
@@ -106,29 +106,34 @@ public class PersonajeController {
     public ResponseEntity<String> updatePersonaje(@RequestBody Personaje personaje, Principal principal,
             BindingResult result) {
 
+    if (result.hasErrors()) {
+        FieldError error = result.getFieldError();
+        String message = "Error desconocido";
+        if (error != null) {
+            message = error.getField() + ": " + error.getDefaultMessage();
+        }
+        return new ResponseEntity<>(message, HttpStatus.FORBIDDEN);
+    }
 
-    if (personaje.getId() != null){
-        Personaje og = ps.findById(personaje.getId());
+        if (personaje == null) {
+            return new ResponseEntity<>("Not found", HttpStatus.FORBIDDEN);
+        }
 
+        if (personaje.getId() != null) {
+            Personaje og = ps.findById(personaje.getId());
 
-            if (!(og.getCreador().getUsername().equals(principal.getName()))) {
+            if (og.getCreador() == null) {
                 return new ResponseEntity<>("Not the owner", HttpStatus.FORBIDDEN);
             }
 
+            else if (!(og.getCreador().getUsername().equals(principal.getName()))) {
+                return new ResponseEntity<>("Not the owner", HttpStatus.FORBIDDEN);
+            }
 
-    }
+        }
         Usuario loggedUser = us.findUserByUsername(principal.getName());
 
         personaje.setCreador(loggedUser);
-
-        if (result.hasErrors()) {
-            FieldError error = result.getFieldError();
-            String message = "Error desconocido";
-            if (error != null){
-                message = error.getField() + ": " + error.getDefaultMessage();
-            }
-            return new ResponseEntity<>(message, HttpStatus.FORBIDDEN);
-        }
 
         ps.savePersonaje(personaje);
 
@@ -140,7 +145,16 @@ public class PersonajeController {
     public ResponseEntity<String> eliminarPersonaje(@RequestBody Map<String, String> mapId, Principal principal) {
         String id = mapId.get("id");
         Personaje personaje = ps.findById(id);
-        if (!(personaje.getCreador().getUsername().equals(principal.getName()))) {
+
+        if (personaje == null) {
+            return new ResponseEntity<>("Personaje not found", HttpStatus.FORBIDDEN);
+        }
+
+        else if (personaje.getCreador() == null) {
+            return new ResponseEntity<>("Not the owner", HttpStatus.FORBIDDEN);
+        }
+
+        else if (!(personaje.getCreador().getUsername().equals(principal.getName()))) {
             return new ResponseEntity<>("Not the owner", HttpStatus.FORBIDDEN);
         }
         ps.deletePersonaje(personaje);
@@ -151,12 +165,12 @@ public class PersonajeController {
     @PostMapping(value = "/api/personajes/import")
     public ResponseEntity<String> importarPersonaje(@RequestBody @Valid Personaje personaje, Principal principal) {
 
-        Personaje personajeFound= null;
+        Personaje personajeFound = null;
 
         try {
             personajeFound = ps.findById(personaje.getId());
 
-        }  catch (Exception e) {
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
 
@@ -164,29 +178,29 @@ public class PersonajeController {
 
         if (personajeFound == null) {
             message = "Personaje exportado correctamente";
-        } 
-        else {
+        } else {
             message = "Personaje actualizado correctamente";
         }
 
-
-
-        
         Usuario loggedUser = us.findUserByUsername(principal.getName());
 
         personaje.setCreador(loggedUser);
-        
+
         ps.savePersonaje(personaje);
         return new ResponseEntity<>(message, HttpStatus.CREATED);
 
     }
- 
-    @GetMapping(value = "/api/personajes/{id}/export",produces = MediaType.APPLICATION_JSON_VALUE)
+
+    @GetMapping(value = "/api/personajes/{id}/export", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> exportarPersonaje(@PathVariable String id, Principal principal) {
         Personaje personaje = ps.findById(id);
 
         if (personaje == null) {
             return ResponseEntity.notFound().build();
+        }
+
+        else if (personaje.getCreador() == null) {
+            return new ResponseEntity<>("Not the owner", HttpStatus.FORBIDDEN);
         }
 
         else if (!(personaje.getCreador().getUsername().equals(principal.getName()))) {
@@ -197,8 +211,6 @@ public class PersonajeController {
             // Convierte el objeto a formato JSON
             ObjectMapper objectMapper = new ObjectMapper();
             String elementoJson = objectMapper.writeValueAsString(personaje);
-
-            
 
             // Se devuelve una respuesta con el elemento exportado
             return ResponseEntity.ok(elementoJson);

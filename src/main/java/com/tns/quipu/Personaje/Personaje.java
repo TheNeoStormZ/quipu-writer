@@ -7,6 +7,10 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.Valid;
+
 import com.tns.quipu.Historia.Historia;
 import com.tns.quipu.Usuario.Usuario;
 
@@ -32,6 +36,9 @@ public class Personaje {
     @Id
     public String id;
 
+    @NotEmpty
+	@NotBlank
+    @Valid
     public String nombre;
 
     public String primerApellido;

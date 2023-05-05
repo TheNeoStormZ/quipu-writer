@@ -30,7 +30,6 @@ public class EscenaController {
     private final EscenaService es;
     private final HistoriaService hs;
     private final TramaService ts;
-    
 
     @Autowired
     private UsuarioService us;
@@ -42,12 +41,20 @@ public class EscenaController {
         this.ts = ts;
     }
 
-
     @GetMapping(value = "/api/historia/trama/escena/{id}")
     public ResponseEntity<Escena> getEscena(@PathVariable String id, Principal principal) {
 
         Escena escena = es.findById(id);
-        if (!(escena.getCreador().getUsername().equals(principal.getName()))) {
+
+        if (escena == null) {
+            return new ResponseEntity<>(new Escena(), HttpStatus.FORBIDDEN);
+        }
+
+        else if (escena.getCreador() == null) {
+            return new ResponseEntity<>(new Escena(), HttpStatus.FORBIDDEN);
+        }
+
+        else if (!(escena.getCreador().getUsername().equals(principal.getName()))) {
             return new ResponseEntity<>(new Escena(), HttpStatus.FORBIDDEN);
         }
         return new ResponseEntity<>(es.findById(id), HttpStatus.OK);
@@ -62,15 +69,23 @@ public class EscenaController {
 
         Trama t_og = ts.findById(tid);
 
-        if (!(t_og.getCreador().getUsername().equals(principal.getName()))) {
+        if (t_og == null) {
             return new ResponseEntity<>(new Historia(), HttpStatus.FORBIDDEN);
         }
 
-        escena.setCreador(loggedUser);
+        else if (t_og.getCreador() == null) {
+            return new ResponseEntity<>(new Historia(), HttpStatus.FORBIDDEN);
+        }
+
+        else if (!(t_og.getCreador().getUsername().equals(principal.getName()))) {
+            return new ResponseEntity<>(new Historia(), HttpStatus.FORBIDDEN);
+        }
 
         if (result.hasErrors()) {
             return new ResponseEntity<>(new Historia(), HttpStatus.FORBIDDEN);
         }
+
+        escena.setCreador(loggedUser);
 
         es.saveEscena(escena);
 
@@ -96,7 +111,23 @@ public class EscenaController {
 
         Usuario loggedUser = us.findUserByUsername(principal.getName());
 
+        if (og == null) {
+            return new ResponseEntity<>(new Historia(), HttpStatus.FORBIDDEN);
+        }
+
+        else if (og.getCreador() == null) {
+            return new ResponseEntity<>(new Historia(), HttpStatus.FORBIDDEN);
+        }
+
         if (!(og.getCreador().getUsername().equals(principal.getName()))) {
+            return new ResponseEntity<>(new Historia(), HttpStatus.FORBIDDEN);
+        }
+
+        else if (escena_og == null) {
+            return new ResponseEntity<>(new Historia(), HttpStatus.FORBIDDEN);
+        }
+
+        else if (escena_og.getCreador() == null) {
             return new ResponseEntity<>(new Historia(), HttpStatus.FORBIDDEN);
         }
 
@@ -125,11 +156,23 @@ public class EscenaController {
 
         Escena escena = es.findById(id);
 
-        if (!(escena.getCreador().getUsername().equals(principal.getName()))) {
+        if (escena == null) {
+            return new ResponseEntity<>(new Historia(), HttpStatus.FORBIDDEN);
+        }
+
+        else if (escena.getCreador() == null) {
+            return new ResponseEntity<>(new Historia(), HttpStatus.FORBIDDEN);
+        }
+
+        else if (!(escena.getCreador().getUsername().equals(principal.getName()))) {
             return new ResponseEntity<>(new Historia(), HttpStatus.FORBIDDEN);
         }
 
         Trama og = ts.findByEscena(escena);
+
+        if (og == null) {
+            return new ResponseEntity<>(new Historia(), HttpStatus.FORBIDDEN);
+        }
 
         es.deleteEscena(escena);
 
