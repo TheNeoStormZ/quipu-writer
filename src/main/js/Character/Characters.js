@@ -1,9 +1,9 @@
 const React = require("react");
 const ReactDOM = require("react-dom/client");
+import CloseIcon from "@mui/icons-material/Close";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import FilterHdrIcon from "@mui/icons-material/FilterHdr";
 import SearchIcon from "@mui/icons-material/Search";
-import Link from "@mui/material/Link";
 import {
   Card,
   CardActionArea,
@@ -19,12 +19,12 @@ import CssBaseline from "@mui/material/CssBaseline";
 import Grid from "@mui/material/Grid";
 import IconButton from "@mui/material/IconButton";
 import InputAdornment from "@mui/material/InputAdornment";
+import Link from "@mui/material/Link";
 import Stack from "@mui/material/Stack";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { Link as LinkRouter, useNavigate } from "react-router-dom";
-import CloseIcon from "@mui/icons-material/Close";
 import DataTable from "./CharacterTable";
 
 import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
@@ -35,13 +35,28 @@ import Badge from "@mui/material/Badge";
 import axios from "axios";
 
 import Footer from "../Footer";
-import Modal from "../Utils/Modal";
 import Navigation from "../Navigation";
+import Modal from "../Utils/Modal";
+
+import Checkbox from "@mui/material/Checkbox";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
+import ListItemText from "@mui/material/ListItemText";
+import MenuItem from "@mui/material/MenuItem";
+import OutlinedInput from "@mui/material/OutlinedInput";
+import Select from "@mui/material/Select";
 
 const theme = createTheme();
 
 export default function Personajes() {
   const [personajes, setPersonajes] = React.useState([]);
+
+  const [personajesFiltradoCatOG, setPersonajesFiltradoCatOG] = React.useState(
+    []
+  );
+
+  const [personajesFiltradoCat, setPersonajesFiltradoCat] = React.useState([]);
+
   const [personajesPorSecciones, setPersonajesPorSecciones] = React.useState(
     {}
   );
@@ -55,14 +70,37 @@ export default function Personajes() {
 
   const [dBResults, setDBResults] = React.useState([]);
 
+  const [seccionName, setSeccionName] = React.useState([]);
+
+  const ITEM_HEIGHT = 48;
+  const ITEM_PADDING_TOP = 8;
+  const MenuProps = {
+    PaperProps: {
+      style: {
+        maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+        width: 250,
+      },
+    },
+  };
+
   const handleSearchChange = (event) => {
     const query = event.target.value;
     setSearchQuery(query);
-
-    const filtered = personajes.filter((personaje) =>
-      personaje.nombre.toLowerCase().includes(query.toLowerCase())
-    );
-    generarSeccionesPersonajes(filtered);
+    if (seccionName.length > 0) {
+      const filtered = personajesFiltradoCatOG.filter(
+        (personaje) =>
+          personaje.nombre.toLowerCase().includes(query.toLowerCase()) ||
+          personaje.descripcion.toLowerCase().includes(query.toLowerCase())
+      );
+      setPersonajesFiltradoCat(filtered);
+    } else {
+      const filtered = personajes.filter(
+        (personaje) =>
+          personaje.nombre.toLowerCase().includes(query.toLowerCase()) ||
+          personaje.descripcion.toLowerCase().includes(query.toLowerCase())
+      );
+      generarSeccionesPersonajes(filtered);
+    }
   };
 
   const handleSearchDBPedia = (event) => {
@@ -81,6 +119,27 @@ export default function Personajes() {
       .catch((error) => {
         console.error(error);
       });
+  };
+
+  const handleSelectorChange = (event) => {
+    const {
+      target: { value },
+    } = event;
+
+    let seccionesElegidas =
+      typeof value === "string" ? value.split(",") : value;
+    console.log(seccionesElegidas);
+    setSeccionName(seccionesElegidas);
+    setSearchQuery("");
+
+    let resultado = seccionesElegidas.map((sec) => personajesPorSecciones[sec]);
+
+    resultado = [...new Set(resultado.flat())];
+
+    console.log(resultado);
+
+    setPersonajesFiltradoCat(resultado);
+    setPersonajesFiltradoCatOG(resultado);
   };
 
   const handleImportInit = (event) => {
@@ -120,6 +179,7 @@ export default function Personajes() {
       .get("/api/personajes")
       .then((response) => {
         setPersonajes(response.data);
+        setPersonajesFiltradoCat(response.data);
         generarSeccionesPersonajes(response.data);
         setShowButton(true);
       })
@@ -147,7 +207,6 @@ export default function Personajes() {
 
     // Este es el map() que recorre el array de personajes
     personajes.map((personaje) => {
-      
       let historiasApariciones = personaje.historiasApariciones.filter(
         function (val) {
           return val != null;
@@ -233,19 +292,43 @@ export default function Personajes() {
               spacing={2}
               justifyContent="center"
             ></Stack>
-            <TextField
-              label="Buscar"
-              value={searchQuery}
-              fullWidth
-              onChange={handleSearchChange}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <SearchIcon />
-                  </InputAdornment>
-                ),
-              }}
-            />
+            <div style={{ display: "flex", flexDirection: "row" }}>
+              <TextField
+                label="Buscar"
+                value={searchQuery}
+                fullWidth
+                onChange={handleSearchChange}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <SearchIcon />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <FormControl sx={{ ml: 1, width: 300 }}>
+                <InputLabel id="demo-multiple-checkbox-label">
+                  Filtrar
+                </InputLabel>
+                <Select
+                  labelId="demo-multiple-checkbox-label"
+                  id="demo-multiple-checkbox"
+                  multiple
+                  value={seccionName}
+                  onChange={handleSelectorChange}
+                  input={<OutlinedInput label="Tag" />}
+                  renderValue={(selected) => selected.join(", ")}
+                  MenuProps={MenuProps}
+                >
+                  {Object.keys(personajesPorSecciones).map((name) => (
+                    <MenuItem key={name} value={name}>
+                      <Checkbox checked={seccionName.indexOf(name) > -1} />
+                      <ListItemText primary={name} />
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </div>
           </Container>
         </Box>
         <Container sx={{ py: 1 }} maxWidth="md">
@@ -386,60 +469,110 @@ export default function Personajes() {
             )}
           </Grid>
           <Grid container>
-            {Object.keys(personajesPorSecciones).map((seccion) => (
-              <>
-                <Typography variant="h5" color="text.primary" paragraph>
-                  {seccion}
-                </Typography>
-                <Grid container spacing={4} sx={{ pb: 2 }}>
-                  {personajesPorSecciones[seccion].map((personaje) => (
-                    <Grid item key={personaje.id} xs={12} sm={6} md={4}>
-                      <Card
-                        sx={{
-                          height: "100%",
-                          display: "flex",
-                          flexDirection: "column",
-                        }}
-                      >
-                        <CardActionArea onClick={() => handleClick(personaje)}>
-                          <CardHeader
-                            avatar={
-                              <Avatar alt="avatar" src={personaje.urlIcon} />
-                            }
-                          />
-
-                          <CardContent sx={{ flexGrow: 1 }}>
-                            <Typography
-                              gutterBottom
-                              variant="h5"
-                              component="h2"
-                            >
-                              {personaje.nombre}
-                            </Typography>
-                            <Typography>{personaje.descripcion}</Typography>
-                          </CardContent>
-                        </CardActionArea>
-                        <CardActions
+            {seccionName.length == 0 &&
+              Object.keys(personajesPorSecciones).map((seccion) => (
+                <>
+                  <Typography variant="h5" color="text.primary" paragraph>
+                    {seccion}
+                  </Typography>
+                  <Grid container spacing={4} sx={{ pb: 2 }}>
+                    {personajesPorSecciones[seccion].map((personaje) => (
+                      <Grid item key={personaje.id} xs={12} sm={6} md={4}>
+                        <Card
                           sx={{
-                            width: "100%",
-                            justifyContent: "flex-end",
-                            pr: 3,
-                            mt: "auto",
+                            height: "100%",
+                            display: "flex",
+                            flexDirection: "column",
                           }}
                         >
-                          <Badge
-                            badgeContent={personaje.numEscenas}
-                            color="primary"
+                          <CardActionArea
+                            onClick={() => handleClick(personaje)}
                           >
-                            <FilterHdrIcon color="action" />
-                          </Badge>
-                        </CardActions>
-                      </Card>
-                    </Grid>
-                  ))}
-                </Grid>
-              </>
-            ))}
+                            <CardHeader
+                              avatar={
+                                <Avatar alt="avatar" src={personaje.urlIcon} />
+                              }
+                            />
+
+                            <CardContent sx={{ flexGrow: 1 }}>
+                              <Typography
+                                gutterBottom
+                                variant="h5"
+                                component="h2"
+                              >
+                                {personaje.nombre}
+                              </Typography>
+                              <Typography>{personaje.descripcion}</Typography>
+                            </CardContent>
+                          </CardActionArea>
+                          <CardActions
+                            sx={{
+                              width: "100%",
+                              justifyContent: "flex-end",
+                              pr: 3,
+                              mt: "auto",
+                            }}
+                          >
+                            <Badge
+                              badgeContent={personaje.numEscenas}
+                              color="primary"
+                            >
+                              <FilterHdrIcon color="action" />
+                            </Badge>
+                          </CardActions>
+                        </Card>
+                      </Grid>
+                    ))}
+                  </Grid>
+                </>
+              ))}
+            {seccionName.length > 0 ? (
+              <Grid container spacing={4} sx={{ pb: 2 }}>
+                {personajesFiltradoCat.map((personaje, index) => (
+                  <Grid item key={personaje.id} xs={12} sm={6} md={4}>
+                    <Card
+                      sx={{
+                        height: "100%",
+                        display: "flex",
+                        flexDirection: "column",
+                      }}
+                    >
+                      <CardActionArea onClick={() => handleClick(personaje)}>
+                        <CardHeader
+                          avatar={
+                            <Avatar alt="avatar" src={personaje.urlIcon} />
+                          }
+                        />
+
+                        <CardContent sx={{ flexGrow: 1 }}>
+                          <Typography gutterBottom variant="h5" component="h2">
+                            {personaje.nombre}
+                          </Typography>
+                          <Typography>{personaje.descripcion}</Typography>
+                        </CardContent>
+                      </CardActionArea>
+                      <CardActions
+                        sx={{
+                          width: "100%",
+                          justifyContent: "flex-end",
+                          pr: 3,
+                          mt: "auto",
+                        }}
+                      >
+                        <Badge
+                          badgeContent={personaje.numEscenas}
+                          color="primary"
+                        >
+                          <FilterHdrIcon color="action" />
+                        </Badge>
+                      </CardActions>
+                    </Card>
+                  </Grid>
+                ))}
+              </Grid>
+            ) : (
+              ""
+            )}
           </Grid>
         </Container>
       </main>
