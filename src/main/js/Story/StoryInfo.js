@@ -16,7 +16,7 @@ import {
   CardActionArea,
   CardActions,
   CardContent,
-  CardHeader
+  CardHeader,
 } from "@mui/material";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -47,6 +47,8 @@ import Navigation from "../Navigation";
 
 import axios from "axios";
 import Footer from "../Footer";
+
+import GroupWorkIcon from "@mui/icons-material/GroupWork";
 
 const theme = createTheme();
 
@@ -120,7 +122,7 @@ export default function Historia() {
     let promesasRelaciones = Array.from(personajesInvolucrados).map(
       (personaje) => obtenerRelaciones(personaje.id)
     );
-    
+
     let reSinDuplicados = [];
 
     try {
@@ -275,6 +277,10 @@ export default function Historia() {
     navigate("/historia/tramas/add");
   };
 
+  const handleRelationshipsGraph = async (event) => {
+    navigate("/historia/graph");
+  };
+
   function removeEmpty(obj) {
     return Object.fromEntries(
       Object.entries(obj).filter(
@@ -418,35 +424,64 @@ export default function Historia() {
           <div>
             <Box>
               <div style={{ display: "flex", alignItems: "left" }}>
-                <BookIcon sx={{ width: 98, height: 98 }} />
-
-                <Typography
-                  component="h3"
-                  variant="h5"
-                  align="left"
-                  color="text.primary"
-                  sx={{ mt: 2, ml: 2 }}
-                  gutterBottom
+                <BookIcon sx={{ width: 140, height: 140 }} />
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "left",
+                    flexDirection: "column",
+                  }}
                 >
-                  {historia.nombreHistoria}
-                  <IconButton aria-label="export" onClick={handleExport}>
-                    <CloudDownloadIcon />
-                  </IconButton>
-
-                  <IconButton aria-label="edit">
-                    <LinkRouter to="/historia/update">
-                      {" "}
-                      <EditIcon />
-                    </LinkRouter>
-                  </IconButton>
-
-                  <IconButton
-                    aria-label="delete"
-                    onClick={handleClickOpenDelete}
+                  <Typography
+                    component="h3"
+                    variant="h5"
+                    align="left"
+                    color="text.primary"
+                    sx={{ mt: 2, ml: 2 }}
+                    gutterBottom
                   >
-                    <DeleteIcon />
-                  </IconButton>
-                </Typography>
+                    {historia.nombreHistoria}
+                    <IconButton aria-label="export" onClick={handleExport}>
+                      <CloudDownloadIcon />
+                    </IconButton>
+
+                    <IconButton aria-label="edit">
+                      <LinkRouter to="/historia/update">
+                        {" "}
+                        <EditIcon />
+                      </LinkRouter>
+                    </IconButton>
+
+                    <IconButton
+                      aria-label="delete"
+                      onClick={handleClickOpenDelete}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </Typography>
+
+                  <div>
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      startIcon={<TimelineIcon />}
+                      onClick={handleTimeline}
+                      sx={{ mt: 2, ml: 2 }}
+                    >
+                      Linea de tiempo
+                    </Button>
+
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      startIcon={<GroupWorkIcon />}
+                      onClick={handleRelationshipsGraph}
+                      sx={{ mt: 2, ml: 2 }}
+                    >
+                      Relaciones de personajes
+                    </Button>
+                  </div>
+                </div>
               </div>
               {datosHistoria.map((personajeDato, index) => (
                 <div
@@ -552,7 +587,13 @@ export default function Historia() {
                   </Typography>
                 </div>
               )}
-              <div>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "left",
+                  flexDirection: "row",
+                }}
+              >
                 <Typography
                   component="h3"
                   variant="h5"
@@ -570,15 +611,6 @@ export default function Historia() {
                   onClick={handleNewArc}
                 >
                   Añadir Trama
-                </Button>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  startIcon={<TimelineIcon />}
-                  onClick={handleTimeline}
-                  sx={{ mt: 2, ml: 2 }}
-                >
-                  Linea de tiempo
                 </Button>
               </div>
             </Box>

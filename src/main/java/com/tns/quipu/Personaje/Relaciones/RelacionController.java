@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.tns.quipu.Historia.Historia;
+import com.tns.quipu.Historia.HistoriaService;
 import com.tns.quipu.Personaje.Personaje;
 import com.tns.quipu.Personaje.PersonajeService;
 import com.tns.quipu.Usuario.Usuario;
@@ -27,6 +29,8 @@ public class RelacionController {
 
     private final PersonajeService ps;
 
+    private final HistoriaService hs;
+
     @Autowired
     private RelacionService rs;
 
@@ -34,8 +38,9 @@ public class RelacionController {
     private UsuarioService us;
 
     @Autowired
-    public RelacionController(PersonajeService ps) {
+    public RelacionController(PersonajeService ps, HistoriaService hs) {
         this.ps = ps;
+        this.hs=hs;
     }
 
     @GetMapping(value = "/api/personajes/relaciones/{pid}")
@@ -80,6 +85,37 @@ public class RelacionController {
         List<Relacion> personajes = rs.findAllPersonajeRelaciones(personaje, loggedUser);
 
         return new ResponseEntity<>(personajes, HttpStatus.OK);
+
+    }
+
+    @GetMapping(value = "/api/historia/relaciones/{hid}/detailed")
+    public ResponseEntity<Set<Relacion>> listRelacionesHistoriaDetailed(@PathVariable String hid, Principal principal) {
+
+        Historia historia = hs.findById(hid);
+
+        
+        if (historia == null) {
+            return new ResponseEntity<>(new HashSet<>(), HttpStatus.FORBIDDEN);
+        }
+
+        else if ((historia.getCreador() == null)) {
+            return new ResponseEntity<>(new HashSet<>(), HttpStatus.FORBIDDEN);
+        }
+
+        else if (!(historia.getCreador().getUsername().equals(principal.getName()))) {
+            return new ResponseEntity<>(new HashSet<>(), HttpStatus.FORBIDDEN);
+        }
+
+        Usuario loggedUser = us.findUserByUsername(principal.getName());
+        Set<Personaje> personajes = historia.obtenerPersonajes();
+
+        Set<Relacion> relaciones = new HashSet<>();
+
+        for (Personaje personaje: personajes) {
+            relaciones.addAll(rs.findAllPersonajeRelacionesHistoria(personaje, historia,loggedUser));
+        }
+
+        return new ResponseEntity<>(relaciones, HttpStatus.OK);
 
     }
 

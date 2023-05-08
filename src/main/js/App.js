@@ -5,6 +5,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import StoryAdd from "./Story/StoryAdd";
 import StoryInfo from "./Story/StoryInfo";
 import StoryUpdate from "./Story/StoryUpdate"
+import StoryGraph from "./Story/StoryRelationshipsGraphPage"
 
 import StoryArcAdd from "./Story/StoryArc/StoryArcAdd";
 import StoryArcInfo from "./Story/StoryArc/StoryArcInfo";
@@ -20,7 +21,7 @@ import Characters from "./Character/Characters";
 import CharacterUpdate from "./Character/CharacterUpdate";
 import RelationshipAdd from "./Character/Relationships/RelationshipAdd";
 import RelationshipUpdate from "./Character/Relationships/RelationshipUpdate";
-import RelationshipGraph from "./Character/Relationships/RelationshipGraphPage";
+import RelationshipGraphs from "./Character/Relationships/RelationshipGraphPage";
 
 import UserInfo from "./User/UserInfo";
 import UserUpdate from "./User/UserUpdate";
@@ -45,11 +46,12 @@ export default function App() {
                 <Route path="/personaje/update" element= {<CharacterUpdate/>} />
                 <Route path="/personaje/relaciones/add" element= {<RelationshipAdd/>} />
                 <Route path="/personaje/relaciones/update" element= {<RelationshipUpdate/>} />
-                <Route path="/personaje/relaciones/graph" element= {<RelationshipGraph/>} />
+                <Route path="/personaje/relaciones/graph" element= {<RelationshipGraphs/>} />
 
               <Route path="/historias/new" element= {<StoryAdd/>} />
               <Route path="/historia/info" element= {<StoryInfo/>} />
               <Route path="/historia/update" element= {<StoryUpdate/>} />
+              <Route path="/historia/graph" element= {<StoryGraph/>} />
 
                 <Route path="/historia/tramas/add" element= {<StoryArcAdd/>} />
                 <Route path="/historia/trama/info" element= {<StoryArcInfo/>} />

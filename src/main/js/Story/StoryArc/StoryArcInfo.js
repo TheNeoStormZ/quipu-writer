@@ -419,8 +419,14 @@ export default function Trama() {
           <div>
             <Box>
               <div style={{ display: "flex", alignItems: "left" }}>
-                <MapIcon sx={{ width: 98, height: 98 }} />
-
+                <MapIcon sx={{ width: 140, height: 140 }} />
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "left",
+                    flexDirection: "column",
+                  }}
+                >
                 <Typography
                   component="h3"
                   variant="h5"
@@ -445,6 +451,18 @@ export default function Trama() {
                     <DeleteIcon />
                   </IconButton>
                 </Typography>
+                <div>
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      startIcon={<TimelineIcon />}
+                      onClick={handleTimeline}
+                      sx={{ mt: 2, ml: 2 }}
+                    >
+                      Linea de tiempo
+                    </Button>
+                  </div>
+              </div>
               </div>
               {showTimeline && (
                 <Modal>
@@ -568,15 +586,6 @@ export default function Trama() {
               onClick={handleNewScene}
             >
               Añadir Escena
-            </Button>
-            <Button
-              type="submit"
-              variant="contained"
-              startIcon={<TimelineIcon />}
-              onClick={handleTimeline}
-              sx={{ mt: 2, ml: 2 }}
-            >
-              Linea de tiempo
             </Button>
           </div>
         </Box>
