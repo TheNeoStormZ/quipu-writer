@@ -15,7 +15,7 @@ import {
   CardActionArea,
   CardActions,
   CardContent,
-  CardHeader
+  CardHeader,
 } from "@mui/material";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -46,6 +46,14 @@ import Footer from "../../Footer";
 
 import Modal from "../../Utils/Modal";
 import { Chrono } from "react-chrono";
+
+import Select from "@mui/material/Select";
+import FormControl from "@mui/material/FormControl";
+import MenuItem from "@mui/material/MenuItem";
+import InputLabel from "@mui/material/InputLabel";
+import OutlinedInput from "@mui/material/OutlinedInput";
+import Checkbox from "@mui/material/Checkbox";
+import ListItemText from "@mui/material/ListItemText";
 
 const theme = createTheme();
 
@@ -82,6 +90,23 @@ export default function Trama() {
   const storyStr = localStorage.getItem("historia");
   const [historia, setHistoria] = React.useState([]);
   const [scenes, setScenes] = React.useState([]);
+  const [selectedFilter, setSelectedFilter] = React.useState([]);
+
+  const [personajesInvolucrados, setPersonajesInvolucrados] = React.useState(
+    []
+  );
+  const [scenesFiltered, setScenesFiltered] = React.useState([]);
+
+  const ITEM_HEIGHT = 48;
+  const ITEM_PADDING_TOP = 8;
+  const MenuProps = {
+    PaperProps: {
+      style: {
+        maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+        width: 250,
+      },
+    },
+  };
 
   const navigate = useNavigate();
 
@@ -97,6 +122,35 @@ export default function Trama() {
 
   const handleClickOpenDelete = () => {
     setOpenDelete(true);
+  };
+
+  const handleSelectorChange = (event) => {
+    const {
+      target: { value },
+    } = event;
+
+    let personajesElegidos =
+      typeof value === "string" ? value.split(",") : value;
+    console.log(personajesElegidos);
+
+    setSelectedFilter(personajesElegidos);
+
+    if (personajesElegidos.length === 0) {
+      // Si está vacío, mostramos todos los elementos
+      setScenesFiltered(scenes);
+    } else {
+      let escenasFiltradas = trama.escenas.filter((escena) => {
+        // Para cada escena, se usa Array.every para ver si todos los personajes de la lista están en la escena
+        return personajesElegidos.every((p) => {
+          // Para cada personaje de la lista, se usa Array.some para buscarlo en la escena por su id
+          return escena.personajesInvolucrados.some((personaje) => {
+            // Finalmente, se usa JSON.parse para convertir la cadena en un objeto antes de comparar los ids
+            return JSON.parse(p).id === personaje.id;
+          });
+        });
+      });
+      setScenesFiltered(escenasFiltradas);
+    }
   };
 
   const handleProccesDelete = () => {
@@ -301,16 +355,33 @@ export default function Trama() {
       arcTemp = removeEmpty(JSON.parse(tramaStr));
       setTrama(arcTemp);
       setScenes(ordenarEscenasPorFecha(arcTemp.escenas));
+      setScenesFiltered(ordenarEscenasPorFecha(arcTemp.escenas));
 
       let { nombreTrama, fechaGlobal } = arcTemp; // desestructuración de objetos
       let datosTramaTemp = [nombreTrama, convertirFecha(fechaGlobal)];
 
       setDatosTrama(datosTramaTemp);
+      obtenerPersonajesInvolucrados(arcTemp);
     } else {
       console.log("FATAL ERROR");
       navigate("/");
     }
   }, []);
+
+  function obtenerPersonajesInvolucrados(trama) {
+    let arr = []; // Este array contendrá todos los personajesInvolucrados de todas las escenas
+
+    trama.escenas.forEach((escena) => {
+      // Añadimos los personajesInvolucrados al array arr
+      arr.push(...escena.personajesInvolucrados);
+    });
+
+    // Usamos Array.from con Set para eliminar los objetos duplicados
+    // Usamos JSON.stringify y JSON.parse para comparar los objetos por su contenido y no por su referencia
+    let unique = Array.from(new Set(arr.map(JSON.stringify))).map(JSON.parse);
+    // Ahora unique contiene la lista de personajesInvolucrados sin repetir
+    setPersonajesInvolucrados(unique);
+  }
 
   return (
     <ThemeProvider theme={theme}>
@@ -427,31 +498,31 @@ export default function Trama() {
                     flexDirection: "column",
                   }}
                 >
-                <Typography
-                  component="h3"
-                  variant="h5"
-                  align="left"
-                  color="text.primary"
-                  sx={{ mt: 2, ml: 2 }}
-                  gutterBottom
-                >
-                  {trama.nombreTrama}
-
-                  <IconButton aria-label="edit">
-                    <LinkRouter to="/historia/trama/update">
-                      {" "}
-                      <EditIcon />
-                    </LinkRouter>
-                  </IconButton>
-
-                  <IconButton
-                    aria-label="delete"
-                    onClick={handleClickOpenDelete}
+                  <Typography
+                    component="h3"
+                    variant="h5"
+                    align="left"
+                    color="text.primary"
+                    sx={{ mt: 2, ml: 2 }}
+                    gutterBottom
                   >
-                    <DeleteIcon />
-                  </IconButton>
-                </Typography>
-                <div>
+                    {trama.nombreTrama}
+
+                    <IconButton aria-label="edit">
+                      <LinkRouter to="/historia/trama/update">
+                        {" "}
+                        <EditIcon />
+                      </LinkRouter>
+                    </IconButton>
+
+                    <IconButton
+                      aria-label="delete"
+                      onClick={handleClickOpenDelete}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </Typography>
+                  <div>
                     <Button
                       type="submit"
                       variant="contained"
@@ -462,7 +533,7 @@ export default function Trama() {
                       Linea de tiempo
                     </Button>
                   </div>
-              </div>
+                </div>
               </div>
               {showTimeline && (
                 <Modal>
@@ -588,14 +659,70 @@ export default function Trama() {
               Añadir Escena
             </Button>
           </div>
+
+          <div>
+            {personajesInvolucrados &&
+              Array.isArray(personajesInvolucrados) &&
+              !personajesInvolucrados.some((e) => e == null) &&
+              personajesInvolucrados.length > 0 && (
+                <div>
+                  <Typography
+                    component="h5"
+                    variant="h6"
+                    align="left"
+                    color="text.primary"
+                    sx={{ mt: 2, ml: 2 }}
+                    gutterBottom
+                  >
+                    Filtrar escenas por personaje
+                  </Typography>
+
+                  <FormControl sx={{ ml: 1, width: 300 }}>
+                    <InputLabel id="demo-multiple-checkbox-label">
+                      Filtrar
+                    </InputLabel>
+                    <Select
+                      labelId="demo-multiple-checkbox-label"
+                      id="demo-multiple-checkbox"
+                      multiple
+                      value={selectedFilter}
+                      onChange={handleSelectorChange}
+                      input={<OutlinedInput label="Tag" />}
+                      renderValue={(selected) =>
+                        // Se usa JSON.parse para convertir la cadena en un objeto y accedemos al nombre
+                        selected.map((s) => JSON.parse(s).nombre).join(", ")
+                      }
+                      MenuProps={MenuProps}
+                    >
+                      {personajesInvolucrados.map((personaje) => (
+                        // Se usa JSON.stringify para convertir el objeto en una cadena y lo usamos como valor
+                        <MenuItem
+                          key={personaje.id}
+                          value={JSON.stringify(personaje)}
+                        >
+                          <Checkbox
+                            checked={
+                              selectedFilter.indexOf(
+                                JSON.stringify(personaje)
+                              ) > -1
+                            }
+                          />
+                          <ListItemText primary={personaje.nombre} />
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </div>
+              )}
+          </div>
         </Box>
 
         <Container sx={{ py: 2 }} maxWidth="md">
           {/* End hero unit */}
           <Grid container spacing={4}>
-            {Array.isArray(scenes) &&
-              !scenes.some((e) => e === null) &&
-              scenes.map((escena, index) => (
+            {Array.isArray(scenesFiltered) &&
+              !scenesFiltered.some((e) => e === null) &&
+              scenesFiltered.map((escena, index) => (
                 <Grid item key={escena.id} xs={12} sm={6} md={4}>
                   <Card
                     sx={{
