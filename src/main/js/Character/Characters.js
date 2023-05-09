@@ -139,7 +139,6 @@ export default function Personajes() {
     console.log(resultado);
 
     setPersonajesFiltradoCat(resultado);
-    setPersonajesFiltradoCatOG(resultado);
   };
 
   const handleImportInit = (event) => {
@@ -180,6 +179,7 @@ export default function Personajes() {
       .then((response) => {
         setPersonajes(response.data);
         setPersonajesFiltradoCat(response.data);
+        setPersonajesFiltradoCatOG(response.data);
         generarSeccionesPersonajes(response.data);
         setShowButton(true);
       })
@@ -228,15 +228,20 @@ export default function Personajes() {
           if (historia != null) {
             // Compruebo si existe una sección con el mismo nombre que la historia
             if (!secciones[historia.nombreHistoria]) {
-              // Si no existe, la creo y le asigno un array vacío
-              secciones[historia.nombreHistoria] = [];
+              // Si no existe, la creo y le asigno un Set vacío
+              secciones[historia.nombreHistoria] = new Set();
             }
-            // Añado el personaje al array de la sección correspondiente
-            secciones[historia.nombreHistoria].push(personaje);
+            // Añado el personaje al Set de la sección correspondiente
+            secciones[historia.nombreHistoria].add(personaje);
           }
         });
       }
     });
+
+    // Convierto los Sets en arrays para mantener el formato original
+    for (let seccion in secciones) {
+      secciones[seccion] = [...secciones[seccion]];
+    }
 
     setPersonajesPorSecciones(secciones);
   }
@@ -307,28 +312,29 @@ export default function Personajes() {
                 }}
               />
               {personajes && personajes.length !== 0 && showButton && (
-              <FormControl sx={{ ml: 1, width: 300 }}>
-                <InputLabel id="demo-multiple-checkbox-label">
-                  Filtrar
-                </InputLabel>
-                <Select
-                  labelId="demo-multiple-checkbox-label"
-                  id="demo-multiple-checkbox"
-                  multiple
-                  value={seccionName}
-                  onChange={handleSelectorChange}
-                  input={<OutlinedInput label="Tag" />}
-                  renderValue={(selected) => selected.join(", ")}
-                  MenuProps={MenuProps}
-                >
-                  {Object.keys(personajesPorSecciones).map((name) => (
-                    <MenuItem key={name} value={name}>
-                      <Checkbox checked={seccionName.indexOf(name) > -1} />
-                      <ListItemText primary={name} />
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>)}
+                <FormControl sx={{ ml: 1, width: 300 }}>
+                  <InputLabel id="demo-multiple-checkbox-label">
+                    Filtrar
+                  </InputLabel>
+                  <Select
+                    labelId="demo-multiple-checkbox-label"
+                    id="demo-multiple-checkbox"
+                    multiple
+                    value={seccionName}
+                    onChange={handleSelectorChange}
+                    input={<OutlinedInput label="Tag" />}
+                    renderValue={(selected) => selected.join(", ")}
+                    MenuProps={MenuProps}
+                  >
+                    {Object.keys(personajesPorSecciones).map((name) => (
+                      <MenuItem key={name} value={name}>
+                        <Checkbox checked={seccionName.indexOf(name) > -1} />
+                        <ListItemText primary={name} />
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              )}
             </div>
           </Container>
         </Box>
