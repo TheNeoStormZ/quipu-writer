@@ -306,6 +306,7 @@ export default function Personajes() {
                   ),
                 }}
               />
+              {personajes && personajes.length !== 0 && showButton && (
               <FormControl sx={{ ml: 1, width: 300 }}>
                 <InputLabel id="demo-multiple-checkbox-label">
                   Filtrar
@@ -327,7 +328,7 @@ export default function Personajes() {
                     </MenuItem>
                   ))}
                 </Select>
-              </FormControl>
+              </FormControl>)}
             </div>
           </Container>
         </Box>
