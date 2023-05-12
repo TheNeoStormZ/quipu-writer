@@ -34,7 +34,7 @@ public class PersonajeService {
 
     @Transactional(readOnly = true)
     public Set<String> findAllGenders(Usuario user) {
-        Set<String> generos = findAllUserCharacters(user).stream().map(x -> x.getGenero()).filter(Objects::nonNull).collect(Collectors.toSet());
+        Set<String> generos = findAllUserCharacters(user).stream().map(x -> x.getGenero()).filter(Objects::nonNull).filter( x -> !x.isBlank()).filter(x -> !x.isEmpty()).collect(Collectors.toSet());
         generos.addAll(List.of("Masculino","Femenino"));
         return generos;
     }

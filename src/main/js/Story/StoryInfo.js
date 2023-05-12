@@ -137,6 +137,7 @@ export default function Historia() {
   }
 
   const handleTimeline = async () => {
+
     let escenas = historia.tramas.flatMap((trama) =>
       trama.escenas.flatMap((escena) => escena)
     );
@@ -370,18 +371,20 @@ export default function Historia() {
   function obtenerPersonajesInvolucrados(historia) {
     let arr = []; // Este array contendrá todos los personajesInvolucrados de todas las escenas
 
-    historia.tramas.forEach((trama) => {
-      trama.escenas.forEach((escena) => {
-        // Añadimos los personajesInvolucrados al array arr
-        arr.push(...escena.personajesInvolucrados);
+    if(historia.tramas != null) {
+      historia.tramas.forEach((trama) => {
+        trama.escenas.forEach((escena) => {
+          // Añadimos los personajesInvolucrados al array arr
+          arr.push(...escena.personajesInvolucrados);
+        });
       });
-    });
-    // Usamos Array.from con Set para eliminar los objetos duplicados
-    // Usamos JSON.stringify y JSON.parse para comparar los objetos por su contenido y no por su referencia
-    let unique = Array.from(new Set(arr.map(JSON.stringify))).map(JSON.parse);
-    // Ahora unique contiene la lista de personajesInvolucrados sin repetir
-    console.log(unique);
-    setPersonajesInvolucrados(unique);
+      // Usamos Array.from con Set para eliminar los objetos duplicados
+      // Usamos JSON.stringify y JSON.parse para comparar los objetos por su contenido y no por su referencia
+      let unique = Array.from(new Set(arr.map(JSON.stringify))).map(JSON.parse);
+      // Ahora unique contiene la lista de personajesInvolucrados sin repetir
+      console.log(unique);
+      setPersonajesInvolucrados(unique);
+    }
   }
 
   React.useEffect(() => {

@@ -41,7 +41,7 @@ public class HistoriaService {
 
     @Transactional(readOnly = true)
     public Set<String> findAllGenres(Usuario user) {
-        Set<String> generos = findAllUserStories(user).stream().map(x -> x.getGeneros()).filter(Objects::nonNull).flatMap(List::stream).collect(Collectors.toSet());
+        Set<String> generos = findAllUserStories(user).stream().map(x -> x.getGeneros()).filter(Objects::nonNull).flatMap(List::stream).filter( x -> !x.isBlank()).filter(x -> !x.isEmpty()).collect(Collectors.toSet());
         List<String> defaultGeneros = List.of("Aventura","Ciencia Ficción");
         generos.addAll(defaultGeneros);
         return generos;

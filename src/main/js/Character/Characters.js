@@ -84,20 +84,39 @@ export default function Personajes() {
   };
 
   const handleSearchChange = (event) => {
-    const query = event.target.value;
+    let query = event.target.value;
     setSearchQuery(query);
+    query = query.trim();
     if (seccionName.length > 0) {
       const filtered = personajesFiltradoCatOG.filter(
         (personaje) =>
-          personaje.nombre.toLowerCase().includes(query.toLowerCase()) ||
-          personaje.descripcion.toLowerCase().includes(query.toLowerCase())
+        // dividir la consulta por espacios
+        query.split(" ").every(
+         // comprobar si alguna palabra está incluida en algún campo
+         (palabra) =>
+          personaje.nombre.toLowerCase().startsWith(palabra.toLowerCase()) ||
+          personaje.primerApellido.toLowerCase().startsWith(palabra.toLowerCase()) ||
+          personaje.segundoApellido.toLowerCase().startsWith(palabra.toLowerCase()) ||
+          personaje.residencia.toLowerCase().includes(palabra.toLowerCase()) ||
+          personaje.genero.toLowerCase().includes(palabra.toLowerCase()) ||
+          personaje.descripcion.toLowerCase().includes(palabra.toLowerCase())
+        )
       );
       setPersonajesFiltradoCat(filtered);
     } else {
       const filtered = personajes.filter(
         (personaje) =>
-          personaje.nombre.toLowerCase().includes(query.toLowerCase()) ||
-          personaje.descripcion.toLowerCase().includes(query.toLowerCase())
+        // dividir la consulta por espacios
+        query.split(" ").every(
+         // comprobar si alguna palabra está incluida en algún campo
+         (palabra) =>
+          personaje.nombre.toLowerCase().startsWith(palabra.toLowerCase()) ||
+          personaje.primerApellido.toLowerCase().startsWith(palabra.toLowerCase()) ||
+          personaje.segundoApellido.toLowerCase().startsWith(palabra.toLowerCase()) ||
+          personaje.residencia.toLowerCase().includes(palabra.toLowerCase()) ||
+          personaje.genero.toLowerCase().includes(palabra.toLowerCase()) ||
+          personaje.descripcion.toLowerCase().includes(palabra.toLowerCase())
+        )
       );
       generarSeccionesPersonajes(filtered);
     }
