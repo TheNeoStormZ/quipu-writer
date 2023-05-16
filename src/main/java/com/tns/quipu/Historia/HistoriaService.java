@@ -1,6 +1,7 @@
 package com.tns.quipu.Historia;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -83,9 +84,9 @@ public class HistoriaService {
     }
 
     @Transactional()
-    public List<Historia> findByPersonaje(Personaje p) {
+    public Set<Historia> findByPersonaje(Personaje p) {
         Set<Historia> historiasInvolucradas = ts.findByPersonaje(p).stream().map(x -> findByTrama(x)).collect(Collectors.toSet());
-        return new ArrayList<>(historiasInvolucradas);
+        return new HashSet<>(historiasInvolucradas);
     }
 
 

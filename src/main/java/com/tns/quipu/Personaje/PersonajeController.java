@@ -55,6 +55,7 @@ public class PersonajeController {
             x.setNumEscenas(es.findByPersonaje(x).size());
             x.setHistoriasApariciones(hs.findByPersonaje(x));
         });
+
         return personajes;
 
     }
@@ -175,14 +176,18 @@ public class PersonajeController {
         }
 
         String message = "Empty message";
+        Usuario loggedUser = us.findUserByUsername(principal.getName());
 
         if (personajeFound == null) {
             message = "Personaje exportado correctamente";
         } else {
             message = "Personaje actualizado correctamente";
-        }
+            
+            if (!(personajeFound.getCreador().equals(loggedUser))){
+                personaje.setId(null);
+            }
 
-        Usuario loggedUser = us.findUserByUsername(principal.getName());
+        }
 
         personaje.setCreador(loggedUser);
 

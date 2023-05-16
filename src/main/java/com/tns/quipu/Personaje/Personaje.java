@@ -2,6 +2,7 @@ package com.tns.quipu.Personaje;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -51,7 +52,7 @@ public class Personaje {
 
     public String genero;
 
-    public String altura;
+    public Double altura;
 
     public String residencia;
 
@@ -63,7 +64,7 @@ public class Personaje {
 
     private Integer numEscenas;
 
-    private List<Historia> historiasApariciones;
+    private Set<Historia> historiasApariciones;
 
 
 }

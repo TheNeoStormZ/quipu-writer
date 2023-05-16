@@ -233,6 +233,7 @@ export default function Personaje() {
   React.useEffect(() => {
     if (personajeStr) {
       personajeTemp = removeEmpty(JSON.parse(personajeStr));
+      console.log(personajeTemp);
       setPersonaje(personajeTemp);
       if (personajeTemp.historiasApariciones != null) {
         let historiasApariciones = personajeTemp.historiasApariciones.filter(
@@ -240,6 +241,7 @@ export default function Personaje() {
             return val != null;
           }
         );
+        
         setHistoriasApariciones(historiasApariciones);
       }
       handleRelations(personajeTemp.id);
