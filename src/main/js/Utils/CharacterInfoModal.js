@@ -29,7 +29,7 @@ import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 
 import Chip from "@mui/material/Chip";
 
-import Modal from "../../../Utils/Modal";
+import Modal from "./Modal";
 
 import axios from "axios";
 
@@ -37,7 +37,7 @@ import CloseIcon from "@mui/icons-material/Close";
 
 const theme = createTheme();
 function PersonajeModal(props) {
-  const personaje = props.data;
+  const personaje = removeEmpty(props.data);
 
   function convertirFecha(fechaOriginal) {
     // Crear objeto Date a partir de la fecha original

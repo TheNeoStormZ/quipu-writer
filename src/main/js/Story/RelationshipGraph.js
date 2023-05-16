@@ -2,12 +2,16 @@ const React = require("react");
 const ReactDOM = require("react-dom");
 
 import cytoscape from "cytoscape";
+import PersonajeModal from "../Utils/CharacterInfoModal";
 
 class RelationshipGraph extends React.Component {
   constructor(props) {
     super(props);
     this.containerRef = React.createRef();
-    this.state = { matches: window.matchMedia("(min-width: 768px)").matches };
+    this.state = { 
+      matches: window.matchMedia("(min-width: 768px)").matches,
+      personajeDato: null // declara el estado inicial de personajeDato
+    };
     this.styleMax = {
       /* Estilo por defecto */ width: "800px",
       height: "600px",
@@ -21,6 +25,11 @@ class RelationshipGraph extends React.Component {
       filter: "drop-shadow(5px 5px 10px rgba(0, 0, 0, 0.5))",
       boxShadow: "5px 5px 10px 2px rgba(0, 0, 0, 0.5)",
     };
+  }
+
+  updatePersonajeDato = (newPersonajeDato) => {
+    // Usa this.setState para actualizar el estado de personajeDato
+    this.setState({ personajeDato: newPersonajeDato });
   }
 
   componentDidMount() {
@@ -76,6 +85,7 @@ class RelationshipGraph extends React.Component {
           data: {
             id: personajeSecundario.id,
             label: personajeSecundario.nombre,
+            personajeDato: personajeSecundario,
             color: "#666",
           },
           position: {
@@ -144,6 +154,20 @@ class RelationshipGraph extends React.Component {
         },
       },
     ]);
+
+    cy.on("tap", "node", (event) => {
+      let node = event.target;
+      console.log(node.data("label"));
+      console.log(node.data("color"));
+      let personajeDato = node.data("personajeDato");
+      console.log(personajeDato);
+     
+      if (personajeDato != null) {
+
+      this.setState({ personajeDato: personajeDato });
+      }
+      });
+
   }
 
   render() {
@@ -151,6 +175,7 @@ class RelationshipGraph extends React.Component {
       <div >
       {this.state.matches && (<div ref={this.containerRef} style={this.styleMax}></div>)}
       {!this.state.matches && (<div ref={this.containerRef} style={this.styleMin}></div>)}
+      {this.state.personajeDato && ( <PersonajeModal data={this.state.personajeDato} updatePersonajeDato={this.updatePersonajeDato} />)}
       </div>
     );
   }

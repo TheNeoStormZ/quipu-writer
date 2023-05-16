@@ -2,7 +2,7 @@ const React = require("react");
 const ReactDOM = require("react-dom");
 
 import cytoscape from "cytoscape";
-import PersonajeModal from "./PersonajeModal/CharacterInfoModal";
+import PersonajeModal from "../../Utils/CharacterInfoModal";
 
 class RelationshipGraph extends React.Component {
   constructor(props) {
