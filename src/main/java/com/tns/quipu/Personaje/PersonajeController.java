@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -27,6 +25,8 @@ import com.tns.quipu.Historia.HistoriaService;
 import com.tns.quipu.Historia.Trama.Escena.EscenaService;
 import com.tns.quipu.Usuario.Usuario;
 import com.tns.quipu.Usuario.UsuarioService;
+
+import jakarta.validation.Valid;
 
 @RestController
 public class PersonajeController {
@@ -104,7 +104,7 @@ public class PersonajeController {
     }
 
     @PutMapping(value = "/api/personajes/update")
-    public ResponseEntity<String> updatePersonaje(@RequestBody Personaje personaje, Principal principal,
+    public ResponseEntity<String> updatePersonaje(@Valid @RequestBody Personaje personaje, Principal principal,
             BindingResult result) {
 
     if (result.hasErrors()) {

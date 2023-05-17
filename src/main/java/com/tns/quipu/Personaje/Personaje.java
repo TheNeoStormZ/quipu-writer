@@ -1,20 +1,20 @@
 package com.tns.quipu.Personaje;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Set;
+
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.Valid;
-
 import com.tns.quipu.Historia.Historia;
 import com.tns.quipu.Usuario.Usuario;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -51,7 +51,9 @@ public class Personaje {
     public Date fechaNacimiento;
 
     public String genero;
-
+    
+    @PositiveOrZero
+    @Valid
     public Double altura;
 
     public String residencia;
