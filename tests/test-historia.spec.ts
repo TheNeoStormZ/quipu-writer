@@ -281,7 +281,6 @@ test("testActualizarHistoriaSinNombre", async ({ page }) => {
     "historia"
   );
 
-
 });
 
 

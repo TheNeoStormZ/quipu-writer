@@ -370,17 +370,20 @@ export default function Trama() {
 
   function obtenerPersonajesInvolucrados(trama) {
     let arr = []; // Este array contendrá todos los personajesInvolucrados de todas las escenas
+    if(trama.escenas !=null) {
 
-    trama.escenas.forEach((escena) => {
-      // Añadimos los personajesInvolucrados al array arr
-      arr.push(...escena.personajesInvolucrados);
-    });
+      trama.escenas.forEach((escena) => {
+        // Añadimos los personajesInvolucrados al array arr
+        arr.push(...escena.personajesInvolucrados);
+      });
+  
+      // Usamos Array.from con Set para eliminar los objetos duplicados
+      // Usamos JSON.stringify y JSON.parse para comparar los objetos por su contenido y no por su referencia
+      let unique = Array.from(new Set(arr.map(JSON.stringify))).map(JSON.parse);
+      // Ahora unique contiene la lista de personajesInvolucrados sin repetir
+      setPersonajesInvolucrados(unique);
 
-    // Usamos Array.from con Set para eliminar los objetos duplicados
-    // Usamos JSON.stringify y JSON.parse para comparar los objetos por su contenido y no por su referencia
-    let unique = Array.from(new Set(arr.map(JSON.stringify))).map(JSON.parse);
-    // Ahora unique contiene la lista de personajesInvolucrados sin repetir
-    setPersonajesInvolucrados(unique);
+    }
   }
 
   return (
@@ -395,11 +398,11 @@ export default function Trama() {
           aria-describedby="alert-dialog-description"
         >
           <DialogTitle id="alert-dialog-title">
-            {"¿Eliminar historia?"}
+            {"¿Eliminar trama?"}
           </DialogTitle>
           <DialogContent>
             <DialogContentText id="alert-dialog-description">
-              ¿Seguro de que desea eliminar la historia? Esta acción no se puede
+              ¿Seguro de que desea eliminar la trama? Esta acción no se puede
               deshacer.
             </DialogContentText>
           </DialogContent>
