@@ -22,9 +22,7 @@ test("testPersonajes", async ({ page }) => {
   await expect(
     page.getByRole("link", { name: "Mis personajes" })
   ).toContainText("Mis personajes");
-  await expect(
-    page.getByRole("link", { name: "Mis personajes" })
-  ).toContainText("Mis personajes");
+
   await expect(page.getByRole("button", { name: "Personaje" })).toContainText(
     "personaje"
   );
@@ -384,6 +382,25 @@ test("testActualizar", async ({ page }) => {
   await page.getByRole('button', { name: 'Actualizar personaje' }).click();
 
   await expect((page.getByRole('button', { name: 'John' }).last())).toContainText("compañero");
+
+  await page.getByRole('button', { name: 'John' }).last().click();
+
+  await expect(page.getByText('Primer ApellidoWatson')).toBeVisible();
+
+  await expect(page.getByText('Segundo ApellidoWatherbridge')).toBeVisible();
+
+  await expect(page.getByText('GéneroMasculino')).toBeVisible();
+
+  await expect(page.getByText('ResidenciaDublin')).toBeVisible();
+
+  await expect(page.getByText('Altura160 cm')).toBeVisible();
+
+  await expect(page.getByText('Fecha de Nacimiento04-12-1998')).toBeVisible();
+
+  await expect(page.getByText('Lugar de NacimientoNorte America')).toBeVisible();
+
+  await expect(page.getByText('DescripciónGran compañero')).toBeVisible();
+
   
 
 });
@@ -507,6 +524,8 @@ test("testActualizarSinNombre", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Actualizar" })).toContainText(
     "personaje"
   );
+
+
 
   
 });
