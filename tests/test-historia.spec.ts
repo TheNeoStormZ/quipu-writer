@@ -180,7 +180,7 @@ test("testEliminarHistoriaCancel", async ({ page }) => {
 
   await page.getByRole('button', { name: 'Sherlock' }).last().click();
 
-  await page.  getByRole('button', { name: 'delete' }).last().click();
+  await page.getByRole('button', { name: 'delete' }).last().click();
 
   await expect(page.getByRole('heading', { name: '¿Eliminar historia?' })).toBeVisible();
   

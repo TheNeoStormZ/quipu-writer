@@ -177,6 +177,47 @@ public class RelacionesControllerTest {
         r.setDescripcion("Amigos");
         r.addPersonaje(personaje);
 
+        Personaje personaje2 = new Personaje();
+
+        Relacion r2 = new Relacion();
+        r2.setId("1");
+        r2.setCreador(user);
+        r2.setDescripcion("Enemigos");
+        r2.addPersonaje(personaje);
+        r2.addPersonaje(personaje2);
+
+        // Crear un objeto mock de Principal
+        Principal principal = new Principal() {
+            @Override
+            public String getName() {
+                return "user";
+            }
+        };
+
+        // Definir el comportamiento de los mocks
+        when(rs.findById("1")).thenReturn(r);
+        when(us.findUserByUsername("user")).thenReturn(user);
+        Gson gson = new Gson();
+        // Invocar el método que se quiere probar y verificar el resultado
+        mockMvc.perform(put("/api/personajes/relaciones/update")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(gson.toJson(r2)))
+                .andExpect(status().isOk());
+
+    }
+
+    @Test
+    public void actualizarRelaciones_Fail() throws Exception {
+        // Crear los objetos necesarios para el test
+        Relacion r = new Relacion();
+        Personaje personaje = new Personaje();
+        r.setId("1");
+        Usuario user = new Usuario(new String("1"), "user@example.com", "user", "pass", "",
+                Collections.singleton(new UsuarioRol("USER")));
+        r.setCreador(user);
+        r.setDescripcion("Amigos");
+        r.addPersonaje(personaje);
+
         Relacion r2 = new Relacion();
         r2.setId("1");
         r2.setCreador(user);
@@ -199,7 +240,7 @@ public class RelacionesControllerTest {
         mockMvc.perform(put("/api/personajes/relaciones/update")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(gson.toJson(r2)))
-                .andExpect(status().isOk());
+                .andExpect(status().isForbidden());
 
     }
 

@@ -15,6 +15,7 @@ import Navigation from "../../Navigation";
 import axios from "axios";
 import Footer from "../../Footer";
 import { useNavigate } from "react-router-dom";
+import Alert from "@mui/material/Alert";
 
 const theme = createTheme();
 
@@ -25,12 +26,11 @@ const AlertCustom = ({ showAlert }) => {
   }
 
   return (
-    <Alert variant="outlined" severity="error" sx={{ m: 2}}>
+    <Alert variant="outlined" severity="error" sx={{ m: 2 }}>
       {alertMessage}
     </Alert>
   );
 };
-
 
 function convertirFecha(fechaOriginal) {
   if (fechaOriginal == null) {
@@ -54,7 +54,6 @@ function convertirFecha(fechaOriginal) {
 }
 
 export default function Relationship() {
-
   const navigate = useNavigate();
 
   const [selectedCharacters, setSelectedCharacters] = React.useState([]);
@@ -63,13 +62,15 @@ export default function Relationship() {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     try {
-      await axios
-        .post("/api/personajes/relaciones/add/" + personaje.id, {
+      let response = await axios.post(
+        "/api/personajes/relaciones/add/" + personaje.id,
+        {
           fecha: data.get("fechaRelacion"),
           personajesInvolucrados: selectedCharacters,
           descripcion: data.get("descripcion"),
-        })
-        .then(navigate("/personaje/info"));
+        }
+      );
+      navigate("/personaje/info");
     } catch (err) {
       console.log(err);
       let message = err.response.data;
@@ -79,14 +80,12 @@ export default function Relationship() {
   };
   const [showAlert, setShowAlert] = React.useState(false);
 
-
   const [personaje, setPersonaje] = React.useState([]);
 
   const [personajesUsuario, setPersonajesUsuarios] = React.useState([]);
 
   const personajeStr = localStorage.getItem("personaje");
   let personajeTemp = personajeStr;
-
 
   React.useEffect(() => {
     if (personajeStr) {
@@ -105,10 +104,6 @@ export default function Relationship() {
       .then((response) => setPersonajesUsuarios(response.data))
       .catch((error) => console.log(error));
   }
-
-
-
-
 
   return (
     <ThemeProvider theme={theme}>

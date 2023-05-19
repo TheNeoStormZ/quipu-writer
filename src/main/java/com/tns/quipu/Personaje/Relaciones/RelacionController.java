@@ -135,6 +135,11 @@ public class RelacionController {
             return new ResponseEntity<>("FORBIDDEN", HttpStatus.FORBIDDEN);
         }
         Usuario loggedUser = us.findUserByUsername(principal.getName());
+
+        if (r.getPersonajesInvolucrados().size()<2){
+            return new ResponseEntity<>("La relación debe contener al menos un personaje mas", HttpStatus.FORBIDDEN);
+        }
+        
         r.setCreador(loggedUser);
 
         rs.saveRelacion(r);
@@ -161,7 +166,12 @@ public class RelacionController {
             return new ResponseEntity<>("FORBIDDEN", HttpStatus.FORBIDDEN);
         }
         Usuario loggedUser = us.findUserByUsername(principal.getName());
+
+        if (r.getPersonajesInvolucrados().size()<2){
+            return new ResponseEntity<>("La relación debe contener al menos dos personajes", HttpStatus.FORBIDDEN);
+        }
         r.setCreador(loggedUser);
+
 
         rs.saveRelacion(r);
 

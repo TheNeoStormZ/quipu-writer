@@ -15,6 +15,7 @@ import Navigation from "../../Navigation";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Footer from "../../Footer";
+import Alert from "@mui/material/Alert";
 
 const theme = createTheme();
 
@@ -68,8 +69,8 @@ export default function Relationship() {
           fecha: data.get("fecha"),
           personajesInvolucrados: selectedCharacters,
           descripcion: data.get("descripcion"),
-        })
-        .then(navigate("/personaje/info"));
+        });
+        navigate("/personaje/info");
     } catch (err) {
       console.log(err);
       let message = err.response.data;
