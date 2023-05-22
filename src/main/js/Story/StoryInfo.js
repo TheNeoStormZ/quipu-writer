@@ -137,7 +137,6 @@ export default function Historia() {
   }
 
   const handleTimeline = async () => {
-
     let escenas = historia.tramas.flatMap((trama) =>
       trama.escenas.flatMap((escena) => escena)
     );
@@ -173,33 +172,56 @@ export default function Historia() {
           title: convertirFecha(escena.fecha),
           orderTime: escena.fecha,
           cardTitle: escena.nombreEscena,
-          cardSubtitle: escena.ubicacion ? escena.ubicacion : "",
-          cardDetailedText: [escena.descripcion || ""],
+          cardSubtitle: escena.ubicacion
+            ? "Ubicación: " + escena.ubicacion
+            : "Ubicación desconocida",
+          cardDetailedText: [
+            escena.descripcion
+              ? "Información de la escena: " + escena.descripcion
+              : "Información de la escena: Sin información",
+            "\n",
+            escena.personajesInvolucrados &&
+            escena.personajesInvolucrados.length > 0
+              ? "Personajes involucrados: " +
+                escena.personajesInvolucrados
+                  .map((personaje) => personaje.nombre)
+                  .reduce((prev, curr, index, array) => {
+                    if (index === 0) {
+                      return curr;
+                    } else if (index === array.length - 1) {
+                      return prev + " y " + curr;
+                    } else {
+                      return prev + ", " + curr;
+                    }
+                  }, "")
+              : "",
+          ],
         });
       }
       // Añadir las fechas y los nombres de los personajes involucrados al acumulador
       for (let personaje of escena.personajesInvolucrados) {
-        if (!ids.has(personaje.id)){
-        ids.add(personaje.id);
-        // Comprobar si los apellidos del personaje existen y no están vacíos
-        let primerApellido = personaje.primerApellido || "";
-        let segundoApellido = personaje.segundoApellido || "";
-        // Formar el nombre completo del personaje con los apellidos si los hay
-        let nombreCompleto =
-          personaje.nombre +
-          (primerApellido ? " " + primerApellido : "") +
-          (segundoApellido ? " " + segundoApellido : "");
-        // Añadir la fecha y el nombre completo del personaje al acumulador junto con otros datos relevantes
-        if (personaje.fechaNacimiento != null) {
-          acumulador.push({
-            title: convertirFecha(personaje.fechaNacimiento),
-            orderTime: personaje.fechaNacimiento,
-            cardTitle: "Nacimiento de " + nombreCompleto,
-            cardSubtitle: personaje.genero ? personaje.genero : "",
-            cardDetailedText: personaje.descripcion,
-          });
-        }
-
+        if (!ids.has(personaje.id)) {
+          ids.add(personaje.id);
+          // Comprobar si los apellidos del personaje existen y no están vacíos
+          let primerApellido = personaje.primerApellido || "";
+          let segundoApellido = personaje.segundoApellido || "";
+          // Formar el nombre completo del personaje con los apellidos si los hay
+          let nombreCompleto =
+            personaje.nombre +
+            (primerApellido ? " " + primerApellido : "") +
+            (segundoApellido ? " " + segundoApellido : "");
+          // Añadir la fecha y el nombre completo del personaje al acumulador junto con otros datos relevantes
+          if (personaje.fechaNacimiento != null) {
+            acumulador.push({
+              title: convertirFecha(personaje.fechaNacimiento),
+              orderTime: personaje.fechaNacimiento,
+              cardTitle: "Nacimiento de " + nombreCompleto,
+              cardSubtitle: personaje.genero
+                ? "Genero: " + personaje.genero
+                : "Genero desconocido",
+              cardDetailedText: personaje.descripcion,
+            });
+          }
         }
       }
       // Devolver el acumulador actualizado
@@ -375,7 +397,7 @@ export default function Historia() {
   function obtenerPersonajesInvolucrados(historia) {
     let arr = []; // Este array contendrá todos los personajesInvolucrados de todas las escenas
 
-    if(historia.tramas != null) {
+    if (historia.tramas != null) {
       historia.tramas.forEach((trama) => {
         trama.escenas.forEach((escena) => {
           // Añadimos los personajesInvolucrados al array arr
@@ -699,7 +721,9 @@ export default function Historia() {
                 </Button>
               </div>
               <div>
-                {personajesInvolucrados && Array.isArray(personajesInvolucrados) && !personajesInvolucrados.some((e) => e == null) &&
+                {personajesInvolucrados &&
+                  Array.isArray(personajesInvolucrados) &&
+                  !personajesInvolucrados.some((e) => e == null) &&
                   personajesInvolucrados.length > 0 && (
                     <div>
                       <Typography

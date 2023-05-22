@@ -230,8 +230,30 @@ export default function Trama() {
           title: convertirFecha(escena.fecha),
           orderTime: escena.fecha,
           cardTitle: escena.nombreEscena,
-          cardSubtitle: escena.ubicacion ? escena.ubicacion : "",
-          cardDetailedText: [escena.descripcion || ""],
+          cardSubtitle: escena.ubicacion
+            ? "Ubicación: " + escena.ubicacion
+            : "Ubicación desconocida",
+            cardDetailedText: [
+              escena.descripcion
+                ? "Información de la escena: " + escena.descripcion
+                : "Información de la escena: Sin información",
+              "\n",
+              escena.personajesInvolucrados &&
+              escena.personajesInvolucrados.length > 0
+                ? "Personajes involucrados: " +
+                  escena.personajesInvolucrados
+                    .map((personaje) => personaje.nombre)
+                    .reduce((prev, curr, index, array) => {
+                      if (index === 0) {
+                        return curr;
+                      } else if (index === array.length - 1) {
+                        return prev + " y " + curr;
+                      } else {
+                        return prev + ", " + curr;
+                      }
+                    }, "")
+                : "",
+            ],
         });
       }
       // Añadir las fechas y los nombres de los personajes involucrados al acumulador
@@ -252,7 +274,9 @@ export default function Trama() {
               title: convertirFecha(personaje.fechaNacimiento),
               orderTime: personaje.fechaNacimiento,
               cardTitle: "Nacimiento de " + nombreCompleto,
-              cardSubtitle: personaje.genero ? personaje.genero : "",
+              cardSubtitle: personaje.genero
+                ? "Genero: " + personaje.genero
+                : "Genero desconocido",
               cardDetailedText: personaje.descripcion,
             });
           }
