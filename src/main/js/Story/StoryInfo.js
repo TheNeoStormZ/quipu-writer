@@ -164,7 +164,7 @@ export default function Historia() {
     } catch (error) {
       console.error(error);
     }
-
+    let ids = new Set();
     let lista = escenas.reduce((acumulador, escena) => {
       // Añadir la fecha y el nombre de la escena al acumulador junto con otros datos relevantes
       // Solo si escena.fecha no es null o undefined
@@ -179,6 +179,8 @@ export default function Historia() {
       }
       // Añadir las fechas y los nombres de los personajes involucrados al acumulador
       for (let personaje of escena.personajesInvolucrados) {
+        if (!ids.has(personaje.id)){
+        ids.add(personaje.id);
         // Comprobar si los apellidos del personaje existen y no están vacíos
         let primerApellido = personaje.primerApellido || "";
         let segundoApellido = personaje.segundoApellido || "";
@@ -197,11 +199,13 @@ export default function Historia() {
             cardDetailedText: personaje.descripcion,
           });
         }
+
+        }
       }
       // Devolver el acumulador actualizado
       return acumulador;
     }, []); // Inicializar el acumulador como un array vacío
-
+    console.log(ids);
     // Ordenar la lista por fecha usando el método Array.prototype.sort()
     lista.sort((a, b) => new Date(a.orderTime) - new Date(b.orderTime));
 

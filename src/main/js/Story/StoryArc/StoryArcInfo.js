@@ -221,8 +221,7 @@ export default function Trama() {
       console.error(error);
     }
 
-    console.log(reSinDuplicados);
-
+    let ids = new Set();
     let lista = escenas.reduce((acumulador, escena) => {
       // Añadir la fecha y el nombre de la escena al acumulador junto con otros datos relevantes
       // Solo si escena.fecha no es null o undefined
@@ -237,23 +236,26 @@ export default function Trama() {
       }
       // Añadir las fechas y los nombres de los personajes involucrados al acumulador
       for (let personaje of escena.personajesInvolucrados) {
-        // Comprobar si los apellidos del personaje existen y no están vacíos
-        let primerApellido = personaje.primerApellido || "";
-        let segundoApellido = personaje.segundoApellido || "";
-        // Formar el nombre completo del personaje con los apellidos si los hay
-        let nombreCompleto =
-          personaje.nombre +
-          (primerApellido ? " " + primerApellido : "") +
-          (segundoApellido ? " " + segundoApellido : "");
-        // Añadir la fecha y el nombre completo del personaje al acumulador junto con otros datos relevantes
-        if (personaje.fechaNacimiento != null) {
-          acumulador.push({
-            title: convertirFecha(personaje.fechaNacimiento),
-            orderTime: personaje.fechaNacimiento,
-            cardTitle: "Nacimiento de " + nombreCompleto,
-            cardSubtitle: personaje.genero ? personaje.genero : "",
-            cardDetailedText: personaje.descripcion,
-          });
+        if (!ids.has(personaje.id)) {
+          ids.add(personaje.id);
+          // Comprobar si los apellidos del personaje existen y no están vacíos
+          let primerApellido = personaje.primerApellido || "";
+          let segundoApellido = personaje.segundoApellido || "";
+          // Formar el nombre completo del personaje con los apellidos si los hay
+          let nombreCompleto =
+            personaje.nombre +
+            (primerApellido ? " " + primerApellido : "") +
+            (segundoApellido ? " " + segundoApellido : "");
+          // Añadir la fecha y el nombre completo del personaje al acumulador junto con otros datos relevantes
+          if (personaje.fechaNacimiento != null) {
+            acumulador.push({
+              title: convertirFecha(personaje.fechaNacimiento),
+              orderTime: personaje.fechaNacimiento,
+              cardTitle: "Nacimiento de " + nombreCompleto,
+              cardSubtitle: personaje.genero ? personaje.genero : "",
+              cardDetailedText: personaje.descripcion,
+            });
+          }
         }
       }
       // Devolver el acumulador actualizado
@@ -370,19 +372,17 @@ export default function Trama() {
 
   function obtenerPersonajesInvolucrados(trama) {
     let arr = []; // Este array contendrá todos los personajesInvolucrados de todas las escenas
-    if(trama.escenas !=null) {
-
+    if (trama.escenas != null) {
       trama.escenas.forEach((escena) => {
         // Añadimos los personajesInvolucrados al array arr
         arr.push(...escena.personajesInvolucrados);
       });
-  
+
       // Usamos Array.from con Set para eliminar los objetos duplicados
       // Usamos JSON.stringify y JSON.parse para comparar los objetos por su contenido y no por su referencia
       let unique = Array.from(new Set(arr.map(JSON.stringify))).map(JSON.parse);
       // Ahora unique contiene la lista de personajesInvolucrados sin repetir
       setPersonajesInvolucrados(unique);
-
     }
   }
 
