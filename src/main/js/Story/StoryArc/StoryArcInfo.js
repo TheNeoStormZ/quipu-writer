@@ -54,6 +54,10 @@ import InputLabel from "@mui/material/InputLabel";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import Checkbox from "@mui/material/Checkbox";
 import ListItemText from "@mui/material/ListItemText";
+import Link from "@mui/material/Link";
+import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
+import Chip from "@mui/material/Chip";
+import Avatar from "@mui/material/Avatar";
 
 const theme = createTheme();
 
@@ -196,6 +200,17 @@ export default function Trama() {
         console.error(error);
       });
   }
+
+  function goToEscene(escene) {
+    localStorage.setItem("escena", JSON.stringify(escene));
+    navigate("/historia/trama/escena/info");
+  }
+
+  function goToChar(personaje) {
+    localStorage.setItem("personaje", JSON.stringify(personaje));
+    navigate("/personaje/info");
+  }
+  
   let reSinDuplicados = [];
   const handleTimeline = async () => {
     let escenas = trama.escenas;
@@ -229,31 +244,47 @@ export default function Trama() {
         acumulador.push({
           title: convertirFecha(escena.fecha),
           orderTime: escena.fecha,
-          cardTitle: escena.nombreEscena,
+          cardTitle: (
+            <Link onClick={() => goToEscene(escena)}>
+              {escena.nombreEscena}
+              <RemoveRedEyeIcon />
+            </Link>
+          ),
           cardSubtitle: escena.ubicacion
             ? "Ubicación: " + escena.ubicacion
             : "Ubicación desconocida",
-            cardDetailedText: [
-              escena.descripcion
-                ? "Información de la escena: " + escena.descripcion
-                : "Información de la escena: Sin información",
-              "\n",
-              escena.personajesInvolucrados &&
-              escena.personajesInvolucrados.length > 0
-                ? "Personajes involucrados: " +
-                  escena.personajesInvolucrados
-                    .map((personaje) => personaje.nombre)
-                    .reduce((prev, curr, index, array) => {
-                      if (index === 0) {
-                        return curr;
-                      } else if (index === array.length - 1) {
-                        return prev + " y " + curr;
-                      } else {
-                        return prev + ", " + curr;
-                      }
-                    }, "")
-                : "",
-            ],
+          cardDetailedText: [
+            <Typography
+              component="h7"
+              variant="h7"
+              align="left"
+              color="text.primary"
+              gutterBottom
+              key={"title"}
+            >
+              Información de la escena:{" "}
+            </Typography>,
+            <Typography key={"data"}>
+              {" "}
+              {escena.descripcion ? escena.descripcion : "Sin información"}{" "}
+            </Typography>,
+            <Typography key={"characters"}>
+              Personajes involucrados:{" "}
+            </Typography>,
+            escena.personajesInvolucrados &&
+            escena.personajesInvolucrados.length !== 0
+              ? escena.personajesInvolucrados.map((personaje) => (
+                  <Chip
+                    key={personaje.id}
+                    avatar={<Avatar alt="avatar" src={personaje.urlIcon} />}
+                    label={personaje.nombre}
+                    variant="outlined"
+                    clickable
+                    onClick={() => goToChar(personaje)}
+                  />
+                ))
+              : "Sin información",
+          ],
         });
       }
       // Añadir las fechas y los nombres de los personajes involucrados al acumulador
@@ -273,7 +304,12 @@ export default function Trama() {
             acumulador.push({
               title: convertirFecha(personaje.fechaNacimiento),
               orderTime: personaje.fechaNacimiento,
-              cardTitle: "Nacimiento de " + nombreCompleto,
+              cardTitle: (
+                <Link onClick={() => goToChar(personaje)}>
+                  {"Nacimiento de " + nombreCompleto}
+                  <RemoveRedEyeIcon />
+                </Link>
+              ),
               cardSubtitle: personaje.genero
                 ? "Genero: " + personaje.genero
                 : "Genero desconocido",
