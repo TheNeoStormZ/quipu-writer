@@ -45,12 +45,16 @@ import GroupRemoveIcon from "@mui/icons-material/GroupRemove";
 import Modal from "../Utils/Modal";
 import DataTable from "./Relationships/RelationshipTable";
 
+import SceneTable from "./RelatedScenesTable";
+
 import GroupWorkIcon from "@mui/icons-material/GroupWork";
 
 import Navigation from "../Navigation";
 
 import axios from "axios";
 import Footer from "../Footer";
+
+import ExploreIcon from '@mui/icons-material/Explore';
 
 const theme = createTheme();
 
@@ -84,6 +88,8 @@ export default function Personaje() {
 
   const [historiasApariciones, setHistoriasApariciones] = React.useState([]);
 
+  const [escenasApariciones, setEscenasApariciones] = React.useState([]);
+
   const [dataRelations, setDataRelations] = React.useState([]);
 
   const [personajesRelacionados, setPersonajesRelacionados] = React.useState(
@@ -111,6 +117,13 @@ export default function Personaje() {
       });
     setShowListRel(true);
   };
+
+  const [showListEsc, setShowListEsc] = React.useState(false);
+
+  const closeModalScenes = () => {
+    setShowListEsc(false);
+  };
+
 
   function handleClick(index) {
     let historiaGuardado = JSON.stringify(historiasApariciones[index]);
@@ -230,6 +243,26 @@ export default function Personaje() {
     });
   }
 
+  function obtenerEscenasRelacionadas(personajeId,historiasFiltradas){
+
+    let escenasFiltradas = historiasFiltradas.flatMap((historia) => {
+      // Para cada historia, se recorre sus tramas y extraemos sus escenas
+      return historia.tramas.flatMap((trama) => {
+        // Para cada trama, se recorre sus escenas y se filtran por el personaje
+        return trama.escenas.filter((escena) => {
+          // Para cada escena, se usa Array.some para buscar al personaje por su id
+          return escena.personajesInvolucrados.some((personajeInvolucrado) => {
+            // Finalmente, se compara los ids del personaje buscado y el involucrado
+            return personajeId === personajeInvolucrado.id;
+          });
+        });
+      });
+    });
+    console.log(escenasFiltradas);
+    setEscenasApariciones(escenasFiltradas);
+    return escenasFiltradas;
+  }
+
   React.useEffect(() => {
     if (personajeStr) {
       personajeTemp = removeEmpty(JSON.parse(personajeStr));
@@ -241,8 +274,12 @@ export default function Personaje() {
             return val != null;
           }
         );
-        
+        console.log(historiasApariciones);
         setHistoriasApariciones(historiasApariciones);
+
+        obtenerEscenasRelacionadas(personajeTemp.id,historiasApariciones);
+          
+
       }
       handleRelations(personajeTemp.id);
 
@@ -397,6 +434,44 @@ export default function Personaje() {
           </Modal>
         )}
 
+{showListEsc && (
+          <Modal>
+            <div
+              className="modal-content"
+              style={{
+                width: "80%",
+                maxHeight: "80%",
+                marginTop: "20vh",
+                marginBottom: "10vh",
+                backgroundColor: "white",
+                padding: "20px",
+                overflowY: "scroll",
+              }}
+            >
+              <Typography
+                component="h3"
+                variant="h5"
+                align="left"
+                color="text.primary"
+                sx={{ mt: 2, ml: 2 }}
+                gutterBottom
+              >
+                Escenas relacionadas
+              </Typography>
+              <SceneTable data={escenasApariciones} />
+              <Button
+                variant="contained"
+                color="error"
+                onClick={closeModalScenes}
+                sx={{ mt: 2 }}
+                startIcon={<CloseIcon />}
+              >
+                Cerrar
+              </Button>
+            </div>
+          </Modal>
+        )}
+
         <Box
           sx={{
             "& .MuiTextField-root": { m: 1, width: "25ch" },
@@ -538,8 +613,8 @@ export default function Personaje() {
                   {personaje.descripcion || "Sin descripción"}
                 </Typography>
               </div>
-            </Box>
-            {historiasApariciones &&
+              <div>
+              {historiasApariciones &&
               Array.isArray(historiasApariciones) &&
               historiasApariciones.length !== 0 && (
                 <Typography
@@ -547,12 +622,14 @@ export default function Personaje() {
                   variant="h5"
                   align="left"
                   color="text.primary"
-                  sx={{ mt: 2 }}
+                  sx={{ mt: 2, ml: 2 }}
                   gutterBottom
                 >
-                  Aparece en:
+                  Historias relacionadas:
                 </Typography>
               )}
+              </div>
+            </Box>
           </div>
         </Box>
         <Container sx={{ py: 2 }} maxWidth="md">
@@ -605,6 +682,19 @@ export default function Personaje() {
                 </Grid>
               ))}
           </Grid>
+        </Container>
+        <Container sx={{ py: 2 }} maxWidth="md">
+        <Box>
+        <Button
+              type="submit"
+              variant="contained"
+              startIcon={<ExploreIcon />}
+              sx={{ ml: 1 }}
+              onClick={() => setShowListEsc(true)}
+            >
+              Buscar escenas involucradas
+            </Button>
+            </Box>
         </Container>
       </main>
       {/* Footer */}
