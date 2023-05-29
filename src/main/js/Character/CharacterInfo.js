@@ -54,7 +54,7 @@ import Navigation from "../Navigation";
 import axios from "axios";
 import Footer from "../Footer";
 
-import ExploreIcon from '@mui/icons-material/Explore';
+import ExploreIcon from "@mui/icons-material/Explore";
 
 const theme = createTheme();
 
@@ -123,7 +123,6 @@ export default function Personaje() {
   const closeModalScenes = () => {
     setShowListEsc(false);
   };
-
 
   function handleClick(index) {
     let historiaGuardado = JSON.stringify(historiasApariciones[index]);
@@ -243,8 +242,7 @@ export default function Personaje() {
     });
   }
 
-  function obtenerEscenasRelacionadas(personajeId,historiasFiltradas){
-
+  function obtenerEscenasRelacionadas(personajeId, historiasFiltradas) {
     let escenasFiltradas = historiasFiltradas.flatMap((historia) => {
       // Para cada historia, se recorre sus tramas y extraemos sus escenas
       return historia.tramas.flatMap((trama) => {
@@ -277,9 +275,7 @@ export default function Personaje() {
         console.log(historiasApariciones);
         setHistoriasApariciones(historiasApariciones);
 
-        obtenerEscenasRelacionadas(personajeTemp.id,historiasApariciones);
-          
-
+        obtenerEscenasRelacionadas(personajeTemp.id, historiasApariciones);
       }
       handleRelations(personajeTemp.id);
 
@@ -344,7 +340,6 @@ export default function Personaje() {
             </Button>
           </DialogActions>
         </Dialog>
-
         <Collapse in={openExportAlert}>
           <Alert
             action={
@@ -364,7 +359,6 @@ export default function Personaje() {
             "¡Archivo exportado con exito!"
           </Alert>
         </Collapse>
-
         <Collapse in={openExportFailAlert}>
           <Alert
             severity="error"
@@ -385,7 +379,6 @@ export default function Personaje() {
             Ha ocurrido un error al exportar. Intentalo mas tarde.
           </Alert>
         </Collapse>
-
         <Typography
           sx={{ mt: 2, ml: 2 }}
           component="h1"
@@ -433,8 +426,7 @@ export default function Personaje() {
             </div>
           </Modal>
         )}
-
-{showListEsc && (
+        {showListEsc && (
           <Modal>
             <div
               className="modal-content"
@@ -471,7 +463,6 @@ export default function Personaje() {
             </div>
           </Modal>
         )}
-
         <Box
           sx={{
             "& .MuiTextField-root": { m: 1, width: "25ch" },
@@ -566,7 +557,7 @@ export default function Personaje() {
               {datosPersonaje.map(([nombreDato, personajeDato], index) => (
                 <div
                   style={{ display: "flex", alignItems: "left" }}
-                  key={personajeDato+personajeDato}
+                  key={personajeDato + personajeDato}
                 >
                   <Typography
                     component="h3"
@@ -614,20 +605,20 @@ export default function Personaje() {
                 </Typography>
               </div>
               <div>
-              {historiasApariciones &&
-              Array.isArray(historiasApariciones) &&
-              historiasApariciones.length !== 0 && (
-                <Typography
-                  component="h3"
-                  variant="h5"
-                  align="left"
-                  color="text.primary"
-                  sx={{ mt: 2, ml: 2 }}
-                  gutterBottom
-                >
-                  Historias relacionadas:
-                </Typography>
-              )}
+                {historiasApariciones &&
+                  Array.isArray(historiasApariciones) &&
+                  historiasApariciones.length !== 0 && (
+                    <Typography
+                      component="h3"
+                      variant="h5"
+                      align="left"
+                      color="text.primary"
+                      sx={{ mt: 2, ml: 2 }}
+                      gutterBottom
+                    >
+                      Historias relacionadas:
+                    </Typography>
+                  )}
               </div>
             </Box>
           </div>
@@ -683,19 +674,23 @@ export default function Personaje() {
               ))}
           </Grid>
         </Container>
-        <Container sx={{ py: 2 }} maxWidth="md">
-        <Box>
-        <Button
-              type="submit"
-              variant="contained"
-              startIcon={<ExploreIcon />}
-              sx={{ ml: 1 }}
-              onClick={() => setShowListEsc(true)}
-            >
-              Buscar escenas involucradas
-            </Button>
-            </Box>
-        </Container>
+        {Array.isArray(escenasApariciones) &&
+          !escenasApariciones.some((e) => e == null) && escenasApariciones.length !== 0 && (
+            <Container sx={{ py: 2 }} maxWidth="md">
+              <Box>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  startIcon={<ExploreIcon />}
+                  sx={{ ml: 1 }}
+                  onClick={() => setShowListEsc(true)}
+                >
+                  Buscar escenas involucradas
+                </Button>
+              </Box>
+            </Container>
+          )}
+        ;
       </main>
       {/* Footer */}
       <Footer />
