@@ -21,7 +21,7 @@ async function createFullStory(page) {
     "historia"
   );
 
-  await page.getByLabel('Nombre de la historia *').fill("Las aventuras de Sherlock Holmes");
+  await page.getByLabel('Nombre de la historia *').fill("Las epicas aventuras de Sherlock Holmes");
 
   await page.getByRole('combobox', { name: 'Generos' }).fill("Misterio");
 
@@ -58,9 +58,10 @@ async function delFullStory(page) {
 }
 
 async function crearEscena(page) {
-  await page.getByRole("link", { name: "Mis historias" }).click();
+  
+  await page.getByRole('link', { name: 'Mis historias' }).click();
 
-  await page.getByRole('button', { name: 'Las aventuras de Sherlock Holmes Sherlock se embarca en una aventura sin precedentes, a la cual deberá enfrentar con todos los medios a su disposición.' }).last().click();
+  await page.getByRole('button', { name: 'Las epicas aventuras de Sherlock Holmes Sherlock se embarca en una aventura sin precedentes, a la cual deberá enfrentar con todos los medios a su disposición.' }).last().click();
 
   await page.getByRole('button', { name: 'Un nuevo comienzo Sherlock se embarca en una nueva aventura, una para la que puede que no esté completamente preparado' }).last().click();
 
@@ -163,13 +164,6 @@ async function crearPersonajeExtra(page) {
 
 }
 
-
-test('testTimeLine', async ({ page }) => {
-
-//TODO
-
-});
-
 test('testContext', async ({ page }) => {
   
   await login(page);
@@ -196,7 +190,7 @@ test('testRelationshipsStory', async ({ page }) => {
 
   await page.getByRole("link", { name: "Mis historias" }).click();
 
-  await page.getByRole('button', { name: 'Las aventuras de Sherlock Holmes Sherlock se embarca en una aventura sin precedentes, a la cual deberá enfrentar con todos los medios a su disposición.' }).last().click();
+  await page.getByRole('button', { name: 'Las epicas aventuras de Sherlock Holmes Sherlock se embarca en una aventura sin precedentes, a la cual deberá enfrentar con todos los medios a su disposición.' }).last().click();
 
   await page.getByRole('button', { name: 'Relaciones de personajes' }).click();
 
@@ -325,3 +319,40 @@ test('testRelationshipsCharacterAddAndGraph', async ({ page }) => {
     await expect(page.getByRole('alert')).toBeVisible();
 
     });
+
+    test('testFindByScenes', async ({ page }) => {
+  
+      await login(page);
+      
+      await page.getByRole('link', { name: 'Mis personajes' }).click();
+        
+      await page.getByRole('button', { name: 'avatar Sherlock Buen detective' }).last().click();
+
+      await page.getByRole('button', { name: 'Buscar escenas involucradas' }).click();
+
+      await expect(page.getByText('Escenas relacionadasNombre escenaDescripciónFechaPersonajes involucradosAcciones')).toBeVisible();
+
+      await expect(page.getByRole('cell', { name: 'Encuentro' })).toBeVisible();
+    
+    
+      });
+
+
+      test('testTimeLine', async ({ page }) => {
+
+        await login(page);
+      
+        await page.getByRole('link', { name: 'Mis personajes' }).click();
+
+        await page.getByRole('link', { name: 'Mis historias' }).click();
+
+        await page.getByRole('button', { name: 'Las epicas aventuras de Sherlock Holmes Sherlock se embarca en una aventura sin precedentes, a la cual deberá enfrentar con todos los medios a su disposición.' }).click();
+
+        await page.getByRole('button', { name: 'Linea de tiempo' }).click();
+
+        await expect(page.getByText('Linea de tiempoCerrar04-12-2000EncuentroUbicación: LondresInformación de la esce')).toBeVisible();
+
+        await expect(page.getByTestId('tree-main').locator('div').filter({ hasText: 'Información de la escena: El inicio de la historia con Sherlock Personajes invol' }).nth(2)).toBeVisible();
+
+        await expect(page.getByText('Nacimiento de Sherlock Holmes AndersonGenero: Masculino')).toBeVisible();
+        });
