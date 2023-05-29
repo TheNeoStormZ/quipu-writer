@@ -58,7 +58,7 @@ async function delFullStory(page) {
 }
 
 async function crearEscena(page) {
-  
+
   await page.getByRole('link', { name: 'Mis historias' }).click();
 
   await page.getByRole('button', { name: 'Las epicas aventuras de Sherlock Holmes Sherlock se embarca en una aventura sin precedentes, a la cual deberá enfrentar con todos los medios a su disposición.' }).last().click();
@@ -341,8 +341,6 @@ test('testRelationshipsCharacterAddAndGraph', async ({ page }) => {
       test('testTimeLine', async ({ page }) => {
 
         await login(page);
-      
-        await page.getByRole('link', { name: 'Mis personajes' }).click();
 
         await page.getByRole('link', { name: 'Mis historias' }).click();
 
@@ -356,3 +354,98 @@ test('testRelationshipsCharacterAddAndGraph', async ({ page }) => {
 
         await expect(page.getByText('Nacimiento de Sherlock Holmes AndersonGenero: Masculino')).toBeVisible();
         });
+
+        test('testFilterNameChar', async ({ page }) => {
+
+          await login(page);
+        
+          await page.getByRole('link', { name: 'Mis personajes' }).click();
+
+          await page.getByLabel('Buscar').fill('Sherlock');
+
+          await expect(page.getByRole('button', { name: 'Rndom' }).first()).toBeHidden();
+
+          await expect(page.getByRole('button', { name: 'avatar Sherlock Buen detective' }).first()).toBeVisible();
+
+          });
+
+          test('testFilterNameCharDesc', async ({ page }) => {
+
+            await login(page);
+          
+            await page.getByRole('link', { name: 'Mis personajes' }).click();
+  
+            await page.getByLabel('Buscar').fill('detective');
+  
+            await expect(page.getByRole('button', { name: 'Rndom' }).first()).toBeHidden();
+  
+            await expect(page.getByRole('button', { name: 'avatar Sherlock Buen detective' }).first()).toBeVisible();
+  
+            });
+
+            test('testFilterSelect', async ({ page }) => {
+
+              await login(page);
+            
+              await page.getByRole('link', { name: 'Mis personajes' }).click();
+    
+              await page.getByRole('button', { name: 'Filtrar ​' }).click();
+
+              await page.getByRole('option', { name: 'Sin clasificar' }).getByRole('checkbox').click();
+
+              await expect(page.getByRole('button', { name: 'Rndom' }).first()).toBeVisible();
+    
+              });
+
+              test('testFilterStoryName', async ({ page }) => {
+
+                await login(page);
+              
+                await page.getByRole('link', { name: 'Mis historias' }).click();
+      
+                await page.getByLabel('Buscar').fill('Las epicas aventuras ');
+      
+                await expect(page.getByRole('button', { name: 'Las epicas aventuras de Sherlock Holmes Sherlock se embarca en una aventura sin precedentes, a la cual deberá enfrentar con todos los medios a su disposición.' }).first()).toBeVisible();
+      
+                });
+
+                test('testFilterStoryNameNeg', async ({ page }) => {
+
+                  await login(page);
+                
+                  await page.getByRole('link', { name: 'Mis historias' }).click();
+        
+                  await page.getByLabel('Buscar').fill('Las aburridas aventuras ');
+        
+                  await expect(page.getByRole('button', { name: 'Las epicas aventuras de Sherlock Holmes Sherlock se embarca en una aventura sin precedentes, a la cual deberá enfrentar con todos los medios a su disposición.' }).first()).toBeHidden();
+        
+                  });
+
+              
+                  test('testFilterStoryCat', async ({ page }) => {
+
+                    await login(page);
+                  
+                    await page.getByRole('link', { name: 'Mis historias' }).click();
+          
+                    await page.getByRole('button', { name: 'Filtrar ​' }).click();
+
+                    await page.getByRole('option', { name: 'Misterio' }).getByRole('checkbox').click();
+          
+                    await expect(page.getByRole('button', { name: 'Las epicas aventuras de Sherlock Holmes Sherlock se embarca en una aventura sin precedentes, a la cual deberá enfrentar con todos los medios a su disposición.' }).first()).toBeVisible();
+          
+                    });
+
+                    test('testFilterStoryCatNeg', async ({ page }) => {
+
+                      await login(page);
+                    
+                      await page.getByRole('link', { name: 'Mis historias' }).click();
+            
+                      await page.getByRole('button', { name: 'Filtrar ​' }).click();
+  
+                      await page.getByRole('option', { name: 'Aventura' }).getByRole('checkbox').click();
+            
+                      await expect(page.getByRole('button', { name: 'Las epicas aventuras de Sherlock Holmes Sherlock se embarca en una aventura sin precedentes, a la cual deberá enfrentar con todos los medios a su disposición.' }).first()).toBeHidden();
+            
+                      });
