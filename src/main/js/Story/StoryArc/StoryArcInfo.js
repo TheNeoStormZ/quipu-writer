@@ -284,6 +284,9 @@ export default function Trama() {
                   />
                 ))
               : "Sin información",
+              <Typography key={"end"}>
+              {"⠀ \n\n"}
+            </Typography>,
           ],
         });
       }
@@ -605,7 +608,7 @@ export default function Trama() {
                     style={{
                       width: "80%",
                       backgroundColor: "white",
-                      marginTop: "50vh",
+                      marginTop: "160vh",
                       marginBottom: "10vh",
                       overflowY: "scroll",
                       boxSizing: "border-box",

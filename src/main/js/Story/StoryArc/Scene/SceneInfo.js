@@ -576,7 +576,8 @@ export default function Escena() {
                               <Typography>{personaje.descripcion}</Typography>
                             </CardContent>
                           </CardActionArea>
-                          <CardActions>
+                          {personaje.fechaNacimiento !=null && (
+                            <CardActions>
                             <Typography gutterBottom>
                               {calcularEdadPersonaje(personaje) < 0 &&
                                 `Quedan ${Math.abs(
@@ -586,6 +587,7 @@ export default function Escena() {
                                 `Edad: ${calcularEdadPersonaje(personaje)}`}
                             </Typography>
                           </CardActions>
+                          )}
                         </Card>
                       </Grid>
                     ))}

@@ -225,6 +225,9 @@ export default function Historia() {
                   />
                 ))
               : "Sin información",
+              <Typography key={"end"}>
+              {"⠀ \n\n"}
+            </Typography>,
           ],
         });
       }
@@ -659,7 +662,7 @@ export default function Historia() {
                     style={{
                       width: "80%",
                       backgroundColor: "white",
-                      marginTop: "115vh",
+                      marginTop: "160vh",
                       marginBottom: "10vh",
                       overflowY: "scroll",
                       boxSizing: "border-box",
@@ -692,6 +695,7 @@ export default function Historia() {
                       mode="VERTICAL_ALTERNATING"
                       scrollable
                       enableOutline
+                      useReadMore
                       theme={{
                         primary: "#191970",
                         secondary: "grey",
