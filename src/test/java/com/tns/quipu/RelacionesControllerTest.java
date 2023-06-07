@@ -15,6 +15,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -29,7 +30,10 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.google.gson.Gson;
+import com.tns.quipu.Historia.Historia;
 import com.tns.quipu.Historia.HistoriaService;
+import com.tns.quipu.Historia.Trama.Trama;
+import com.tns.quipu.Historia.Trama.Escena.Escena;
 import com.tns.quipu.Personaje.Personaje;
 import com.tns.quipu.Personaje.PersonajeService;
 import com.tns.quipu.Personaje.Relaciones.Relacion;
@@ -173,6 +177,47 @@ public class RelacionesControllerTest {
         r.setDescripcion("Amigos");
         r.addPersonaje(personaje);
 
+        Personaje personaje2 = new Personaje();
+
+        Relacion r2 = new Relacion();
+        r2.setId("1");
+        r2.setCreador(user);
+        r2.setDescripcion("Enemigos");
+        r2.addPersonaje(personaje);
+        r2.addPersonaje(personaje2);
+
+        // Crear un objeto mock de Principal
+        Principal principal = new Principal() {
+            @Override
+            public String getName() {
+                return "user";
+            }
+        };
+
+        // Definir el comportamiento de los mocks
+        when(rs.findById("1")).thenReturn(r);
+        when(us.findUserByUsername("user")).thenReturn(user);
+        Gson gson = new Gson();
+        // Invocar el método que se quiere probar y verificar el resultado
+        mockMvc.perform(put("/api/personajes/relaciones/update")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(gson.toJson(r2)))
+                .andExpect(status().isOk());
+
+    }
+
+    @Test
+    public void actualizarRelaciones_Fail() throws Exception {
+        // Crear los objetos necesarios para el test
+        Relacion r = new Relacion();
+        Personaje personaje = new Personaje();
+        r.setId("1");
+        Usuario user = new Usuario(new String("1"), "user@example.com", "user", "pass", "",
+                Collections.singleton(new UsuarioRol("USER")));
+        r.setCreador(user);
+        r.setDescripcion("Amigos");
+        r.addPersonaje(personaje);
+
         Relacion r2 = new Relacion();
         r2.setId("1");
         r2.setCreador(user);
@@ -195,7 +240,7 @@ public class RelacionesControllerTest {
         mockMvc.perform(put("/api/personajes/relaciones/update")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(gson.toJson(r2)))
-                .andExpect(status().isOk());
+                .andExpect(status().isForbidden());
 
     }
 
@@ -542,6 +587,262 @@ public class RelacionesControllerTest {
 
         // Invocar el método que se quiere probar y verificar el resultado
         mockMvc.perform(get("/api/personajes/relaciones/{pid}/detailed", "1")
+                .principal(principal))
+                .andExpect(status().isForbidden());
+
+    }
+
+    @Test
+    public void obtenerRelacionesHistoriaDetallado() throws Exception {
+        // Crear los objetos necesarios para el test
+        Relacion r = new Relacion();
+        Personaje personaje = new Personaje();
+        r.setId("1");
+        Usuario user = new Usuario(new String("1"), "user@example.com", "user", "pass", "",
+                Collections.singleton(new UsuarioRol("USER")));
+        r.setCreador(user);
+        personaje.setCreador(user);
+        personaje.setNombre("Personaje1");
+        r.setDescripcion("Amigos");
+        r.addPersonaje(personaje);
+
+        Personaje personaje2 = new Personaje();
+        personaje2.setCreador(user);
+        personaje2.setNombre("Personaje2");
+
+        r.addPersonaje(personaje2);
+
+        Set<Personaje> relacionados = new HashSet<>();
+        relacionados.add(personaje2);
+
+        Historia historia = new Historia();
+        historia.setId("1");
+        historia.setNombreHistoria("Test1");
+        historia.setCreador(user);
+
+        Trama trama = new Trama(user, "1", "trama1", "descripcion1", new ArrayList<>());
+
+
+        Escena escena2 = new Escena();
+        escena2.setId("1");
+        escena2.setNombreEscena("E2");
+        escena2.setDescripcion("Descripcion2");
+        escena2.setCreador(user);
+        escena2.añadirPersonaje(personaje2);
+        escena2.añadirPersonaje(personaje);
+        trama.añadirEscena(escena2);
+
+        List<Trama> tramas = Arrays.asList(trama);
+        historia.setTramas(tramas);
+
+        // Crear un objeto mock de Principal
+        Principal principal = new Principal() {
+            @Override
+            public String getName() {
+                return "user";
+            }
+        };
+
+        List<Relacion> listaRelaciones = new ArrayList<>();
+        listaRelaciones.add(r);
+
+        // Definir el comportamiento de los mocks
+        when(rs.findById("1")).thenReturn(r);
+        when(us.findUserByUsername(principal.getName())).thenReturn(user);
+        when(us.findUserById("1")).thenReturn(user);
+        when(rs.findAllPersonajeRelaciones(personaje, user)).thenReturn(listaRelaciones);
+        when(rs.findAllPersonajeRelacionesHistoria(personaje,historia, user)).thenReturn(listaRelaciones);
+        when(rr.findBypersonajesInvolucradosContainsAndCreadorEquals(personaje, user)).thenReturn(listaRelaciones);
+        when(ps.findById("1")).thenReturn(personaje);
+        when(hs.findById("1")).thenReturn(historia);
+
+        // Invocar el método que se quiere probar y verificar el resultado
+        mockMvc.perform(get("/api/historia/relaciones/{hid}/detailed", "1")
+                .principal(principal))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].descripcion", is("Amigos")));
+
+    }
+
+    @Test
+    public void obtenerRelacionesHistoriaDetallado_ForbiddenNull() throws Exception {
+        // Crear los objetos necesarios para el test
+        Relacion r = new Relacion();
+        Personaje personaje = new Personaje();
+        r.setId("1");
+        Usuario user = new Usuario(new String("1"), "user@example.com", "user", "pass", "",
+                Collections.singleton(new UsuarioRol("USER")));
+        r.setCreador(user);
+        personaje.setCreador(user);
+        personaje.setNombre("Personaje1");
+        r.setDescripcion("Amigos");
+        r.addPersonaje(personaje);
+
+        Personaje personaje2 = new Personaje();
+        personaje2.setCreador(user);
+        personaje2.setNombre("Personaje2");
+
+        r.addPersonaje(personaje2);
+
+        Set<Personaje> relacionados = new HashSet<>();
+        relacionados.add(personaje2);
+
+        Historia historia = null;
+
+
+        // Crear un objeto mock de Principal
+        Principal principal = new Principal() {
+            @Override
+            public String getName() {
+                return "user";
+            }
+        };
+
+        List<Relacion> listaRelaciones = new ArrayList<>();
+        listaRelaciones.add(r);
+
+        // Definir el comportamiento de los mocks
+
+        when(hs.findById("1")).thenReturn(historia);
+
+        // Invocar el método que se quiere probar y verificar el resultado
+        mockMvc.perform(get("/api/historia/relaciones/{hid}/detailed", "1")
+                .principal(principal))
+                .andExpect(status().isForbidden());
+
+    }
+
+    @Test
+    public void obtenerRelacionesHistoriaDetallado_ForbiddenNullCreator() throws Exception {
+        // Crear los objetos necesarios para el test
+        Relacion r = new Relacion();
+        Personaje personaje = new Personaje();
+        r.setId("1");
+        Usuario user = new Usuario(new String("1"), "user@example.com", "user", "pass", "",
+                Collections.singleton(new UsuarioRol("USER")));
+        r.setCreador(user);
+        personaje.setCreador(user);
+        personaje.setNombre("Personaje1");
+        r.setDescripcion("Amigos");
+        r.addPersonaje(personaje);
+
+        Personaje personaje2 = new Personaje();
+        personaje2.setCreador(user);
+        personaje2.setNombre("Personaje2");
+
+        r.addPersonaje(personaje2);
+
+        Set<Personaje> relacionados = new HashSet<>();
+        relacionados.add(personaje2);
+
+        Historia historia = new Historia();
+        historia.setId("1");
+        historia.setNombreHistoria("Test1");
+        historia.setCreador(null);
+
+        Trama trama = new Trama(user, "1", "trama1", "descripcion1", new ArrayList<>());
+
+
+        Escena escena2 = new Escena();
+        escena2.setId("1");
+        escena2.setNombreEscena("E2");
+        escena2.setDescripcion("Descripcion2");
+        escena2.setCreador(user);
+        escena2.añadirPersonaje(personaje2);
+        escena2.añadirPersonaje(personaje);
+        trama.añadirEscena(escena2);
+
+        List<Trama> tramas = Arrays.asList(trama);
+        historia.setTramas(tramas);
+
+        // Crear un objeto mock de Principal
+        Principal principal = new Principal() {
+            @Override
+            public String getName() {
+                return "user";
+            }
+        };
+
+        List<Relacion> listaRelaciones = new ArrayList<>();
+        listaRelaciones.add(r);
+
+
+        when(hs.findById("1")).thenReturn(historia);
+
+        // Invocar el método que se quiere probar y verificar el resultado
+        mockMvc.perform(get("/api/historia/relaciones/{hid}/detailed", "1")
+                .principal(principal))
+                .andExpect(status().isForbidden());
+
+    }
+
+    @Test
+    public void obtenerRelacionesHistoriaDetallado_ForbiddenOtherUser() throws Exception {
+        // Crear los objetos necesarios para el test
+        Relacion r = new Relacion();
+        Personaje personaje = new Personaje();
+        r.setId("1");
+        Usuario user = new Usuario(new String("1"), "user@example.com", "user2", "pass", "",
+                Collections.singleton(new UsuarioRol("USER")));
+        r.setCreador(user);
+        personaje.setCreador(user);
+        personaje.setNombre("Personaje1");
+        r.setDescripcion("Amigos");
+        r.addPersonaje(personaje);
+
+        Personaje personaje2 = new Personaje();
+        personaje2.setCreador(user);
+        personaje2.setNombre("Personaje2");
+
+        r.addPersonaje(personaje2);
+
+        Set<Personaje> relacionados = new HashSet<>();
+        relacionados.add(personaje2);
+
+        Historia historia = new Historia();
+        historia.setId("1");
+        historia.setNombreHistoria("Test1");
+        historia.setCreador(user);
+
+        Trama trama = new Trama(user, "1", "trama1", "descripcion1", new ArrayList<>());
+
+
+        Escena escena2 = new Escena();
+        escena2.setId("1");
+        escena2.setNombreEscena("E2");
+        escena2.setDescripcion("Descripcion2");
+        escena2.setCreador(user);
+        escena2.añadirPersonaje(personaje2);
+        escena2.añadirPersonaje(personaje);
+        trama.añadirEscena(escena2);
+
+        List<Trama> tramas = Arrays.asList(trama);
+        historia.setTramas(tramas);
+
+        // Crear un objeto mock de Principal
+        Principal principal = new Principal() {
+            @Override
+            public String getName() {
+                return "user";
+            }
+        };
+
+        List<Relacion> listaRelaciones = new ArrayList<>();
+        listaRelaciones.add(r);
+
+        // Definir el comportamiento de los mocks
+        when(rs.findById("1")).thenReturn(r);
+        when(us.findUserByUsername(principal.getName())).thenReturn(user);
+        when(us.findUserById("1")).thenReturn(user);
+        when(rs.findAllPersonajeRelaciones(personaje, user)).thenReturn(listaRelaciones);
+        when(rs.findAllPersonajeRelacionesHistoria(personaje,historia, user)).thenReturn(listaRelaciones);
+        when(rr.findBypersonajesInvolucradosContainsAndCreadorEquals(personaje, user)).thenReturn(listaRelaciones);
+        when(ps.findById("1")).thenReturn(personaje);
+        when(hs.findById("1")).thenReturn(historia);
+
+        // Invocar el método que se quiere probar y verificar el resultado
+        mockMvc.perform(get("/api/historia/relaciones/{hid}/detailed", "1")
                 .principal(principal))
                 .andExpect(status().isForbidden());
 

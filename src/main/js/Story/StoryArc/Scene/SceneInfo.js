@@ -49,7 +49,7 @@ import Footer from "../../../Footer";
 const theme = createTheme();
 
 let nombreDatosEscena = [
-  "Nombre de la escena",
+  "Ubicación de la escena",
   "Fecha de la escena",
   "Ubicación",
 ];
@@ -576,7 +576,8 @@ export default function Escena() {
                               <Typography>{personaje.descripcion}</Typography>
                             </CardContent>
                           </CardActionArea>
-                          <CardActions>
+                          {personaje.fechaNacimiento !=null && (
+                            <CardActions>
                             <Typography gutterBottom>
                               {calcularEdadPersonaje(personaje) < 0 &&
                                 `Quedan ${Math.abs(
@@ -586,6 +587,7 @@ export default function Escena() {
                                 `Edad: ${calcularEdadPersonaje(personaje)}`}
                             </Typography>
                           </CardActions>
+                          )}
                         </Card>
                       </Grid>
                     ))}

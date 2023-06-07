@@ -2,12 +2,16 @@ const React = require("react");
 const ReactDOM = require("react-dom");
 
 import cytoscape from "cytoscape";
+import PersonajeModal from "../../Utils/CharacterInfoModal";
 
 class RelationshipGraph extends React.Component {
   constructor(props) {
     super(props);
     this.containerRef = React.createRef();
-    this.state = { matches: window.matchMedia("(min-width: 768px)").matches };
+    this.state = { 
+      matches: window.matchMedia("(min-width: 768px)").matches,
+      personajeDato: null // declara el estado inicial de personajeDato
+    };
     this.styleMax = {
       /* Estilo por defecto */ width: "800px",
       height: "600px",
@@ -23,6 +27,11 @@ class RelationshipGraph extends React.Component {
     };
   }
 
+  updatePersonajeDato = (newPersonajeDato) => {
+    // Usa this.setState para actualizar el estado de personajeDato
+    this.setState({ personajeDato: newPersonajeDato });
+  }
+
   componentDidMount() {
     // Tus variables
     const personaje = JSON.parse(localStorage.getItem("personaje"));
@@ -36,6 +45,7 @@ class RelationshipGraph extends React.Component {
       data: {
         id: personaje.id,
         label: personaje.nombre,
+        personajeDato: personaje,
         color: "#191970",
       },
     };
@@ -76,6 +86,7 @@ class RelationshipGraph extends React.Component {
           data: {
             id: personajeSecundario.id,
             label: personajeSecundario.nombre,
+            personajeDato: personajeSecundario,
             color: "#666",
           },
           position: {
@@ -118,6 +129,7 @@ class RelationshipGraph extends React.Component {
     });
     let container = this.containerRef.current;
     // Crea una instancia de cytoscape y pasa el elemento HTML como el contenedor y los elementos como la opción elements
+
     const cy = cytoscape({
       container: container,
       elements: elements,
@@ -144,13 +156,32 @@ class RelationshipGraph extends React.Component {
         },
       },
     ]);
+
+    cy.on("tap", "node", (event) => {
+      let node = event.target;
+      console.log(node.data("label"));
+      console.log(node.data("color"));
+      let personajeDato = node.data("personajeDato");
+      console.log(personajeDato);
+     
+      if (personajeDato != null) {
+
+      this.setState({ personajeDato: personajeDato });
+      }
+      });
+
   }
 
   render() {
     return (
-      <div >
-      {this.state.matches && (<div ref={this.containerRef} style={this.styleMax}></div>)}
-      {!this.state.matches && (<div ref={this.containerRef} style={this.styleMin}></div>)}
+      <div>
+        {this.state.matches && (
+          <div ref={this.containerRef} style={this.styleMax}></div>
+        )}
+        {!this.state.matches && (
+          <div ref={this.containerRef} style={this.styleMin}></div>
+        )}
+        {this.state.personajeDato && ( <PersonajeModal data={this.state.personajeDato} updatePersonajeDato={this.updatePersonajeDato} />)}
       </div>
     );
   }

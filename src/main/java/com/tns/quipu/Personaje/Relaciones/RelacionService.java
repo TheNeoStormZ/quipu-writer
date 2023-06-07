@@ -2,13 +2,13 @@ package com.tns.quipu.Personaje.Relaciones;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.tns.quipu.Historia.Historia;
 import com.tns.quipu.Personaje.Personaje;
 import com.tns.quipu.Usuario.Usuario;
 
@@ -65,6 +65,15 @@ public class RelacionService {
     @Transactional()
     public List<Relacion> findAllPersonajeRelaciones(Personaje p, Usuario u) {
        List<Relacion> relaciones = rs.findBypersonajesInvolucradosContainsAndCreadorEquals(p,u);
+       return relaciones;
+       
+    }
+
+    @Transactional()
+    public List<Relacion> findAllPersonajeRelacionesHistoria(Personaje p, Historia h, Usuario u) {
+       List<Relacion> relaciones = findAllPersonajeRelaciones(p, u);
+       Set<Personaje> personajesHistoria = h.obtenerPersonajes();
+       relaciones = relaciones.stream().filter(x -> personajesHistoria.containsAll(x.getPersonajesInvolucrados())).collect(Collectors.toList());
        return relaciones;
        
     }

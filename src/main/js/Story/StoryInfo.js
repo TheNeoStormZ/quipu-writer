@@ -16,7 +16,7 @@ import {
   CardActionArea,
   CardActions,
   CardContent,
-  CardHeader
+  CardHeader,
 } from "@mui/material";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -48,6 +48,19 @@ import Navigation from "../Navigation";
 import axios from "axios";
 import Footer from "../Footer";
 
+import GroupWorkIcon from "@mui/icons-material/GroupWork";
+
+import Select from "@mui/material/Select";
+import FormControl from "@mui/material/FormControl";
+import MenuItem from "@mui/material/MenuItem";
+import InputLabel from "@mui/material/InputLabel";
+import OutlinedInput from "@mui/material/OutlinedInput";
+import Checkbox from "@mui/material/Checkbox";
+import ListItemText from "@mui/material/ListItemText";
+import Link from "@mui/material/Link";
+import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
+import Chip from "@mui/material/Chip";
+import Avatar from "@mui/material/Avatar";
 const theme = createTheme();
 
 let nombreDatosHistoria = ["Nombre de la historia", "Generos narrativos"];
@@ -83,9 +96,28 @@ export default function Historia() {
 
   const [arcs, setArcs] = React.useState([]);
 
+  const [arcsFiltered, setArcsFiltered] = React.useState([]);
+
   const [showTimeline, setShowTimeline] = React.useState(false);
 
   const [timeline, setTimeline] = React.useState([]);
+
+  const [selectedFilter, setSelectedFilter] = React.useState([]);
+
+  const [personajesInvolucrados, setPersonajesInvolucrados] = React.useState(
+    []
+  );
+
+  const ITEM_HEIGHT = 48;
+  const ITEM_PADDING_TOP = 8;
+  const MenuProps = {
+    PaperProps: {
+      style: {
+        maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+        width: 250,
+      },
+    },
+  };
 
   const handleClickOpenDelete = () => {
     setOpenDelete(true);
@@ -108,6 +140,16 @@ export default function Historia() {
       });
   }
 
+  function goToEscene(escene) {
+    localStorage.setItem("escena", JSON.stringify(escene));
+    navigate("/historia/trama/escena/info");
+  }
+
+  function goToChar(personaje) {
+    localStorage.setItem("personaje", JSON.stringify(personaje));
+    navigate("/personaje/info");
+  }
+
   const handleTimeline = async () => {
     let escenas = historia.tramas.flatMap((trama) =>
       trama.escenas.flatMap((escena) => escena)
@@ -120,7 +162,7 @@ export default function Historia() {
     let promesasRelaciones = Array.from(personajesInvolucrados).map(
       (personaje) => obtenerRelaciones(personaje.id)
     );
-    
+
     let reSinDuplicados = [];
 
     try {
@@ -135,7 +177,7 @@ export default function Historia() {
     } catch (error) {
       console.error(error);
     }
-
+    let ids = new Set();
     let lista = escenas.reduce((acumulador, escena) => {
       // Añadir la fecha y el nombre de la escena al acumulador junto con otros datos relevantes
       // Solo si escena.fecha no es null o undefined
@@ -143,36 +185,86 @@ export default function Historia() {
         acumulador.push({
           title: convertirFecha(escena.fecha),
           orderTime: escena.fecha,
-          cardTitle: escena.nombreEscena,
-          cardSubtitle: escena.ubicacion ? escena.ubicacion : "",
-          cardDetailedText: [escena.descripcion || ""],
+          cardTitle: (
+            <Link onClick={() => goToEscene(escena)}>
+              {escena.nombreEscena}
+              <RemoveRedEyeIcon />
+            </Link>
+          ),
+          cardSubtitle: escena.ubicacion
+            ? "Ubicación: " + escena.ubicacion
+            : "Ubicación desconocida",
+          cardDetailedText: [
+            <Typography
+              component="h7"
+              variant="h7"
+              align="left"
+              color="text.primary"
+              gutterBottom
+              key={"title"}
+            >
+              Información de la escena:{" "}
+            </Typography>,
+            <Typography key={"data"}>
+              {" "}
+              {escena.descripcion ? escena.descripcion : "Sin información"}{" "}
+            </Typography>,
+            <Typography key={"characters"}>
+              Personajes involucrados:{" "}
+            </Typography>,
+            escena.personajesInvolucrados &&
+            escena.personajesInvolucrados.length !== 0
+              ? escena.personajesInvolucrados.map((personaje) => (
+                  <Chip
+                    key={personaje.id}
+                    avatar={<Avatar alt="avatar" src={personaje.urlIcon} />}
+                    label={personaje.nombre}
+                    variant="outlined"
+                    clickable
+                    onClick={() => goToChar(personaje)}
+                  />
+                ))
+              : "Sin información",
+              <Typography key={"end"}>
+              {"⠀ \n\n"}
+            </Typography>,
+          ],
         });
       }
       // Añadir las fechas y los nombres de los personajes involucrados al acumulador
       for (let personaje of escena.personajesInvolucrados) {
-        // Comprobar si los apellidos del personaje existen y no están vacíos
-        let primerApellido = personaje.primerApellido || "";
-        let segundoApellido = personaje.segundoApellido || "";
-        // Formar el nombre completo del personaje con los apellidos si los hay
-        let nombreCompleto =
-          personaje.nombre +
-          (primerApellido ? " " + primerApellido : "") +
-          (segundoApellido ? " " + segundoApellido : "");
-        // Añadir la fecha y el nombre completo del personaje al acumulador junto con otros datos relevantes
-        if (personaje.fechaNacimiento != null) {
-          acumulador.push({
-            title: convertirFecha(personaje.fechaNacimiento),
-            orderTime: personaje.fechaNacimiento,
-            cardTitle: "Nacimiento de " + nombreCompleto,
-            cardSubtitle: personaje.genero ? personaje.genero : "",
-            cardDetailedText: personaje.descripcion,
-          });
+        if (!ids.has(personaje.id)) {
+          ids.add(personaje.id);
+          // Comprobar si los apellidos del personaje existen y no están vacíos
+          let primerApellido = personaje.primerApellido || "";
+          let segundoApellido = personaje.segundoApellido || "";
+          // Formar el nombre completo del personaje con los apellidos si los hay
+          let nombreCompleto =
+            personaje.nombre +
+            (primerApellido ? " " + primerApellido : "") +
+            (segundoApellido ? " " + segundoApellido : "");
+          // Añadir la fecha y el nombre completo del personaje al acumulador junto con otros datos relevantes
+          if (personaje.fechaNacimiento != null) {
+            acumulador.push({
+              title: convertirFecha(personaje.fechaNacimiento),
+              orderTime: personaje.fechaNacimiento,
+              cardTitle: (
+                <Link onClick={() => goToChar(personaje)}>
+                  {"Nacimiento de " + nombreCompleto}
+                  <RemoveRedEyeIcon />
+                </Link>
+              ),
+              cardSubtitle: personaje.genero
+                ? "Genero: " + personaje.genero
+                : "Genero desconocido",
+              cardDetailedText: personaje.descripcion,
+            });
+          }
         }
       }
       // Devolver el acumulador actualizado
       return acumulador;
     }, []); // Inicializar el acumulador como un array vacío
-
     // Ordenar la lista por fecha usando el método Array.prototype.sort()
     lista.sort((a, b) => new Date(a.orderTime) - new Date(b.orderTime));
 
@@ -228,6 +320,39 @@ export default function Historia() {
 
     setShowTimeline(true);
   };
+
+  const handleSelectorChange = (event) => {
+    const {
+      target: { value },
+    } = event;
+
+    let personajesElegidos =
+      typeof value === "string" ? value.split(",") : value;
+    console.log(personajesElegidos);
+
+    setSelectedFilter(personajesElegidos);
+
+    if (personajesElegidos.length === 0) {
+      // Si está vacío, mostramos todos los elementos de arcs
+      setArcsFiltered(arcs);
+    } else {
+      // Se usa Array.filter para obtener las tramas con los personajes elegidos
+      let tramasFiltradas = arcs.filter((trama) => {
+        // Para cada trama, recorremos sus escenas y comprobamos si algún personaje coincide con la lista
+        return trama.escenas.some((escena) => {
+          // Para cada escena, se usa Array.every para ver si todos los personajes de la lista están en la escena
+          return personajesElegidos.every((p) => {
+            // Para cada personaje de la lista, se usa Array.some para buscarlo en la escena por su id
+            return escena.personajesInvolucrados.some((personaje) => {
+              // Finalmente, se usa JSON.parse para convertir la cadena en un objeto antes de comparar los ids
+              return JSON.parse(p).id === personaje.id;
+            });
+          });
+        });
+      });
+      setArcsFiltered(tramasFiltradas);
+    }
+  };
   const handleProccesDelete = () => {
     console.log(historia);
     axios
@@ -275,6 +400,10 @@ export default function Historia() {
     navigate("/historia/tramas/add");
   };
 
+  const handleRelationshipsGraph = async (event) => {
+    navigate("/historia/graph");
+  };
+
   function removeEmpty(obj) {
     return Object.fromEntries(
       Object.entries(obj).filter(
@@ -302,6 +431,25 @@ export default function Historia() {
     });
   }
 
+  function obtenerPersonajesInvolucrados(historia) {
+    let arr = []; // Este array contendrá todos los personajesInvolucrados de todas las escenas
+
+    if (historia.tramas != null) {
+      historia.tramas.forEach((trama) => {
+        trama.escenas.forEach((escena) => {
+          // Añadimos los personajesInvolucrados al array arr
+          arr.push(...escena.personajesInvolucrados);
+        });
+      });
+      // Usamos Array.from con Set para eliminar los objetos duplicados
+      // Usamos JSON.stringify y JSON.parse para comparar los objetos por su contenido y no por su referencia
+      let unique = Array.from(new Set(arr.map(JSON.stringify))).map(JSON.parse);
+      // Ahora unique contiene la lista de personajesInvolucrados sin repetir
+      console.log(unique);
+      setPersonajesInvolucrados(unique);
+    }
+  }
+
   React.useEffect(() => {
     if (storyStr) {
       storyTemp = removeEmpty(JSON.parse(storyStr));
@@ -317,6 +465,8 @@ export default function Historia() {
       setDatosHistoria(datosHistoriaTemp);
 
       setArcs(ordenarTramasPorFecha(storyTemp.tramas));
+      setArcsFiltered(ordenarTramasPorFecha(storyTemp.tramas));
+      obtenerPersonajesInvolucrados(storyTemp);
     } else {
       console.log("FATAL ERROR");
       navigate("/");
@@ -418,35 +568,64 @@ export default function Historia() {
           <div>
             <Box>
               <div style={{ display: "flex", alignItems: "left" }}>
-                <BookIcon sx={{ width: 98, height: 98 }} />
-
-                <Typography
-                  component="h3"
-                  variant="h5"
-                  align="left"
-                  color="text.primary"
-                  sx={{ mt: 2, ml: 2 }}
-                  gutterBottom
+                <BookIcon sx={{ width: 140, height: 140 }} />
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "left",
+                    flexDirection: "column",
+                  }}
                 >
-                  {historia.nombreHistoria}
-                  <IconButton aria-label="export" onClick={handleExport}>
-                    <CloudDownloadIcon />
-                  </IconButton>
-
-                  <IconButton aria-label="edit">
-                    <LinkRouter to="/historia/update">
-                      {" "}
-                      <EditIcon />
-                    </LinkRouter>
-                  </IconButton>
-
-                  <IconButton
-                    aria-label="delete"
-                    onClick={handleClickOpenDelete}
+                  <Typography
+                    component="h3"
+                    variant="h5"
+                    align="left"
+                    color="text.primary"
+                    sx={{ mt: 2, ml: 2 }}
+                    gutterBottom
                   >
-                    <DeleteIcon />
-                  </IconButton>
-                </Typography>
+                    {historia.nombreHistoria}
+                    <IconButton aria-label="export" onClick={handleExport}>
+                      <CloudDownloadIcon />
+                    </IconButton>
+
+                    <IconButton aria-label="edit">
+                      <LinkRouter to="/historia/update">
+                        {" "}
+                        <EditIcon />
+                      </LinkRouter>
+                    </IconButton>
+
+                    <IconButton
+                      aria-label="delete"
+                      onClick={handleClickOpenDelete}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </Typography>
+
+                  <div>
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      startIcon={<TimelineIcon />}
+                      onClick={handleTimeline}
+                      sx={{ mt: 2, ml: 2 }}
+                    >
+                      Linea de tiempo
+                    </Button>
+
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      startIcon={<GroupWorkIcon />}
+                      onClick={handleRelationshipsGraph}
+                      sx={{ mt: 2, ml: 2 }}
+                    >
+                      Relaciones de personajes
+                    </Button>
+                  </div>
+                </div>
               </div>
               {datosHistoria.map((personajeDato, index) => (
                 <div
@@ -483,7 +662,7 @@ export default function Historia() {
                     style={{
                       width: "80%",
                       backgroundColor: "white",
-                      marginTop: "115vh",
+                      marginTop: "160vh",
                       marginBottom: "10vh",
                       overflowY: "scroll",
                       boxSizing: "border-box",
@@ -516,6 +695,7 @@ export default function Historia() {
                       mode="VERTICAL_ALTERNATING"
                       scrollable
                       enableOutline
+                      useReadMore
                       theme={{
                         primary: "#191970",
                         secondary: "grey",
@@ -552,7 +732,13 @@ export default function Historia() {
                   </Typography>
                 </div>
               )}
-              <div>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "left",
+                  flexDirection: "row",
+                }}
+              >
                 <Typography
                   component="h3"
                   variant="h5"
@@ -571,15 +757,61 @@ export default function Historia() {
                 >
                   Añadir Trama
                 </Button>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  startIcon={<TimelineIcon />}
-                  onClick={handleTimeline}
-                  sx={{ mt: 2, ml: 2 }}
-                >
-                  Linea de tiempo
-                </Button>
+              </div>
+              <div>
+                {personajesInvolucrados &&
+                  Array.isArray(personajesInvolucrados) &&
+                  !personajesInvolucrados.some((e) => e == null) &&
+                  personajesInvolucrados.length > 0 && (
+                    <div>
+                      <Typography
+                        component="h5"
+                        variant="h6"
+                        align="left"
+                        color="text.primary"
+                        sx={{ mt: 2, ml: 2 }}
+                        gutterBottom
+                      >
+                        Filtrar tramas por personaje
+                      </Typography>
+
+                      <FormControl sx={{ ml: 1, width: 300 }}>
+                        <InputLabel id="demo-multiple-checkbox-label">
+                          Filtrar
+                        </InputLabel>
+                        <Select
+                          labelId="demo-multiple-checkbox-label"
+                          id="demo-multiple-checkbox"
+                          multiple
+                          value={selectedFilter}
+                          onChange={handleSelectorChange}
+                          input={<OutlinedInput label="Tag" />}
+                          renderValue={(selected) =>
+                            // Se usa JSON.parse para convertir la cadena en un objeto y accedemos al nombre
+                            selected.map((s) => JSON.parse(s).nombre).join(", ")
+                          }
+                          MenuProps={MenuProps}
+                        >
+                          {personajesInvolucrados.map((personaje) => (
+                            // Se usa JSON.stringify para convertir el objeto en una cadena y lo usamos como valor
+                            <MenuItem
+                              key={personaje.id}
+                              value={JSON.stringify(personaje)}
+                            >
+                              <Checkbox
+                                checked={
+                                  selectedFilter.indexOf(
+                                    JSON.stringify(personaje)
+                                  ) > -1
+                                }
+                              />
+                              <ListItemText primary={personaje.nombre} />
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </div>
+                  )}
               </div>
             </Box>
           </div>
@@ -587,9 +819,9 @@ export default function Historia() {
         <Container sx={{ py: 2 }} maxWidth="md">
           {/* End hero unit */}
           <Grid container spacing={4}>
-            {Array.isArray(arcs) &&
-              !arcs.some((e) => e === null) &&
-              arcs.map((trama, index) => (
+            {Array.isArray(arcsFiltered) &&
+              !arcsFiltered.some((e) => e === null) &&
+              arcsFiltered.map((trama, index) => (
                 <Grid item key={trama.id} xs={12} sm={6} md={4}>
                   <Card
                     sx={{

@@ -1,6 +1,7 @@
 package com.tns.quipu.Historia;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -41,7 +42,7 @@ public class HistoriaService {
 
     @Transactional(readOnly = true)
     public Set<String> findAllGenres(Usuario user) {
-        Set<String> generos = findAllUserStories(user).stream().map(x -> x.getGeneros()).filter(Objects::nonNull).flatMap(List::stream).collect(Collectors.toSet());
+        Set<String> generos = findAllUserStories(user).stream().map(x -> x.getGeneros()).filter(Objects::nonNull).flatMap(List::stream).filter( x -> !x.isBlank()).filter(x -> !x.isEmpty()).collect(Collectors.toSet());
         List<String> defaultGeneros = List.of("Aventura","Ciencia Ficción");
         generos.addAll(defaultGeneros);
         return generos;
@@ -83,9 +84,9 @@ public class HistoriaService {
     }
 
     @Transactional()
-    public List<Historia> findByPersonaje(Personaje p) {
+    public Set<Historia> findByPersonaje(Personaje p) {
         Set<Historia> historiasInvolucradas = ts.findByPersonaje(p).stream().map(x -> findByTrama(x)).collect(Collectors.toSet());
-        return new ArrayList<>(historiasInvolucradas);
+        return new HashSet<>(historiasInvolucradas);
     }
 
 

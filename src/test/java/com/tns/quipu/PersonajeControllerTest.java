@@ -81,11 +81,11 @@ public class PersonajeControllerTest {
                 List<Personaje> personajes = Arrays.asList(
                                 new Personaje(user, "1", "Mario", "Pérez", "García", "Madrid", new Date(1638112320000L),
                                                 "Masculino",
-                                                "170 cm", "Barcelona", "Un fontanero aventurero.", "/mario.png", null,
+                                                170.0, "Barcelona", "Un fontanero aventurero.", "/mario.png", null,
                                                 null),
                                 new Personaje(user, "2", "Luigi", "López", "Sánchez", "Roma", new Date(1638112320000L),
                                                 "Masculino",
-                                                "180 cm", "Milán", "El hermano de Mario.", "/luigi.png", null, null));
+                                                180.0, "Milán", "El hermano de Mario.", "/luigi.png", null, null));
                 when(us.findUserByUsername("user")).thenReturn(user);
                 when(ps.findAllUserCharacters(user)).thenReturn(personajes);
 
@@ -102,7 +102,7 @@ public class PersonajeControllerTest {
                                 .andExpect(jsonPath("$[0].lugarNacimiento", is("Madrid")))
                                 .andExpect(jsonPath("$[0].fechaNacimiento", is("2021-11-28T15:12:00.000+00:00")))
                                 .andExpect(jsonPath("$[0].genero", is("Masculino")))
-                                .andExpect(jsonPath("$[0].altura", is("170 cm")))
+                                .andExpect(jsonPath("$[0].altura", is(170.0)))
                                 .andExpect(jsonPath("$[0].residencia", is("Barcelona")))
                                 .andExpect(jsonPath("$[0].descripcion", is("Un fontanero aventurero.")))
                                 .andExpect(jsonPath("$[0].urlIcon", is("/mario.png")));
@@ -120,11 +120,11 @@ public class PersonajeControllerTest {
                 List<Personaje> personajes = Arrays.asList(
                                 new Personaje(user, "1", "Mario", "Pérez", "García", "Madrid", new Date(1638112320000L),
                                                 "Masculino",
-                                                "170 cm", "Barcelona", "Un fontanero aventurero.", "/mario.png", null,
+                                                170.0, "Barcelona", "Un fontanero aventurero.", "/mario.png", null,
                                                 null),
                                 new Personaje(user, "2", "Luigi", "López", "Sánchez", "Roma", new Date(1638112320000L),
                                                 "Masculino",
-                                                "180 cm", "Milán", "El hermano de Mario.", "/luigi.png", null, null));
+                                                180.0, "Milán", "El hermano de Mario.", "/luigi.png", null, null));
                 when(us.findUserByUsername("user")).thenReturn(user);
                 when(ps.findAllUserCharacters(user)).thenReturn(new ArrayList<>(personajes));
                 when(ps.findById("1")).thenReturn(personajes.get(0));
@@ -141,7 +141,7 @@ public class PersonajeControllerTest {
                                 .andExpect(jsonPath("$[0].segundoApellido", is("Sánchez")))
                                 .andExpect(jsonPath("$[0].lugarNacimiento", is("Roma")))
                                 .andExpect(jsonPath("$[0].genero", is("Masculino")))
-                                .andExpect(jsonPath("$[0].altura", is("180 cm")))
+                                .andExpect(jsonPath("$[0].altura", is(180.0)))
                                 .andExpect(jsonPath("$[0].residencia", is("Milán")))
                                 .andExpect(jsonPath("$[0].descripcion", is("El hermano de Mario.")))
                                 .andExpect(jsonPath("$[0].urlIcon", is("/luigi.png")));
@@ -190,7 +190,7 @@ public class PersonajeControllerTest {
                 personaje.setLugarNacimiento("Godric's Hollow");
                 personaje.setFechaNacimiento(new SimpleDateFormat("dd/MM/yyyy").parse("31/07/1980"));
                 personaje.setGenero("Masculino");
-                personaje.setAltura("170");
+                personaje.setAltura(170.0);
                 personaje.setResidencia("Privet Drive, 4");
                 personaje.setDescripcion("El niño que vivió");
                 personaje.setUrlIcon(
@@ -342,7 +342,7 @@ public class PersonajeControllerTest {
                 Personaje personaje = new Personaje(usuario, "1", "Mario", "Fontanero", null, null, null, null, null,
                                 null, null, null, null, null);
 
-                Personaje personaje2 = new Personaje(usuario, "1", "MarioEdit", "Font", "Bro", null, null, null, "100",
+                Personaje personaje2 = new Personaje(usuario, "1", "MarioEdit", "Font", "Bro", null, null, null, 100.0,
                                 null, null, null, null, null);
                 Principal principal = () -> "user";
 
@@ -396,7 +396,7 @@ public class PersonajeControllerTest {
                 Personaje personaje = new Personaje(usuario, null, "Mario", "Fontanero", null, null, null, null, null,
                                 null, null, null, null, null);
 
-                Personaje personaje2 = new Personaje(usuario, "1", "MarioEdit", "Font", "Bro", null, null, null, "100",
+                Personaje personaje2 = new Personaje(usuario, "1", "MarioEdit", "Font", "Bro", null, null, null, 100.0,
                                 null, null, null, null, null);
                 Principal principal = () -> "user";
 
@@ -426,7 +426,7 @@ public class PersonajeControllerTest {
                 Personaje personaje = new Personaje(null, "1", "Mario", "Fontanero", null, null, null, null, null,
                                 null, null, null, null, null);
 
-                Personaje personaje2 = new Personaje(null, "1", "MarioEdit", "Font", "Bro", null, null, null, "100",
+                Personaje personaje2 = new Personaje(null, "1", "MarioEdit", "Font", "Bro", null, null, null, 100.0,
                                 null, null, null, null, null);
                 Principal principal = () -> "user";
 
@@ -456,7 +456,7 @@ public class PersonajeControllerTest {
                 Personaje personaje = new Personaje(usuario2, "1", "Mario", "Fontanero", null, null, null, null, null,
                                 null, null, null, null, null);
 
-                Personaje personaje2 = new Personaje(usuario, "1", "MarioEdit", "Font", "Bro", null, null, null, "100",
+                Personaje personaje2 = new Personaje(usuario, "1", "MarioEdit", "Font", "Bro", null, null, null, 100.0,
                                 null, null, null, null, null);
 
                 // Crear un objeto mock de Principal

@@ -7,7 +7,7 @@ import {
   CardActionArea,
   CardActions,
   CardContent,
-  CardHeader
+  CardHeader,
 } from "@mui/material";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -25,7 +25,7 @@ import { Link as LinkRouter, useNavigate } from "react-router-dom";
 import Badge from "@mui/material/Badge";
 
 import BookIcon from "@mui/icons-material/Book";
-import LibraryAddIcon from '@mui/icons-material/LibraryAdd';
+import LibraryAddIcon from "@mui/icons-material/LibraryAdd";
 import MapIcon from "@mui/icons-material/Map";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 
@@ -35,25 +35,83 @@ import Navigation from "./Navigation";
 
 import Footer from "./Footer";
 
-
+import Checkbox from "@mui/material/Checkbox";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
+import ListItemText from "@mui/material/ListItemText";
+import MenuItem from "@mui/material/MenuItem";
+import OutlinedInput from "@mui/material/OutlinedInput";
+import Select from "@mui/material/Select";
 
 const theme = createTheme();
 
 export default function Historias() {
   const [historias, setHistorias] = React.useState([]);
+
+  const [historiasCat, setHistoriasCat] = React.useState([]);
+
+  const [generosHistorias, setGenerosHistorias] = React.useState([]);
+
   const [historiasFiltradas, setHistoriasFiltradas] = React.useState([]);
   const [searchQuery, setSearchQuery] = React.useState("");
 
   const [showButton, setShowButton] = React.useState(null);
 
-  const handleSearchChange = (event) => {
-    const query = event.target.value;
-    setSearchQuery(query);
+  const [seccionName, setSeccionName] = React.useState([]);
 
-    const filtered = historias.filter((historia) =>
-      historia.nombreHistoria.toLowerCase().includes(query.toLowerCase())
+  const ITEM_HEIGHT = 48;
+  const ITEM_PADDING_TOP = 8;
+  const MenuProps = {
+    PaperProps: {
+      style: {
+        maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+        width: 250,
+      },
+    },
+  };
+
+  const handleSearchChange = (event) => {
+    let query = event.target.value;
+    setSearchQuery(query);
+    query = query.trim();
+
+    const filtered = historiasCat.filter((historia) =>
+      // dividir la consulta por espacios
+      query
+        .split(" ")
+        .every(
+          (palabra) =>
+            historia.nombreHistoria
+              .toLowerCase()
+              .includes(palabra.toLowerCase()) ||
+            historia.descripcion.toLowerCase().includes(palabra.toLowerCase())
+        )
     );
     setHistoriasFiltradas(filtered);
+  };
+
+  const handleSelectorChange = (event) => {
+    const {
+      target: { value },
+    } = event;
+
+    let seccionesElegidas =
+      typeof value === "string" ? value.split(",") : value;
+    console.log(seccionesElegidas);
+    setSeccionName(seccionesElegidas);
+    setSearchQuery("");
+
+    let resultado = historias;
+
+    if (seccionesElegidas.length > 0) {
+      resultado = historias.filter((historia) =>
+      // Comprueba si la lista de géneros de la historia es subconjunto de seccionesElegidas usando una función flecha
+      seccionesElegidas.every((g) => historia.generos.includes(g)) && historia.generos && historia.generos.length > 0 );
+     
+    }
+    console.log(resultado);
+    setHistoriasCat(resultado);
+    setHistoriasFiltradas(resultado);
   };
 
   const handleImportInit = (event) => {
@@ -88,6 +146,7 @@ export default function Historias() {
       .get("/api/historias")
       .then((response) => {
         setHistorias(response.data);
+        setHistoriasCat(response.data);
         setHistoriasFiltradas(response.data);
         setShowButton(true);
       })
@@ -95,6 +154,17 @@ export default function Historias() {
         console.error(error);
       });
     localStorage.removeItem("historia");
+  }, []);
+
+  React.useEffect(() => {
+    axios
+      .get("/api/historias/generos")
+      .then((response) => {
+        setGenerosHistorias(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   }, []);
 
   const navigate = useNavigate();
@@ -109,7 +179,7 @@ export default function Historias() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Navigation />
-      
+
       <main>
         {/* Hero unit */}
         <Box
@@ -157,42 +227,93 @@ export default function Historias() {
               spacing={2}
               justifyContent="center"
             ></Stack>
-            <TextField
-              label="Buscar"
-              value={searchQuery}
-              fullWidth
-              onChange={handleSearchChange}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <SearchIcon />
-                  </InputAdornment>
-                ),
-              }}
-            />
+            <div style={{ display: "flex", flexDirection: "row" }}>
+              <TextField
+                label="Buscar"
+                value={searchQuery}
+                fullWidth
+                onChange={handleSearchChange}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <SearchIcon />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              {historias && historias.length !== 0 && showButton && (
+              <FormControl sx={{ ml: 1, width: 300 }}>
+                <InputLabel id="demo-multiple-checkbox-label">
+                  Filtrar
+                </InputLabel>
+                <Select
+                  labelId="demo-multiple-checkbox-label"
+                  id="demo-multiple-checkbox"
+                  multiple
+                  value={seccionName}
+                  onChange={handleSelectorChange}
+                  input={<OutlinedInput label="Tag" />}
+                  renderValue={(selected) =>
+                    // No hace falta usar JSON.parse, solo unir los valores con una coma
+                    selected.join(", ")
+                  }
+                  MenuProps={MenuProps}
+                >
+                  {generosHistorias.map((genero) => (
+                    // No hace falta usar JSON.stringify, solo usar el valor del género
+                    <MenuItem key={genero.id} value={genero}>
+                      <Checkbox checked={seccionName.indexOf(genero) > -1} />
+                      <ListItemText primary={genero} />
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>)}
+            </div>
           </Container>
         </Box>
         <Container sx={{ py: 1 }} maxWidth="md">
-        {(!historiasFiltradas || historiasFiltradas.length === 0) && showButton && (
-            <Grid container spacing={4} justifyContent="center">
-              <Button
-                type="submit"
-                variant="contained"
-                startIcon={<LibraryAddIcon />}
-              >  <LinkRouter style={{color: '#FFF', textDecoration: 'none'}} to="/historias/new">¡Crea tu historia!</LinkRouter>
-              </Button>
-            </Grid>
-          )}
-          {historiasFiltradas && historiasFiltradas.length !== 0 && showButton && (
-             <Grid container spacing={4} justifyContent="center" sx={{ pb: 4 }}>
-              <Button
-                type="submit"
-                variant="contained"
-                startIcon={<LibraryAddIcon />}
-              >  <LinkRouter style={{color: '#FFF', textDecoration: 'none'}} to="/historias/new">Crea una historia nueva</LinkRouter>
-              </Button>
+          {(!historiasFiltradas || historiasFiltradas.length === 0) &&
+            showButton && (
+              <Grid container spacing={4} justifyContent="center">
+                <Button
+                  type="submit"
+                  variant="contained"
+                  startIcon={<LibraryAddIcon />}
+                >
+                  {" "}
+                  <LinkRouter
+                    style={{ color: "#FFF", textDecoration: "none" }}
+                    to="/historias/new"
+                  >
+                    ¡Crea tu historia!
+                  </LinkRouter>
+                </Button>
               </Grid>
-          )}
+            )}
+          {historiasFiltradas &&
+            historiasFiltradas.length !== 0 &&
+            showButton && (
+              <Grid
+                container
+                spacing={4}
+                justifyContent="center"
+                sx={{ pb: 4 }}
+              >
+                <Button
+                  type="submit"
+                  variant="contained"
+                  startIcon={<LibraryAddIcon />}
+                >
+                  {" "}
+                  <LinkRouter
+                    style={{ color: "#FFF", textDecoration: "none" }}
+                    to="/historias/new"
+                  >
+                    Crea una historia nueva
+                  </LinkRouter>
+                </Button>
+              </Grid>
+            )}
           {/* End hero unit */}
           <Grid container spacing={4}>
             {historiasFiltradas.map((historia, index) => (
@@ -243,7 +364,7 @@ export default function Historias() {
         </Container>
       </main>
       {/* Footer */}
-      <Footer/>
+      <Footer />
       {/* End footer */}
     </ThemeProvider>
   );

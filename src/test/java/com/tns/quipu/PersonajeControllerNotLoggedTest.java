@@ -1,21 +1,14 @@
 package com.tns.quipu;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.security.Principal;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -27,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.google.gson.Gson;
@@ -80,11 +72,11 @@ public class PersonajeControllerNotLoggedTest {
                 List<Personaje> personajes = Arrays.asList(
                                 new Personaje(user, "1", "Mario", "Pérez", "García", "Madrid", new Date(1638112320000L),
                                                 "Masculino",
-                                                "170 cm", "Barcelona", "Un fontanero aventurero.", "/mario.png", null,
+                                                170.0, "Barcelona", "Un fontanero aventurero.", "/mario.png", null,
                                                 null),
                                 new Personaje(user, "2", "Luigi", "López", "Sánchez", "Roma", new Date(1638112320000L),
                                                 "Masculino",
-                                                "180 cm", "Milán", "El hermano de Mario.", "/luigi.png", null, null));
+                                                180.0, "Milán", "El hermano de Mario.", "/luigi.png", null, null));
                 when(us.findUserByUsername("user")).thenReturn(user);
                 when(ps.findAllUserCharacters(user)).thenReturn(personajes);
 
@@ -102,11 +94,11 @@ public class PersonajeControllerNotLoggedTest {
                 List<Personaje> personajes = Arrays.asList(
                                 new Personaje(user, "1", "Mario", "Pérez", "García", "Madrid", new Date(1638112320000L),
                                                 "Masculino",
-                                                "170 cm", "Barcelona", "Un fontanero aventurero.", "/mario.png", null,
+                                                170.0, "Barcelona", "Un fontanero aventurero.", "/mario.png", null,
                                                 null),
                                 new Personaje(user, "2", "Luigi", "López", "Sánchez", "Roma", new Date(1638112320000L),
                                                 "Masculino",
-                                                "180 cm", "Milán", "El hermano de Mario.", "/luigi.png", null, null));
+                                                180.0, "Milán", "El hermano de Mario.", "/luigi.png", null, null));
 
                 // Act and Assert
                 mockMvc.perform(get("/api/personajes/{pid}", "1"))
@@ -139,7 +131,7 @@ public class PersonajeControllerNotLoggedTest {
                 personaje.setLugarNacimiento("Godric's Hollow");
                 personaje.setFechaNacimiento(new SimpleDateFormat("dd/MM/yyyy").parse("31/07/1980"));
                 personaje.setGenero("Masculino");
-                personaje.setAltura("170");
+                personaje.setAltura(170.0);
                 personaje.setResidencia("Privet Drive, 4");
                 personaje.setDescripcion("El niño que vivió");
                 personaje.setUrlIcon(
@@ -188,7 +180,7 @@ public class PersonajeControllerNotLoggedTest {
                 Personaje personaje = new Personaje(usuario, "1", "Mario", "Fontanero", null, null, null, null, null,
                                 null, null, null, null, null);
 
-                Personaje personaje2 = new Personaje(usuario, "1", "MarioEdit", "Font", "Bro", null, null, null, "100",
+                Personaje personaje2 = new Personaje(usuario, "1", "MarioEdit", "Font", "Bro", null, null, null, 100.0,
                                 null, null, null, null, null);
 
                 // Invocar el método bajo prueba y verificar el resultado

@@ -15,6 +15,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import Navigation from "../Navigation";
+import Alert from "@mui/material/Alert";
 
 import axios from "axios";
 import Footer from "../Footer";
@@ -229,11 +230,17 @@ export default function Update() {
                   type="number"
                   name="altura"
                   value={personaje.altura || ''}
+                  onBlur={(e) => {
+                    if (Number(e.target.value) < 0) {
+                      setPersonaje({...personaje, [e.target.name]: 0});; // Si el valor es menor que 0, se cambia a 0
+                    }
+                   }}
                   onChange={handleTextChange}
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">cm</InputAdornment>
                     ),
+                    inputProps: { min: 0 },
                   }}
                 />
                 <TextField
