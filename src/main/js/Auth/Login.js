@@ -107,11 +107,6 @@ export default function SignIn() {
               Iniciar sesión
             </Button>
             <Grid container>
-              <Grid item xs>
-                <Link href="#" variant="body2">
-                  ¿Contraseña olvidada?
-                </Link>
-              </Grid>
               <Grid item>
                 <Link href="/register" variant="body2">
                   {"Registrarse"}
