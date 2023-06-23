@@ -83,7 +83,7 @@ export default function SignIn() {
               required
               fullWidth
               id="email"
-              label="Correo electronico"
+              label="Correo electrónico"
               name="email"
               autoComplete="email"
               autoFocus

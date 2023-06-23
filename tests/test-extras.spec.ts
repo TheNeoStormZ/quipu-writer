@@ -4,7 +4,7 @@ let url = "http://localhost:8080";
 
 async function login(page) {
   await page.goto(url + "/login");
-  await page.getByLabel("Correo electronico *").fill("test@example.com");
+  await page.getByLabel("Correo electrónico *").fill("test@example.com");
   await page.getByLabel("Contraseña *").click();
   await page.getByLabel("Contraseña *").fill("test1234");
   await page.getByLabel("Contraseña *").press("Enter");
@@ -23,9 +23,9 @@ async function createFullStory(page) {
 
   await page.getByLabel('Nombre de la historia *').fill("Las epicas aventuras de Sherlock Holmes");
 
-  await page.getByRole('combobox', { name: 'Generos' }).fill("Misterio");
+  await page.getByRole('combobox', { name: 'Géneros' }).fill("Misterio");
 
-  await page.getByRole('combobox', { name: 'Generos' }).press("Enter");
+  await page.getByRole('combobox', { name: 'Géneros' }).press("Enter");
 
   await page.getByLabel('Descripción').fill("Sherlock se embarca en una aventura sin precedentes, a la cual deberá enfrentar con todos los medios a su disposición.");
 
@@ -71,7 +71,7 @@ async function crearEscena(page) {
 
   await page.getByLabel('Ubicación').fill("Londres");
 
-  await page.getByLabel('Url de la musica').fill("https://soundcloud.com/jameshypethedj/helicopter");
+  await page.getByLabel('Url de la música').fill("https://soundcloud.com/jameshypethedj/helicopter");
 
   await page.getByLabel('Fecha de la escena').fill("2000-12-04");
 
@@ -346,13 +346,13 @@ test('testRelationshipsCharacterAddAndGraph', async ({ page }) => {
 
         await page.getByRole('button', { name: 'Las epicas aventuras de Sherlock Holmes Sherlock se embarca en una aventura sin precedentes, a la cual deberá enfrentar con todos los medios a su disposición.' }).click();
 
-        await page.getByRole('button', { name: 'Linea de tiempo' }).click();
+        await page.getByRole('button', { name: 'Línea de tiempo' }).click();
 
-        await expect(page.getByText('Linea de tiempoCerrar04-12-2000EncuentroUbicación: LondresInformación de la esce')).toBeVisible();
+        await expect(page.getByText('Línea de tiempoCerrar04-12-2000EncuentroUbicación: LondresInformación de la esce')).toBeVisible();
 
         await expect(page.getByTestId('tree-main').locator('div').filter({ hasText: 'Información de la escena: El inicio de la historia con Sherlock Personajes invol' }).nth(2)).toBeVisible();
 
-        await expect(page.getByText('Nacimiento de Sherlock Holmes AndersonGenero: Masculino')).toBeVisible();
+        await expect(page.getByText('Nacimiento de Sherlock Holmes AndersonGénero: Masculino')).toBeVisible();
         });
 
         test('testFilterNameChar', async ({ page }) => {

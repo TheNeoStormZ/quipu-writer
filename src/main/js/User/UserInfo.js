@@ -213,7 +213,7 @@ export default function Usuario() {
                   sx={{ mt: 2, ml: 2 }}
                   gutterBottom
                 >
-                  Correo electronico
+                  Correo electrónico
                 </Typography>
 
                 <Typography

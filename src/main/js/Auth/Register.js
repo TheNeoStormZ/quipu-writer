@@ -93,7 +93,7 @@ export default function Register() {
               fullWidth
               id="email"
               type="email"
-              label="Correo electronico"
+              label="Correo electrónico"
               name="email"
               autoComplete="email"
             />

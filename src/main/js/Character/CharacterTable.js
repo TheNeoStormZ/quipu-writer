@@ -65,7 +65,7 @@ function DataTable(props) {
           <TableHead>
             <TableRow>
               <TableCell sx={{ fontWeight: "bold" }}>Nombre</TableCell>
-              <TableCell sx={{ fontWeight: "bold" }}>Genero</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }}>Género</TableCell>
               <TableCell sx={{ fontWeight: "bold" }}>
                 Lugar de nacimiento
               </TableCell>

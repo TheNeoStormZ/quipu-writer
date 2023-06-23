@@ -4,7 +4,7 @@ let url = "http://localhost:8080";
 
 async function login(page) {
   await page.goto("http://localhost:8080/login");
-  await page.getByLabel("Correo electronico *").fill("test@example.com");
+  await page.getByLabel("Correo electrónico *").fill("test@example.com");
   await page.getByLabel("Contraseña *").click();
   await page.getByLabel("Contraseña *").fill("test1234");
   await page.getByLabel("Contraseña *").press("Enter");
@@ -42,9 +42,9 @@ async function createClone(page) {
 
   await page.getByLabel('Nombre de la historia *').fill("Las aventuras de Sherlock Holmes");
 
-  await page.getByRole('combobox', { name: 'Generos' }).fill("Misterio");
+  await page.getByRole('combobox', { name: 'Géneros' }).fill("Misterio");
 
-  await page.getByRole('combobox', { name: 'Generos' }).press("Enter");
+  await page.getByRole('combobox', { name: 'Géneros' }).press("Enter");
 
   await page.getByLabel('Descripción').fill("Sherlock se embarca en una aventura sin precedentes, a la cual deberá enfrentar con todos los medios a su disposición.");
 
@@ -65,9 +65,9 @@ test("testCrearHistorias", async ({ page }) => {
 
   await page.getByLabel('Nombre de la historia *').fill("Las aventuras de Sherlock Holmes");
 
-  await page.getByRole('combobox', { name: 'Generos' }).fill("Misterio");
+  await page.getByRole('combobox', { name: 'Géneros' }).fill("Misterio");
 
-  await page.getByRole('combobox', { name: 'Generos' }).press("Enter");
+  await page.getByRole('combobox', { name: 'Géneros' }).press("Enter");
 
   await page.getByLabel('Descripción').fill("Sherlock se embarca en una aventura sin precedentes, a la cual deberá enfrentar con todos los medios a su disposición.");
 
@@ -91,9 +91,9 @@ test("testCrearHistoriasClone", async ({ page }) => {
 
   await page.getByLabel('Nombre de la historia *').fill("Las aventuras de Sherlock Holmes");
 
-  await page.getByRole('combobox', { name: 'Generos' }).fill("Misterio");
+  await page.getByRole('combobox', { name: 'Géneros' }).fill("Misterio");
 
-  await page.getByRole('combobox', { name: 'Generos' }).press("Enter");
+  await page.getByRole('combobox', { name: 'Géneros' }).press("Enter");
 
   await page.getByLabel('Descripción').fill("Sherlock se embarca en una aventura sin precedentes, a la cual deberá enfrentar con todos los medios a su disposición.");
 
@@ -117,9 +117,9 @@ test("testCrearHistoriasSinNombre", async ({ page }) => {
 
   await page.getByLabel('Nombre de la historia *').fill("");
 
-  await page.getByRole('combobox', { name: 'Generos' }).fill("Misterio");
+  await page.getByRole('combobox', { name: 'Géneros' }).fill("Misterio");
 
-  await page.getByRole('combobox', { name: 'Generos' }).press("Enter");
+  await page.getByRole('combobox', { name: 'Géneros' }).press("Enter");
 
   await page.getByLabel('Descripción').fill("Sherlock se embarca en una aventura sin precedentes, a la cual deberá enfrentar con todos los medios a su disposición.");
 
@@ -141,7 +141,7 @@ test("testVisualizarHistoria", async ({ page }) => {
 
   await expect(page.getByText('Nombre de la historiaLas aventuras de Sherlock Holmes')).toBeVisible();
 
-  await expect(page.getByText('Generos narrativosMisterio')).toBeVisible();
+  await expect(page.getByText('Géneros narrativosMisterio')).toBeVisible();
 
   await expect(page.getByText('DescripciónSherlock se embarca en una aventura sin precedentes, a la cual deberá')).toBeVisible();
 
@@ -229,9 +229,9 @@ test("testActualizarHistoria", async ({ page }) => {
 
   await page.getByLabel('Nombre de la historia *').fill("Las desaventuras de Watson");
 
-  await page.getByRole('combobox', { name: 'Generos' }).fill("Ciencia Ficción");
+  await page.getByRole('combobox', { name: 'Géneros' }).fill("Ciencia Ficción");
 
-  await page.getByRole('combobox', { name: 'Generos' }).press("Enter");
+  await page.getByRole('combobox', { name: 'Géneros' }).press("Enter");
 
   await page.getByLabel('Descripción').fill("Watson se embarca en una aventura sin precedentes, a la cual deberá enfrentar con todos los medios a su disposición.");
 
@@ -243,7 +243,7 @@ test("testActualizarHistoria", async ({ page }) => {
 
   await expect(page.getByText('Nombre de la historiaLas desaventuras de Watson')).toBeVisible();
 
-  await expect(page.getByText('Generos narrativosMisterio, Ciencia Ficción')).toBeVisible();
+  await expect(page.getByText('Géneros narrativosMisterio, Ciencia Ficción')).toBeVisible();
 
   await expect(page.getByText('DescripciónWatson se embarca en una aventura sin precedentes, a la cual deberá e')).toBeVisible();
 
@@ -269,9 +269,9 @@ test("testActualizarHistoriaSinNombre", async ({ page }) => {
 
   await page.getByLabel('Nombre de la historia *').fill("");
 
-  await page.getByRole('combobox', { name: 'Generos' }).fill("Ciencia Ficción");
+  await page.getByRole('combobox', { name: 'Géneros' }).fill("Ciencia Ficción");
 
-  await page.getByRole('combobox', { name: 'Generos' }).press("Enter");
+  await page.getByRole('combobox', { name: 'Géneros' }).press("Enter");
 
   await page.getByLabel('Descripción').fill("Watson se embarca en una aventura sin precedentes, a la cual deberá enfrentar con todos los medios a su disposición.");
 

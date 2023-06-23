@@ -212,7 +212,7 @@ export default function Creation() {
                   renderInput={(params) => (
                     <TextField
                       {...params}
-                      label="Genero"
+                      label="Género"
                       variant="standard"
                       name="genero"
                       InputProps={{

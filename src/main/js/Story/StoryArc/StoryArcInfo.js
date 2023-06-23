@@ -314,8 +314,8 @@ export default function Trama() {
                 </Link>
               ),
               cardSubtitle: personaje.genero
-                ? "Genero: " + personaje.genero
-                : "Genero desconocido",
+                ? "Género: " + personaje.genero
+                : "Género desconocido",
               cardDetailedText: personaje.descripcion,
             });
           }
@@ -596,7 +596,7 @@ export default function Trama() {
                       onClick={handleTimeline}
                       sx={{ mt: 2, ml: 2 }}
                     >
-                      Linea de tiempo
+                      Línea de tiempo
                     </Button>
                   </div>
                 </div>
@@ -623,7 +623,7 @@ export default function Trama() {
                         sx={{ mt: 2, ml: 2 }}
                         gutterBottom
                       >
-                        Linea de tiempo
+                        Línea de tiempo
                       </Typography>
                       <Button
                         variant="contained"

@@ -5,7 +5,7 @@ let url = "http://localhost:8080";
 
 async function login(page) {
   await page.goto(url + "/login");
-  await page.getByLabel("Correo electronico *").fill("test@example.com");
+  await page.getByLabel("Correo electrónico *").fill("test@example.com");
   await page.getByLabel("Contraseña *").click();
   await page.getByLabel("Contraseña *").fill("test1234");
   await page.getByLabel("Contraseña *").press("Enter");
@@ -24,9 +24,9 @@ async function createFullStory(page) {
 
   await page.getByLabel('Nombre de la historia *').fill("Las aventuras de Sherlock Holmes");
 
-  await page.getByRole('combobox', { name: 'Generos' }).fill("Misterio");
+  await page.getByRole('combobox', { name: 'Géneros' }).fill("Misterio");
 
-  await page.getByRole('combobox', { name: 'Generos' }).press("Enter");
+  await page.getByRole('combobox', { name: 'Géneros' }).press("Enter");
 
   await page.getByLabel('Descripción').fill("Sherlock se embarca en una aventura sin precedentes, a la cual deberá enfrentar con todos los medios a su disposición.");
 
@@ -104,7 +104,7 @@ test("testCrearEscena", async ({ page }) => {
 
   await page.getByLabel('Ubicación').fill("Londres");
 
-  await page.getByLabel('Url de la musica').fill("https://soundcloud.com/jameshypethedj/helicopter");
+  await page.getByLabel('Url de la música').fill("https://soundcloud.com/jameshypethedj/helicopter");
 
   await page.getByLabel('Fecha de la escena').fill("2000-12-04");
 
@@ -133,7 +133,7 @@ test("testCrearEscenaSiNombre", async ({ page }) => {
 
   await page.getByLabel('Ubicación').fill("Londres");
 
-  await page.getByLabel('Url de la musica').fill("https://soundcloud.com/jameshypethedj/helicopter");
+  await page.getByLabel('Url de la música').fill("https://soundcloud.com/jameshypethedj/helicopter");
 
   await page.getByLabel('Fecha de la escena').fill("2000-12-04");
 
@@ -166,7 +166,7 @@ test("testCrearEscenaConPersonaje", async ({ page }) => {
 
   await page.getByLabel('Ubicación').fill("Londres");
 
-  await page.getByLabel('Url de la musica').fill("https://soundcloud.com/jameshypethedj/helicopter");
+  await page.getByLabel('Url de la música').fill("https://soundcloud.com/jameshypethedj/helicopter");
 
   await page.getByLabel('Fecha de la escena').fill("2000-12-04");
 
@@ -203,7 +203,7 @@ test("testVisualizarEscenas", async ({ page }) => {
 
   await expect(page.getByRole('button', { name: 'Obtener contexto' })).toBeVisible();
 
-  await expect(page.locator('div').filter({ hasText: /^Musica de fondo$/ })).toBeVisible({ timeout: 10000 });
+  await expect(page.locator('div').filter({ hasText: /^Música de fondo$/ })).toBeVisible({ timeout: 10000 });
 
   await expect(page.getByRole('button', { name: 'Sherlock Buen detective' })).toBeVisible();
 });
@@ -260,7 +260,7 @@ async function createScene(page) {
 
   await page.getByLabel('Ubicación').fill("Londres");
 
-  await page.getByLabel('Url de la musica').fill("https://soundcloud.com/jameshypethedj/helicopter");
+  await page.getByLabel('Url de la música').fill("https://soundcloud.com/jameshypethedj/helicopter");
 
   await page.getByLabel('Fecha de la escena').fill("2000-12-04");
 
@@ -334,7 +334,7 @@ test("testActualizarEscena", async ({ page }) => {
 
   expect((await page.getByLabel('Ubicación').inputValue()).toString()).toContain("Londres");
 
-  expect((await page.getByLabel('Url de la musica').inputValue()).toString()).toContain("https://soundcloud.com/jameshypethedj/helicopter");
+  expect((await page.getByLabel('Url de la música').inputValue()).toString()).toContain("https://soundcloud.com/jameshypethedj/helicopter");
 
   expect((await page.getByLabel('Fecha de la escena').inputValue()).toString()).toContain("2000-12-04");
 
@@ -347,7 +347,7 @@ test("testActualizarEscena", async ({ page }) => {
 
   await page.getByLabel('Ubicación').fill("NY");
 
-  await page.getByLabel('Url de la musica').fill("");
+  await page.getByLabel('Url de la música').fill("");
 
   await page.getByLabel('Fecha de la escena').fill("2012-12-04");
 
@@ -365,7 +365,7 @@ test("testActualizarEscena", async ({ page }) => {
 
   await expect(page.getByText('DescripciónEl final de la historia')).toBeVisible();
 
-  await expect(page.locator('div').filter({ hasText: /^Musica de fondo$/ })).toBeHidden({ timeout: 10000 });
+  await expect(page.locator('div').filter({ hasText: /^Música de fondo$/ })).toBeHidden({ timeout: 10000 });
 
 });
 
@@ -387,7 +387,7 @@ test("testActualizarEscenaSinNombre", async ({ page }) => {
 
   await page.getByLabel('Ubicación').fill("NY");
 
-  await page.getByLabel('Url de la musica').fill("");
+  await page.getByLabel('Url de la música').fill("");
 
   await page.getByLabel('Fecha de la escena').fill("2012-12-04");
 
