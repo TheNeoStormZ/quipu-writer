@@ -166,7 +166,7 @@ export default function UserUpdate() {
                 <TextField
                   required
                   id="outlined-required"
-                  label="Correo electronico"
+                  label="Correo electrónico"
                   name="email"
                   value={usuario.email || ""}
                   onChange={handleTextChange}

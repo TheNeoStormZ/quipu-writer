@@ -93,7 +93,7 @@ export default function Register() {
               fullWidth
               id="email"
               type="email"
-              label="Correo electronico"
+              label="Correo electrónico"
               name="email"
               autoComplete="email"
             />
@@ -125,7 +125,7 @@ export default function Register() {
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
             >
-              Resgitrarme
+              Registrarme
             </Button>
             <Grid container>
               <Grid item>

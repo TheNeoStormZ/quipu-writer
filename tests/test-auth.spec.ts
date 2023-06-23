@@ -6,7 +6,7 @@ test('testRegister', async ({ page }) => {
   await page.goto(url + '/login');
   await page.getByRole('link', { name: 'Registrarse' }).click();
   await page.getByLabel('Nombre de usuario *').fill('testuser');
-  await page.getByLabel('Correo electronico *').fill('test@example.com');
+  await page.getByLabel('Correo electrónico *').fill('test@example.com');
   await page.getByLabel('Contraseña *', { exact: true }).fill('test1234');
   await page.getByLabel('Confirmar contraseña *').fill('test1234');
   await page.getByRole('button', { name: 'Resgitrarme' }).click();  
@@ -16,7 +16,7 @@ test('testRegisterNegative', async ({ page }) => {
   await page.goto(url + '/login');
   await page.getByRole('link', { name: 'Registrarse' }).click();
   await page.getByLabel('Nombre de usuario *').fill('testuser');
-  await page.getByLabel('Correo electronico *').fill('test@example.com');
+  await page.getByLabel('Correo electrónico *').fill('test@example.com');
   await page.getByLabel('Contraseña *', { exact: true }).fill('test1234');
   await page.getByLabel('Confirmar contraseña *').fill('test1234');
   await page.getByRole('button', { name: 'Resgitrarme' }).click();  
@@ -26,7 +26,7 @@ test('testRegisterNegative', async ({ page }) => {
 
 test('testLogin', async ({ page }) => {
   await page.goto(url + '/login');
-  await page.getByLabel('Correo electronico *').fill('test@example.com');
+  await page.getByLabel('Correo electrónico *').fill('test@example.com');
   await page.getByLabel('Contraseña *', { exact: true }).fill('test1234');
   await page.getByRole('button', { name: 'Iniciar sesión' }).click();
   
@@ -38,7 +38,7 @@ test('testLogin', async ({ page }) => {
 
 test('testLoginNegative', async ({ page }) => {
   await page.goto(url + '/login');
-  await page.getByLabel('Correo electronico *').fill('testfailed@example.com');
+  await page.getByLabel('Correo electrónico *').fill('testfailed@example.com');
   await page.getByLabel('Contraseña *', { exact: true }).fill('test1234');
   await page.getByRole('button', { name: 'Iniciar sesión' }).click();
   

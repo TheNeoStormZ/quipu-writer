@@ -519,7 +519,7 @@ export default function Escena() {
                     sx={{ mt: 2, ml: 2 }}
                     gutterBottom
                   >
-                    Musica de fondo
+                    Música de fondo
                   </Typography>
 
                   <ReactPlayer

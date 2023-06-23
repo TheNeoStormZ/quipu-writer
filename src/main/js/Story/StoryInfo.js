@@ -63,7 +63,7 @@ import Chip from "@mui/material/Chip";
 import Avatar from "@mui/material/Avatar";
 const theme = createTheme();
 
-let nombreDatosHistoria = ["Nombre de la historia", "Generos narrativos"];
+let nombreDatosHistoria = ["Nombre de la historia", "Géneros narrativos"];
 
 function convertirFecha(fechaOriginal) {
   // Si fechaOriginal es undefined, se devuelve tal cual
@@ -255,8 +255,8 @@ export default function Historia() {
                 </Link>
               ),
               cardSubtitle: personaje.genero
-                ? "Genero: " + personaje.genero
-                : "Genero desconocido",
+                ? "Género: " + personaje.genero
+                : "Género desconocido",
               cardDetailedText: personaje.descripcion,
             });
           }
@@ -612,7 +612,7 @@ export default function Historia() {
                       onClick={handleTimeline}
                       sx={{ mt: 2, ml: 2 }}
                     >
-                      Linea de tiempo
+                      Línea de tiempo
                     </Button>
 
                     <Button
@@ -677,7 +677,7 @@ export default function Historia() {
                         sx={{ mt: 2, ml: 2 }}
                         gutterBottom
                       >
-                        Linea de tiempo
+                        Línea de tiempo
                       </Typography>
                       <Button
                         variant="contained"

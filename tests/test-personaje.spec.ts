@@ -4,7 +4,7 @@ let url = "http://localhost:8080";
 
 async function login(page) {
   await page.goto("http://localhost:8080/login");
-  await page.getByLabel("Correo electronico *").fill("test@example.com");
+  await page.getByLabel("Correo electrónico *").fill("test@example.com");
   await page.getByLabel("Contraseña *").click();
   await page.getByLabel("Contraseña *").fill("test1234");
   await page.getByLabel("Contraseña *").press("Enter");

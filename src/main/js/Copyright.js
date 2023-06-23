@@ -13,11 +13,10 @@ function Copyright(props) {
       align="center"
       {...props}
     >
-      {"Copyright © "}
+      Este proyecto usa{" "}
       <Link color="inherit" href="https://mui.com/">
-        Quipu
-      </Link>{" "}
-      {new Date().getFullYear()}
+       MIUI
+      </Link>
       {"."}
     </Typography>
   );

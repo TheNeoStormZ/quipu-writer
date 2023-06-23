@@ -165,7 +165,7 @@ export default function Update() {
               getOptionLabel={(genre) => genre}
               sx={{ minWidth: 200 }}
               renderInput={(params) => (
-                <TextField {...params} name="generos" label="Generos" />
+                <TextField {...params} name="generos" label="Géneros" />
               )}
             />
           </Box>
