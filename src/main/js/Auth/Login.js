@@ -14,26 +14,21 @@ import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 
 import axios from "axios";
-
-function Copyright(props) {
-  return (
-    <Typography
-      variant="body2"
-      color="text.secondary"
-      align="center"
-      {...props}
-    >
-      {"Copyright © "}
-      <Link color="inherit" href="https://mui.com/">
-        Quipu
-      </Link>{" "}
-      {new Date().getFullYear()}
-      {"."}
-    </Typography>
-  );
-}
+import Copyright from "../Copyright";
 
 const theme = createTheme();
+
+const AlertCustom = ({ showAlert }) => {
+  if (!showAlert) {
+    return null;
+  }
+
+  return (
+    <Alert variant="outlined" severity="error" sx={{ m: 2}}>
+      Los datos son incorrectos
+    </Alert>
+  );
+};
 
 export default function SignIn() {
   const handleSubmit = async (event) => {
@@ -47,9 +42,7 @@ export default function SignIn() {
         })
         .then((response) => {
           if (response.data.token) {
-            //localStorage.setItem("user", JSON.stringify(response.data));
-            console.log(response.data.token)
-            document.cookie = "token=" + response.data.token;
+            document.cookie = "token=Bearer-" + response.data.token;
             window.location.href = "/";
           }
           return response.data;
@@ -59,12 +52,7 @@ export default function SignIn() {
     }
   };
 
-  const [showAlert, setShowAlert] = React.useState(false)
-  const AlertCustom = () => (
-    <Alert variant="outlined" severity="error"sx={{ m: 2}}>
-    Los datos son incorrectos
-    </Alert>
-  )
+  const [showAlert, setShowAlert] = React.useState(false);
 
   return (
     <ThemeProvider theme={theme}>
@@ -84,7 +72,7 @@ export default function SignIn() {
           <Typography component="h1" variant="h5">
             Iniciar sesión
           </Typography>
-          { showAlert ? <AlertCustom /> : null }
+          <AlertCustom showAlert={showAlert} />
           <Box
             component="form"
             onSubmit={handleSubmit}
@@ -95,7 +83,7 @@ export default function SignIn() {
               required
               fullWidth
               id="email"
-              label="Correo electronico"
+              label="Correo electrónico"
               name="email"
               autoComplete="email"
               autoFocus
@@ -119,11 +107,6 @@ export default function SignIn() {
               Iniciar sesión
             </Button>
             <Grid container>
-              <Grid item xs>
-                <Link href="#" variant="body2">
-                  ¿Contraseña olvidada?
-                </Link>
-              </Grid>
               <Grid item>
                 <Link href="/register" variant="body2">
                   {"Registrarse"}

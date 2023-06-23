@@ -2,6 +2,7 @@ package com.tns.quipu.Security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -30,9 +31,13 @@ public class SecurityServiceImpl implements SecurityService {
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
                 userDetails, password, userDetails.getAuthorities());
 
-        
-        authenticationManager.authenticate(usernamePasswordAuthenticationToken);
+        try {
 
+            authenticationManager.authenticate(usernamePasswordAuthenticationToken);
+        } catch (BadCredentialsException e ) {
+            return false;
+        }
+        
 
 
         if (usernamePasswordAuthenticationToken.isAuthenticated()) {

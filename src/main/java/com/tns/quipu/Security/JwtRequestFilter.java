@@ -40,7 +40,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 		// only the Token
 		if (requestTokenHeader != null ) {
 			String token = requestTokenHeader.getValue();
-			if ( token.startsWith("Bearer ")){
+			if ( token.startsWith("Bearer-")){
 			jwtToken = token.substring(7);
 			} else {
 				jwtToken=token;

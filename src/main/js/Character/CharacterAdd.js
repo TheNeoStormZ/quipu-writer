@@ -4,59 +4,46 @@ import ChildFriendlyIcon from "@mui/icons-material/ChildFriendly";
 import EventIcon from "@mui/icons-material/Event";
 import MapIcon from "@mui/icons-material/Map";
 import PersonIcon from "@mui/icons-material/Person";
-import SaveAsIcon from '@mui/icons-material/SaveAs';
+import SaveIcon from '@mui/icons-material/Save';
 import Autocomplete from "@mui/material/Autocomplete";
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import InputAdornment from "@mui/material/InputAdornment";
-import Link from "@mui/material/Link";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import Navigation from "./Navigation";
+import Navigation from "../Navigation";
+import Alert from "@mui/material/Alert";
 
 import axios from "axios";
+import Footer from "../Footer";
 
-function Copyright() {
-  return (
-    <Typography variant="body2" color="text.secondary" align="center">
-      {"Copyright © "}
-      <Link color="inherit" href="https://mui.com/">
-        Quipu
-      </Link>{" "}
-      {new Date().getFullYear()}
-      {"."}
-    </Typography>
-  );
-}
 
 const theme = createTheme();
 
-function convertirFecha(fechaOriginal) {
-  // Crear objeto Date a partir de la fecha original
-  let fecha = new Date(fechaOriginal);
+let alertMessage = "";
 
-  // Obtener componentes de la fecha
-  let dia = fecha.getDate().toString().padStart(2, "0");
-  let mes = (fecha.getMonth() + 1).toString().padStart(2, "0");
-  let anio = fecha.getFullYear().toString();
+const AlertCustom = ({ showAlert }) => {
+  if (!showAlert) {
+    return null;
+  }
 
-  // Formatear la fecha en la cadena deseada
-  let fechaFormateada = `${anio}-${mes}-${dia}`;
+  return (
+    <Alert variant="outlined" severity="error" sx={{ m: 2}}>
+      {alertMessage}
+    </Alert>
+  );
+};
 
-  return fechaFormateada;
-}
-
-export default function Update() {
+export default function Creation() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     try {
       await axios
-        .put("/api/personajes/update", {
-          id: personaje.id,
+        .post("/api/personajes/new", {
           nombre: data.get("nombre"),
           primerApellido: data.get("primerApellido"),
           segundoApellido: data.get("segundoApellido"),
@@ -66,24 +53,22 @@ export default function Update() {
           residencia: data.get("residencia"),
           descripcion: data.get("descripcion"),
           genero: data.get("genero"),
-          urlIcon: data.get("urlIcon"),
+          urlIcon: data.get("url-icon"),
         })
-        .then((window.location.href = "/personajes"));
+        .then(() => {
+          window.location.href = "/personajes";
+        });
     } catch (err) {
       console.log(err);
-      message = err.response.data;
+      let message = err.response.data;
+      alertMessage = message;
       setShowAlert(true);
     }
   };
   const [showAlert, setShowAlert] = React.useState(false);
-  const AlertCustom = () => (
-    <Alert variant="outlined" severity="error" sx={{ m: 2 }}>
-      {message}
-    </Alert>
-  );
+
 
   const [genders, setGenders] = React.useState([]);
-  const [personaje, setPersonaje] = React.useState([]);
 
   React.useEffect(() => {
     axios
@@ -92,30 +77,11 @@ export default function Update() {
       .catch((error) => console.log(error));
   }, []);
 
-  const personajeStr = localStorage.getItem("personaje");
-  var personajeTemp = personajeStr;
   const [avatarUrl, setAvatarUrl] = React.useState("");
 
-  React.useEffect(() => {
-    if (personajeStr) {
-      personajeTemp = JSON.parse(personajeStr);
-      setPersonaje(personajeTemp);
-    } else {
-      console.log("FATAL ERROR");
-      navigate("/personajes");
-    }
-  }, []);
-
-
   const handleAvatarUrlChange = (event) => {
-    setPersonaje({...personaje, [event.target.name]: event.target.value});
     setAvatarUrl(event.target.value);
   };
-
-  function handleTextChange(e) {
-    setPersonaje({...personaje, [e.target.name]: e.target.value});
-    console.log(personaje)
-  }
 
   return (
     <ThemeProvider theme={theme}>
@@ -130,12 +96,12 @@ export default function Update() {
           color="text.primary"
           gutterBottom
         >
-          Actualizar personaje
+          Añadir personaje
         </Typography>
-        {showAlert ? <AlertCustom /> : null}
+        <AlertCustom showAlert={showAlert} />
         <Box
           sx={{
-            "& .MuiTextField-root": { m: 1, width: "25ch" },
+            "& .MuiTextField-root": { mb:1, mt:1, ml:1, width: { xs: '98%', sm: '25ch' }  },
             marginTop: 3,
             display: "flex",
             flexDirection: "column",
@@ -145,7 +111,13 @@ export default function Update() {
           autoComplete="off"
         >
           <div>
-            <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+            <Box component="form" onSubmit={handleSubmit} 
+            sx={{
+              mt: 1,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}>
               <div>
                 <Avatar
                   alt="Avatar"
@@ -170,31 +142,22 @@ export default function Update() {
                   id="outlined-required"
                   label="Nombre"
                   name="nombre"
-                  value={personaje.nombre || ''}
-                  onChange={handleTextChange}
                 />
                 <TextField
                   id="outlined-required"
                   label="Apellido 1"
                   name="primerApellido"
-                  value={personaje.primerApellido || ''}
-                  onChange={handleTextChange}
                 />
-              </div>
-              <div>
+
                 <TextField
                   id="outlined-required"
                   label="Apellido 2"
                   name="segundoApellido"
-                  value={personaje.segundoApellido || ''}
-                  onChange={handleTextChange}
                 />
                 <TextField
                   id="outlined-required"
                   label="Residencia"
                   name="residencia"
-                  value={personaje.residencia || ''}
-                  onChange={handleTextChange}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
@@ -220,20 +183,23 @@ export default function Update() {
                   label="Altura"
                   type="number"
                   name="altura"
-                  value={personaje.altura || ''}
-                  onChange={handleTextChange}
+                  onBlur={(e) => {
+                    if (Number(e.target.value) < 0) {
+                      setPersonaje({...personaje, [e.target.name]: 0});; // Si el valor es menor que 0, se cambia a 0
+                    }
+                   }}
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">cm</InputAdornment>
                     ),
+                    inputProps: { min: 0 },
                   }}
                 />
                 <TextField
                   id="outlined"
                   label="URL icono"
-                  name="urlIcon"
+                  name="url-icon"
                   onChange={handleAvatarUrlChange}
-                  value={personaje.urlIcon || ''}
                   type="URL"
                   placeholder="https://cdn.webpage.com"
                 />
@@ -241,14 +207,12 @@ export default function Update() {
                   options={genders}
                   getOptionLabel={(gender) => gender}
                   id="auto-select"
-                  value={personaje.genero || ''}
-                  onChange={handleTextChange}
                   autoSelect
                   freeSolo
                   renderInput={(params) => (
                     <TextField
                       {...params}
-                      label="Genero"
+                      label="Género"
                       variant="standard"
                       name="genero"
                       InputProps={{
@@ -279,8 +243,6 @@ export default function Update() {
                   label="Fecha de nacimiento"
                   type="date"
                   name="fechaNacimiento"
-                  value={convertirFecha(personaje.fechaNacimiento) || ''}
-                  onChange={handleTextChange}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
@@ -294,8 +256,6 @@ export default function Update() {
                   id="outlined-required"
                   label="Lugar de nacimiento"
                   name="lugarNacimiento"
-                  value={personaje.lugarNacimiento || ''}
-                  onChange={handleTextChange}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
@@ -311,8 +271,6 @@ export default function Update() {
                   id="outlined-textarea"
                   label="Descripción"
                   name="descripcion"
-                  value={personaje.descripcion || ''}
-                  onChange={handleTextChange}
                   multiline
                   rows={4}
                 />
@@ -321,30 +279,17 @@ export default function Update() {
                 type="submit"
                 fullWidth
                 variant="contained"
-                startIcon={<SaveAsIcon />}
+                startIcon={<SaveIcon />}
                 sx={{ mt: 3, mb: 2 }}
               >
-                Actualizar personaje
+                Crear personaje
               </Button>
             </Box>
           </div>
         </Box>
       </main>
       {/* Footer */}
-      <Box sx={{ bgcolor: "background.paper", p: 6 }} component="footer">
-        <Typography variant="h6" align="center" gutterBottom>
-          Acerca de
-        </Typography>
-        <Typography
-          variant="subtitle1"
-          align="center"
-          color="text.secondary"
-          component="p"
-        >
-          Quipu, un proyecto para los que sueñan a lo grande
-        </Typography>
-        <Copyright />
-      </Box>
+      <Footer/>
       {/* End footer */}
     </ThemeProvider>
   );

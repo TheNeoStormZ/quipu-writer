@@ -1,7 +1,6 @@
 package com.tns.quipu.Usuario;
 
 
-import java.math.BigInteger;
 import java.util.Set;
 
 import javax.persistence.GeneratedValue;
@@ -16,6 +15,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -27,11 +27,13 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @Document
+@EqualsAndHashCode
 public class Usuario {
+
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	protected BigInteger id;
+	protected String id;
 
 	@Valid
 	@NotEmpty
@@ -48,8 +50,9 @@ public class Usuario {
 
 	@Valid
     @NotBlank
-	@NotBlank
 	protected String password;
+
+	protected String urlIcon;
 
 	private Set<UsuarioRol> authorities;
 

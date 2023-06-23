@@ -37,3 +37,11 @@ node_modules
 .ENV
 env.sh
 .env
+
+## JS Files
+src/main/js/resources/static/built/*
+src/main/resources/static/built/bundle.js
+src/main/resources/static/built/bundle.js.map
+/test-results/
+/playwright-report/
+/playwright/.cache/
