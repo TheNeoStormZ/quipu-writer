@@ -9,7 +9,7 @@ test('testRegister', async ({ page }) => {
   await page.getByLabel('Correo electrónico *').fill('test@example.com');
   await page.getByLabel('Contraseña *', { exact: true }).fill('test1234');
   await page.getByLabel('Confirmar contraseña *').fill('test1234');
-  await page.getByRole('button', { name: 'Resgitrarme' }).click();  
+  await page.getByRole('button', { name: 'Registrarme' }).click();  
 });
 
 test('testRegisterNegative', async ({ page }) => {
@@ -19,7 +19,7 @@ test('testRegisterNegative', async ({ page }) => {
   await page.getByLabel('Correo electrónico *').fill('test@example.com');
   await page.getByLabel('Contraseña *', { exact: true }).fill('test1234');
   await page.getByLabel('Confirmar contraseña *').fill('test1234');
-  await page.getByRole('button', { name: 'Resgitrarme' }).click();  
+  await page.getByRole('button', { name: 'Registrarme' }).click();  
   await expect(page.getByRole('alert')).toHaveText("Los datos son incorrectos");
 });
 
