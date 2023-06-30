@@ -393,6 +393,8 @@ test('testRelationshipsCharacterAddAndGraph', async ({ page }) => {
 
               await page.getByRole('option', { name: 'Sin clasificar' }).getByRole('checkbox').click();
 
+              await page.locator('#menu- > .MuiBackdrop-root').click();
+
               await expect(page.getByRole('button', { name: 'Rndom' }).first()).toBeVisible();
     
               });
@@ -431,6 +433,8 @@ test('testRelationshipsCharacterAddAndGraph', async ({ page }) => {
                     await page.getByRole('button', { name: 'Filtrar ​' }).click();
 
                     await page.getByRole('option', { name: 'Misterio' }).getByRole('checkbox').click();
+
+                    await page.locator('#menu- > .MuiBackdrop-root').click();
           
                     await expect(page.getByRole('button', { name: 'Las epicas aventuras de Sherlock Holmes Sherlock se embarca en una aventura sin precedentes, a la cual deberá enfrentar con todos los medios a su disposición.' }).first()).toBeVisible();
           
