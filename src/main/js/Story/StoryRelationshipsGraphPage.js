@@ -10,7 +10,8 @@ import { useNavigate } from "react-router-dom";
 import Footer from "../Footer";
 import RelationshipGraph from "./RelationshipGraph";
 
-const theme = createTheme();
+import createDarkTheme from "../theme";
+const theme = createDarkTheme(JSON.parse(localStorage.getItem("darkMode")) === true);
 
 function convertirFecha(fechaOriginal) {
   if (fechaOriginal == null) {

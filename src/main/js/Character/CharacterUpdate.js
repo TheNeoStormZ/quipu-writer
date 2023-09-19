@@ -21,7 +21,8 @@ import axios from "axios";
 import Footer from "../Footer";
 
 
-const theme = createTheme();
+import createDarkTheme from "../theme";
+const theme = createDarkTheme(JSON.parse(localStorage.getItem("darkMode")) === true);
 
 let alertMessage = "";
 

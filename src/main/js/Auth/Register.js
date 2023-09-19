@@ -17,7 +17,7 @@ import axios from "axios";
 import Copyright from "../Copyright";
 
 
-const theme = createTheme();
+import createDarkTheme from "../theme";
 let message = "ERROR — check it out!";
 
 const AlertCustom = ({ showAlert }) => {

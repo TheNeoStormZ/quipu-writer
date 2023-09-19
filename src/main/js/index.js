@@ -42,10 +42,12 @@ import ListItemText from "@mui/material/ListItemText";
 import MenuItem from "@mui/material/MenuItem";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import Select from "@mui/material/Select";
+import createDarkTheme from "./theme";
+const theme = createDarkTheme(JSON.parse(localStorage.getItem("darkMode")) === true);
 
-const theme = createTheme();
 
 export default function Historias() {
+  
   const [historias, setHistorias] = React.useState([]);
 
   const [historiasCat, setHistoriasCat] = React.useState([]);

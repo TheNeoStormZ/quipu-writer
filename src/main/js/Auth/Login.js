@@ -15,8 +15,8 @@ import Typography from "@mui/material/Typography";
 
 import axios from "axios";
 import Copyright from "../Copyright";
-
-const theme = createTheme();
+import createDarkTheme from "../theme";
+const theme = createDarkTheme(JSON.parse(localStorage.getItem("darkMode")) === true);
 
 const AlertCustom = ({ showAlert }) => {
   if (!showAlert) {

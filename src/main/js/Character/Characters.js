@@ -45,8 +45,9 @@ import ListItemText from "@mui/material/ListItemText";
 import MenuItem from "@mui/material/MenuItem";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import Select from "@mui/material/Select";
+import createDarkTheme from "../theme";
 
-const theme = createTheme();
+const theme = createDarkTheme(JSON.parse(localStorage.getItem("darkMode")) === true);
 
 export default function Personajes() {
   const [personajes, setPersonajes] = React.useState([]);

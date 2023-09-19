@@ -59,7 +59,8 @@ import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import Chip from "@mui/material/Chip";
 import Avatar from "@mui/material/Avatar";
 
-const theme = createTheme();
+import createDarkTheme from "../../theme";
+const theme = createDarkTheme(JSON.parse(localStorage.getItem("darkMode")) === true);
 
 let nombreDatosTrama = ["Nombre de la trama", "Fecha"];
 

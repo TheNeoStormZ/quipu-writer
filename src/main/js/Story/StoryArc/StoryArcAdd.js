@@ -19,7 +19,8 @@ import axios from "axios";
 import Alert from "@mui/material/Alert";
 
 
-const theme = createTheme();
+import createDarkTheme from "../../theme";
+const theme = createDarkTheme(JSON.parse(localStorage.getItem("darkMode")) === true);
 
 let alertMessage = "";
 

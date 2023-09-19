@@ -56,7 +56,8 @@ import Footer from "../Footer";
 
 import ExploreIcon from "@mui/icons-material/Explore";
 
-const theme = createTheme();
+import createDarkTheme from "../theme";
+const theme = createDarkTheme(JSON.parse(localStorage.getItem("darkMode")) === true);
 
 function convertirFecha(fechaOriginal) {
   // Crear objeto Date a partir de la fecha original

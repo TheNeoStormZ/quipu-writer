@@ -17,12 +17,21 @@ import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import axios from "axios";
 
+
+import { useTheme, ThemeProvider, createTheme } from '@mui/material/styles';
+import Brightness4Icon from '@mui/icons-material/Brightness4';
+import Brightness7Icon from '@mui/icons-material/Brightness7';
+
+import {createDarkTheme} from "./theme"
+
+
 import { SpeedDial, SpeedDialAction, SpeedDialIcon } from "@mui/material";
 
 import { Link as LinkRouter, useNavigate } from "react-router-dom";
 
 import BottomNavigation from "@mui/material/BottomNavigation";
 import BottomNavigationAction from "@mui/material/BottomNavigationAction";
+
 
 const pages = ["historia", "personaje"];
 const iconosNav = [
@@ -34,6 +43,7 @@ const urls_add = ["/historias", "/personajes"];
 const settings = ["Cuenta", "Cerrar sesión"];
 
 function ResponsiveAppBar() {
+  const theme = useTheme();
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const [anchorElAdd, setAnchorElAdd] = React.useState(null);
   const [usuario, setUsuario] = React.useState([]);
@@ -85,6 +95,15 @@ function ResponsiveAppBar() {
 
   const handlUserInfo = () => {
     navigate("/usuario/info");
+  };
+
+  const changeTheme = () => {
+    if (JSON.parse(localStorage.getItem("darkMode")) == false){
+      localStorage.setItem("darkMode",JSON.stringify(true));
+    } else {
+      localStorage.setItem("darkMode",JSON.stringify(false));
+    }
+    window.location.href = window.location.href;
   };
 
   const [value, setValue] = React.useState();
@@ -139,7 +158,7 @@ function ResponsiveAppBar() {
                 right: 0,
                 justifyContent: "center",
                 boxShadow: "0 -1px 4px rgba(0,0,0,0.12)",
-                backgroundColor: "#9eaae7",
+                backgroundColor: theme.palette.secondary.light,
               }}
             >
               {pages.map((page, index) => (
@@ -241,11 +260,18 @@ function ResponsiveAppBar() {
               ))}
             </Menu>
           </Box>
+          <Box>
+          <Tooltip title="Cambiar tema (Beta)">
+          <IconButton sx={{ ml: 1 }} onClick={changeTheme} color="inherit">
+                {theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
+          </IconButton>
+          </Tooltip>
+          </Box>
 
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Cuenta">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt={usuario.username} src={usuario.urlIcon}/>
+                <Avatar alt={usuario.username} src={usuario.urlIcon} />
               </IconButton>
             </Tooltip>
             <Menu

@@ -30,9 +30,12 @@ import Index from "./index";
 import Login from "./Auth/Login";
 import Register from "./Auth/Register";
 
-
 export default function App() {
 
+  if (localStorage.getItem("darkMode") == null){
+    localStorage.setItem("darkMode",JSON.stringify(false));
+  }
+  
   return (
     <BrowserRouter>
             <Routes >

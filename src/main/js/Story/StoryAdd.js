@@ -37,7 +37,8 @@ const AlertCustom = ({ showAlert }) => {
   );
 };
 
-const theme = createTheme();
+import createDarkTheme from "../theme";
+const theme = createDarkTheme(JSON.parse(localStorage.getItem("darkMode")) === true);
 
 export default function Creation() {
 

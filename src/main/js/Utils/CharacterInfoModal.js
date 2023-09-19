@@ -35,7 +35,6 @@ import axios from "axios";
 
 import CloseIcon from "@mui/icons-material/Close";
 
-const theme = createTheme();
 function PersonajeModal(props) {
   const personaje = removeEmpty(props.data);
 
