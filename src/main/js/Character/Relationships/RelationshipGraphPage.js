@@ -9,6 +9,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Footer from "../../Footer";
 import RelationshipGraph from "./RelationshipGraph";
+import Box from "@mui/material/Box";
 
 import createDarkTheme from "../../theme";
 const theme = createDarkTheme(JSON.parse(localStorage.getItem("darkMode")) === true);
@@ -78,16 +79,24 @@ export default function RelationshipGraphs() {
         >
           Grafo de relaciones
         </Typography>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
+        <Box sx={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    bgcolor: 'background.paper',
+                    border: '2px solid #000',
+                    width:"80%",
+                    boxShadow: 24,
+                    p: 4,
+                    maxWidth: '100vw',
+                    maxHeight:'100vh',
+                    overflowY: "auto",
+                }}
+                >
           {" "}
           {showGraph && <RelationshipGraph datos={dataRelations} />}
-        </div>
+        </Box>
       </main>
       {/* Footer */}
       <Footer />

@@ -13,14 +13,14 @@ class RelationshipGraph extends React.Component {
       personajeDato: null // declara el estado inicial de personajeDato
     };
     this.styleMax = {
-      /* Estilo por defecto */ width: "800px",
+      /* Estilo por defecto */ width: "100%",
       height: "600px",
       filter: "drop-shadow(5px 5px 10px rgba(0, 0, 0, 0.5))",
       boxShadow: "5px 5px 10px 2px rgba(0, 0, 0, 0.5)",
     };
     this.styleMin = {
       /* Estilo para pantallas pequeñas */
-      width: "300px",
+      width: "100%",
       height: "300px",
       filter: "drop-shadow(5px 5px 10px rgba(0, 0, 0, 0.5))",
       boxShadow: "5px 5px 10px 2px rgba(0, 0, 0, 0.5)",
@@ -141,6 +141,7 @@ class RelationshipGraph extends React.Component {
         selector: "node",
         style: {
           "background-color": "data(color)",
+          "color": "#827163",
           label: "data(label)",
         },
       },

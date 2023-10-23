@@ -42,7 +42,7 @@ import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import Chip from "@mui/material/Chip";
 
 import GroupRemoveIcon from "@mui/icons-material/GroupRemove";
-import Modal from "../Utils/Modal";
+import Modal from '@mui/material/Modal';
 import DataTable from "./Relationships/RelationshipTable";
 
 import SceneTable from "./RelatedScenesTable";
@@ -390,56 +390,63 @@ export default function Personaje() {
         >
           Información del personaje
         </Typography>
-        {showListRel && (
-          <Modal>
-            <div
-              className="modal-content"
-              style={{
-                width: "80%",
-                maxHeight: "80%",
-                marginTop: "20vh",
-                marginBottom: "10vh",
-                backgroundColor: "white",
-                padding: "20px",
-                overflowY: "scroll",
-              }}
+        <Modal
+          open={showListRel}
+          onClose={() => setShowListRel(false)}
+        >
+          <Box sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            bgcolor: 'background.paper',
+            border: '2px solid #000',
+            boxShadow: 24,
+            p: 4,
+            maxWidth: '100vw',
+            maxHeight: '100vh',
+            overflowY: "auto",
+          }}
+          >
+            <Typography
+              component="h3"
+              variant="h5"
+              align="left"
+              color="text.primary"
+              sx={{ mt: 2, ml: 2 }}
+              gutterBottom
             >
-              <Typography
-                component="h3"
-                variant="h5"
-                align="left"
-                color="text.primary"
-                sx={{ mt: 2, ml: 2 }}
-                gutterBottom
-              >
-                Relaciones
-              </Typography>
-              <DataTable data={dataRelations} />
-              <Button
-                variant="contained"
-                color="error"
-                onClick={closeModalRelations}
-                sx={{ mt: 2 }}
-                startIcon={<CloseIcon />}
-              >
-                Cerrar
-              </Button>
-            </div>
-          </Modal>
-        )}
-        {showListEsc && (
-          <Modal>
-            <div
-              className="modal-content"
-              style={{
-                width: "80%",
-                maxHeight: "80%",
-                marginTop: "20vh",
-                marginBottom: "10vh",
-                backgroundColor: "white",
-                padding: "20px",
-                overflowY: "scroll",
-              }}
+              Relaciones
+            </Typography>
+            <DataTable data={dataRelations} />
+            <Button
+              variant="contained"
+              color="error"
+              onClick={closeModalRelations}
+              sx={{ mt: 2 }}
+              startIcon={<CloseIcon />}
+            >
+              Cerrar
+            </Button>
+          </Box>
+        </Modal>
+          <Modal
+            open={showListEsc}
+            onClose={() => setShowListEsc(false)}
+          >
+            <Box sx={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              bgcolor: 'background.paper',
+              border: '2px solid #000',
+              boxShadow: 24,
+              p: 4,
+              maxWidth: '100vw',
+              maxHeight: '100vh',
+              overflowY: "auto",
+            }}
             >
               <Typography
                 component="h3"
@@ -461,9 +468,8 @@ export default function Personaje() {
               >
                 Cerrar
               </Button>
-            </div>
+            </Box>
           </Modal>
-        )}
         <Box
           sx={{
             "& .MuiTextField-root": { m: 1, width: "25ch" },

@@ -18,6 +18,7 @@ import Copyright from "../Copyright";
 
 
 import createDarkTheme from "../theme";
+const theme = createDarkTheme(JSON.parse(localStorage.getItem("darkMode")) === true);
 let message = "ERROR — check it out!";
 
 const AlertCustom = ({ showAlert }) => {

@@ -36,7 +36,7 @@ import axios from "axios";
 
 import Footer from "../Footer";
 import Navigation from "../Navigation";
-import Modal from "../Utils/Modal";
+import Modal from '@mui/material/Modal';
 
 import Checkbox from "@mui/material/Checkbox";
 import FormControl from "@mui/material/FormControl";
@@ -405,19 +405,24 @@ export default function Personajes() {
             >
               Importar de DBPedia
             </Button>
-            {showDBSearch && (
-              <Modal>
-                <div
-                  className="modal-content"
-                  style={{
-                    width: "80%",
-                    maxHeight: "80%",
-                    marginTop: "20vh",
-                    marginBottom: "10vh",
-                    backgroundColor: "white",
-                    padding: "20px",
-                    overflowY: "scroll",
-                  }}
+            
+              <Modal
+              open={showDBSearch}
+              onClose={() => setShowDBSearch(false)}
+              >
+                <Box sx={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    bgcolor: 'background.paper',
+                    border: '2px solid #000',
+                    boxShadow: 24,
+                    p: 4,
+                    maxWidth: '100vw',
+                    maxHeight:'100vh',
+                    overflowY: "auto",
+                }}
                 >
                   <Typography
                     component="h3"
@@ -491,9 +496,8 @@ export default function Personajes() {
                   >
                     Cerrar
                   </Button>
-                </div>
+                </Box>
               </Modal>
-            )}
           </Grid>
           <Grid container>
             {seccionName.length == 0 &&

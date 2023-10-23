@@ -39,7 +39,7 @@ import Badge from "@mui/material/Badge";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 
 import { Chrono } from "react-chrono";
-import Modal from "../Utils/Modal";
+import Modal from '@mui/material/Modal';
 
 import TimelineIcon from "@mui/icons-material/Timeline";
 
@@ -214,19 +214,19 @@ export default function Historia() {
               Personajes involucrados:{" "}
             </Typography>,
             escena.personajesInvolucrados &&
-            escena.personajesInvolucrados.length !== 0
+              escena.personajesInvolucrados.length !== 0
               ? escena.personajesInvolucrados.map((personaje) => (
-                  <Chip
-                    key={personaje.id}
-                    avatar={<Avatar alt="avatar" src={personaje.urlIcon} />}
-                    label={personaje.nombre}
-                    variant="outlined"
-                    clickable
-                    onClick={() => goToChar(personaje)}
-                  />
-                ))
+                <Chip
+                  key={personaje.id}
+                  avatar={<Avatar alt="avatar" src={personaje.urlIcon} />}
+                  label={personaje.nombre}
+                  variant="outlined"
+                  clickable
+                  onClick={() => goToChar(personaje)}
+                />
+              ))
               : "Sin información",
-              <Typography key={"end"}>
+            <Typography key={"end"}>
               {"⠀ \n\n"}
             </Typography>,
           ],
@@ -656,59 +656,67 @@ export default function Historia() {
                   </Typography>
                 </div>
               ))}
-              {showTimeline && (
-                <Modal>
-                  <div
-                    className="modal-content"
-                    style={{
-                      width: "80%",
-                      backgroundColor: "white",
-                      marginTop: "160vh",
-                      marginBottom: "10vh",
-                      overflowY: "scroll",
-                      boxSizing: "border-box",
-                    }}
-                  >
-                    <div>
-                      <Typography
-                        component="h3"
-                        variant="h5"
-                        align="left"
-                        color="text.primary"
-                        sx={{ mt: 2, ml: 2 }}
-                        gutterBottom
-                      >
-                        Línea de tiempo
-                      </Typography>
-                      <Button
-                        variant="contained"
-                        color="error"
-                        onClick={closeModal}
-                        sx={{ ml: 2 }}
-                        startIcon={<CloseIcon />}
-                      >
-                        Cerrar
-                      </Button>
-                    </div>
+              <Modal
 
-                    <Chrono
-                      items={timeline}
-                      mode="VERTICAL_ALTERNATING"
-                      scrollable
-                      enableOutline
-                      useReadMore
-                      theme={{
-                        primary: "#191970",
-                        secondary: "grey",
-                        cardBgColor: "white",
-                        titleColor: "#CC5500",
-                        titleColorActive: "white",
-                        outline: "blue",
-                      }}
-                    />
+                open={showTimeline}
+                onClose={() => setShowTimeline(false)}
+
+              >
+                <Box sx={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  bgcolor: 'background.paper',
+                  border: '2px solid #000',
+                  width: '80%',
+                  boxShadow: 24,
+                  p: 4,
+                  maxWidth: '100vw',
+                  maxHeight: '100vh',
+                  overflowY: "auto",
+                }}
+                >
+
+                  <div>
+                    <Typography
+                      component="h3"
+                      variant="h5"
+                      align="left"
+                      color="text.primary"
+                      sx={{ mt: 2, ml: 2 }}
+                      gutterBottom
+                    >
+                      Línea de tiempo
+                    </Typography>
+                    <Button
+                      variant="contained"
+                      color="error"
+                      onClick={closeModal}
+                      sx={{ ml: 2 }}
+                      startIcon={<CloseIcon />}
+                    >
+                      Cerrar
+                    </Button>
                   </div>
-                </Modal>
-              )}
+
+                  <Chrono
+                    items={timeline}
+                    mode="VERTICAL_ALTERNATING"
+                    scrollable
+                    enableOutline
+                    useReadMore
+                    theme={{
+                      primary: "#191970",
+                      secondary: "grey",
+                      cardBgColor: "#e5cbba",
+                      titleColor: "#CC5500",
+                      titleColorActive: "white",
+                      outline: "blue",
+                    }}
+                  />
+                </Box>
+              </Modal>
               {historia.descripcion && (
                 <div>
                   <Typography

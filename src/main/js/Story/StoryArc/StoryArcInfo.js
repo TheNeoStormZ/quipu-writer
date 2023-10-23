@@ -44,7 +44,7 @@ import Navigation from "../../Navigation";
 import axios from "axios";
 import Footer from "../../Footer";
 
-import Modal from "../../Utils/Modal";
+import Modal from '@mui/material/Modal';
 import { Chrono } from "react-chrono";
 
 import Select from "@mui/material/Select";
@@ -211,7 +211,7 @@ export default function Trama() {
     localStorage.setItem("personaje", JSON.stringify(personaje));
     navigate("/personaje/info");
   }
-  
+
   let reSinDuplicados = [];
   const handleTimeline = async () => {
     let escenas = trama.escenas;
@@ -273,19 +273,19 @@ export default function Trama() {
               Personajes involucrados:{" "}
             </Typography>,
             escena.personajesInvolucrados &&
-            escena.personajesInvolucrados.length !== 0
+              escena.personajesInvolucrados.length !== 0
               ? escena.personajesInvolucrados.map((personaje) => (
-                  <Chip
-                    key={personaje.id}
-                    avatar={<Avatar alt="avatar" src={personaje.urlIcon} />}
-                    label={personaje.nombre}
-                    variant="outlined"
-                    clickable
-                    onClick={() => goToChar(personaje)}
-                  />
-                ))
+                <Chip
+                  key={personaje.id}
+                  avatar={<Avatar alt="avatar" src={personaje.urlIcon} />}
+                  label={personaje.nombre}
+                  variant="outlined"
+                  clickable
+                  onClick={() => goToChar(personaje)}
+                />
+              ))
               : "Sin información",
-              <Typography key={"end"}>
+            <Typography key={"end"}>
               {"⠀ \n\n"}
             </Typography>,
           ],
@@ -603,18 +603,27 @@ export default function Trama() {
                 </div>
               </div>
               {showTimeline && (
-                <Modal>
-                  <div
-                    className="modal-content"
-                    style={{
-                      width: "80%",
-                      backgroundColor: "white",
-                      marginTop: "160vh",
-                      marginBottom: "10vh",
-                      overflowY: "scroll",
-                      boxSizing: "border-box",
-                    }}
-                  >
+                <Modal
+
+                  open={showTimeline}
+                  onClose={() => setShowTimeline(false)}
+
+                >
+                <Box sx={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  bgcolor: 'background.paper',
+                  border: '2px solid #000',
+                  width: '80%',
+                  boxShadow: 24,
+                  p: 4,
+                  maxWidth: '100vw',
+                  maxHeight: '100vh',
+                  overflowY: "auto",
+                }}
+                >
                     <div>
                       <Typography
                         component="h3"
@@ -645,13 +654,13 @@ export default function Trama() {
                       theme={{
                         primary: "#191970",
                         secondary: "grey",
-                        cardBgColor: "white",
+                        cardBgColor: "#e5cbba",
                         titleColor: "#CC5500",
                         titleColorActive: "white",
                         outline: "blue",
                       }}
                     />
-                  </div>
+                  </Box>
                 </Modal>
               )}
               {datosTrama.map((tramaDato, index) => (

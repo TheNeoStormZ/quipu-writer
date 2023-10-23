@@ -37,7 +37,7 @@ import Grid from "@mui/material/Grid";
 
 import DataTable from "./ContextTable";
 
-import Modal from "../../../Utils/Modal";
+import Modal from '@mui/material/Modal';
 
 import ReactPlayer from "react-player";
 
@@ -199,14 +199,14 @@ export default function Escena() {
     axios
       .get(
         "https://dbpedia.org/sparql/?default-graph-uri=http%3A%2F%2Fdbpedia.org&query=PREFIX+dbpedia-owl%3A+%3Chttp%3A%2F%2Fdbpedia.org%2Fontology%2F%3E%0D%0APREFIX+rdfs%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23%3E%0D%0APREFIX+prov%3A+%3Chttp%3A%2F%2Fwww.w3.org%2Fns%2Fprov%23%3E%0D%0ASELECT+DISTINCT+%3Fevent+%3Fdate+%3Ftitle+%3Fsource%0D%0AWHERE+%7B%0D%0A++%3Fevent+rdf%3Atype+dbpedia-owl%3AEvent+.%0D%0A++%3Fevent+dbpedia-owl%3Adate+%3Fdate+.%0D%0A++%3Fevent+rdfs%3Alabel+%3Ftitle+.%0D%0A++FILTER+%28xsd%3Adate%28%3Fdate%29+%3E%3D+xsd%3Adate%28%22" +
-          anio +
-          "-01-01%22%29+%26%26+xsd%3Adate%28%3Fdate%29+%3C%3D+xsd%3Adate%28%22" +
-          anio +
-          "-" +
-          mes +
-          "-" +
-          dia +
-          "%22%29%29%0D%0A++FILTER+%28langMatches%28lang%28%3Ftitle%29%2C+%22es%22%29%29%0D%0A++OPTIONAL+%7B%3Fevent+prov%3AwasDerivedFrom+%3Fsource%7D.%0D%0A%7D%0D%0AORDER+BY+DESC%28%3Fdate%29&format=application%2Fsparql-results%2Bjson&timeout=30000&signal_void=on&signal_unconnected=on"
+        anio +
+        "-01-01%22%29+%26%26+xsd%3Adate%28%3Fdate%29+%3C%3D+xsd%3Adate%28%22" +
+        anio +
+        "-" +
+        mes +
+        "-" +
+        dia +
+        "%22%29%29%0D%0A++FILTER+%28langMatches%28lang%28%3Ftitle%29%2C+%22es%22%29%29%0D%0A++OPTIONAL+%7B%3Fevent+prov%3AwasDerivedFrom+%3Fsource%7D.%0D%0A%7D%0D%0AORDER+BY+DESC%28%3Fdate%29&format=application%2Fsparql-results%2Bjson&timeout=30000&signal_void=on&signal_unconnected=on"
       )
       .then((response) => {
         console.log(response.data.results.bindings);
@@ -454,20 +454,27 @@ export default function Escena() {
                 </Button>
               )}
 
-              {showContext && (
-                <Modal>
-                  <div
-                    className="modal-content"
-                    style={{
-                      width: "80%",
-                      maxHeight: "80%",
-                      marginTop: "10vh",
-                      marginBottom: "10vh",
-                      backgroundColor: "white",
-                      padding: "20px",
-                      overflowY: "scroll",
-                    }}
-                  >
+                <Modal
+
+                  open={showContext}
+                  onClose={() => setShowContext(false)}
+
+                >
+                <Box sx={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    bgcolor: 'background.paper',
+                    border: '2px solid #000',
+                    boxShadow: 24,
+                    width: '80%',
+                    p: 4,
+                    maxWidth: '100vw',
+                    maxHeight:'100vh',
+                    overflowY: "auto",
+                }}
+                >
                     <Typography
                       component="h3"
                       variant="h5"
@@ -506,9 +513,8 @@ export default function Escena() {
                     >
                       Cerrar
                     </Button>
-                  </div>
+                  </Box>
                 </Modal>
-              )}
 
               {escena.musica && ReactPlayer.canPlay(escena.musica) && (
                 <div>
@@ -577,17 +583,17 @@ export default function Escena() {
                               <Typography>{personaje.descripcion}</Typography>
                             </CardContent>
                           </CardActionArea>
-                          {personaje.fechaNacimiento !=null && (
+                          {personaje.fechaNacimiento != null && (
                             <CardActions>
-                            <Typography gutterBottom>
-                              {calcularEdadPersonaje(personaje) < 0 &&
-                                `Quedan ${Math.abs(
-                                  calcularEdadPersonaje(personaje)
-                                )} años para que nazca.`}
-                              {calcularEdadPersonaje(personaje) >= 0 &&
-                                `Edad: ${calcularEdadPersonaje(personaje)}`}
-                            </Typography>
-                          </CardActions>
+                              <Typography gutterBottom>
+                                {calcularEdadPersonaje(personaje) < 0 &&
+                                  `Quedan ${Math.abs(
+                                    calcularEdadPersonaje(personaje)
+                                  )} años para que nazca.`}
+                                {calcularEdadPersonaje(personaje) >= 0 &&
+                                  `Edad: ${calcularEdadPersonaje(personaje)}`}
+                              </Typography>
+                            </CardActions>
                           )}
                         </Card>
                       </Grid>
