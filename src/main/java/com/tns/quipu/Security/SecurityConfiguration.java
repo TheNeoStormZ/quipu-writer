@@ -43,7 +43,7 @@ public class SecurityConfiguration {
 		.sessionManagement()
 		.sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 		.authorizeHttpRequests((requests) -> requests
-						.requestMatchers("/built/**", "/login", "/register", "/api/auth/**","/alive")
+						.requestMatchers("/built/**", "/login", "/register", "/api/auth/**","/alive","/site.webmanifest")
 						.permitAll()
 						.anyRequest().authenticated())
 				.formLogin()

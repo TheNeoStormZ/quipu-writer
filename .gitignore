@@ -45,3 +45,9 @@ src/main/resources/static/built/bundle.js.map
 /test-results/
 /playwright-report/
 /playwright/.cache/
+src/main/resources/static/built/workbox-*.js
+src/main/resources/static/built/workbox-*.js.map
+src/resources/static/sw.js
+src/resources/static/sw.js.map
+src/main/resources/static/built/bundle.js
+src/main/resources/static/built/bundle.js.map

@@ -1,5 +1,11 @@
 package com.tns.quipu;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -9,6 +15,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 public class PageController {
+
+	@CrossOrigin(origins = "*", allowedHeaders = "Accept-Encoding")
+    @RequestMapping(value = "/site.webmanifest")
+	public ResponseEntity<String> manifest() throws IOException {
+		ClassPathResource resource = new ClassPathResource("static/manifest.json");
+        Path path = resource.getFile().toPath();
+        String content = new String(Files.readAllBytes(path));
+
+        // Devuelve el contenido como respuesta JSON
+        return ResponseEntity.ok().body(content);
+
+	}
 
 	@CrossOrigin(origins = "*", allowedHeaders = "Accept-Encoding")
     @RequestMapping(value = "/login")
