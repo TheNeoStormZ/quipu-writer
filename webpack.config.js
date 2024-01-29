@@ -15,13 +15,29 @@ module.exports = {
       swDest: 'src/main/resources/static/sw.js',
       clientsClaim: true,
       skipWaiting: true,
+      cleanupOutdatedCaches: true,
       navigateFallback: 'src/main/resources/static/templates/index.html',
       runtimeCaching: [
         {
-          urlPattern: new RegExp('.*'),
+          urlPattern: new RegExp('/'),
           handler: 'StaleWhileRevalidate',
           options: {
-            cacheName: 'all-requests-cache',
+            cacheName: 'app-frontend',
+            plugins: [
+              {
+                cacheDidUpdate: {
+                  maxAgeSeconds: 60 * 60 * 24, // 24 hours
+                },
+              },
+            ],
+          },
+        },
+        {
+            urlPattern: new RegExp('/api/'),
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'app-api',
+              networkTimeoutSeconds: 10,
           },
         },
       ],
