@@ -45,7 +45,6 @@ module.exports = {
           handler: 'NetworkOnly',
           options: {
             cacheName: 'app-manifest',
-            networkTimeoutSeconds: 60,
         },
       },
       ],
