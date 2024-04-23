@@ -40,6 +40,14 @@ module.exports = {
               networkTimeoutSeconds: 10,
           },
         },
+        {
+          urlPattern: new RegExp('/site.webmanifest'),
+          handler: 'NetworkOnly',
+          options: {
+            cacheName: 'app-manifest',
+            networkTimeoutSeconds: 60,
+        },
+      },
       ],
     }),
   ],
