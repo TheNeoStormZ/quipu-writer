@@ -17,18 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class PageController {
 
 	@CrossOrigin(origins = "*", allowedHeaders = "Accept-Encoding")
-    @RequestMapping(value = "/site.webmanifest")
-	public ResponseEntity<String> manifest() throws IOException {
-		ClassPathResource resource = new ClassPathResource("static/site.webmanifest");
-        Path path = resource.getFile().toPath();
-        String content = new String(Files.readAllBytes(path));
-
-        // Devuelve el contenido como respuesta JSON
-        return ResponseEntity.ok().body(content);
-
-	}
-
-	@CrossOrigin(origins = "*", allowedHeaders = "Accept-Encoding")
     @RequestMapping(value = "/login")
 	public String login() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
